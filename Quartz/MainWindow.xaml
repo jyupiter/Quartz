@@ -42,7 +42,7 @@
         <DockPanel Background="Transparent" Grid.RowSpan="3">
             <Border BorderBrush="#FFFFFFFF" BorderThickness="4,0" CornerRadius="4,4,0,0" DockPanel.Dock="Top">
                 <DockPanel Name="WindowTopBar" MouseDown="DragWindow" Background="#FFFFFFFF" DockPanel.Dock="Top" VerticalAlignment="Top" Height="50">
-                    <Image VerticalAlignment="Center" HorizontalAlignment="Center" Source="Resources/quartz.png" Width="18" Margin="25,0,0,0"/>
+                    <Image VerticalAlignment="Center" HorizontalAlignment="Center" Source="Resources/quartz.png" Width="18" Margin="25,0,0,0" RenderOptions.BitmapScalingMode="NearestNeighbor" />
                     <Label x:Name="WindowTitle" MouseDown="DragWindow" Content="quartz" DockPanel.Dock="Left" VerticalAlignment="Top" Height="50" VerticalContentAlignment="Center" TextOptions.TextFormattingMode="Display" Background="{x:Null}" Foreground="#FF344055" Padding="5" FontSize="30" FontFamily="SF Square Root" Margin="15,0,0,0"/>
                     <StackPanel Height="50" Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Top" Width="100" HorizontalAlignment="Right" Margin="0,0,-4,0">
                         <Button x:Name="MinimizeButton" Content="—" Width="50" Click="WindowMinimize" Background="{x:Null}" Foreground="#FF344055" BorderBrush="{x:Null}" VerticalContentAlignment="Center" Padding="1.7,1,1,1" Margin="0,0,0,0">
@@ -94,15 +94,15 @@
                         <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Button" HorizontalAlignment="Left"/>
                         <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Placeholder" HorizontalAlignment="Left"/>
                         <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Example" HorizontalAlignment="Left"/>
-                        <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Button" HorizontalAlignment="Left"/>
+                        <Button x:Name="DownloadsBtn" Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Downloads" HorizontalAlignment="Left" Click="RedirectToDownloads"/>
                         <Rectangle Width="1" Fill="#FFCCCCCC" Margin="10,0"></Rectangle>
-                        <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Settings" HorizontalAlignment="Left"/>
-                        <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Help" HorizontalAlignment="Left"/>
+                        <Button x:Name="SettingsBtn" Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Settings" HorizontalAlignment="Left"/>
+                        <Button x:Name="HelpBtn" Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Help" HorizontalAlignment="Left"/>
                     </StackPanel>
                 </Border>
             </StackPanel>
             <Border BorderBrush="#FFF2F2F2" BorderThickness="0,0,0,4" CornerRadius="0,0,4,4" DockPanel.Dock="Top">
-                <Frame Content="" DockPanel.Dock="Left" Background="#FFF2F2F2"/>
+                <Frame Name="ContentWrapper" Content="" DockPanel.Dock="Left" Background="#FFF2F2F2" NavigationUIVisibility="Hidden" />
             </Border>
         </DockPanel>
     </Grid>

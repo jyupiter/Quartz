@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Quartz.Pages;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -134,5 +135,10 @@ namespace Quartz
             }
         }
         #endregion
+
+        private void RedirectToDownloads(object sender, RoutedEventArgs e)
+        {
+            ContentWrapper.NavigationService.Navigate(new Downloads());
+        }
     }
 }
