@@ -28,7 +28,14 @@ namespace Quartz
 
         private void DragWindow(object sender, MouseButtonEventArgs e)
         {
-            DragMove();
+            try
+            {
+                DragMove();
+            }
+            catch(InvalidOperationException i)
+            {
+                Console.WriteLine(i.Message);
+            }
         }
 
         private void WindowClose(object sender, RoutedEventArgs e)
