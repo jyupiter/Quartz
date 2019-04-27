@@ -27,6 +27,7 @@ namespace Quartz
             InitializeComponent();
         }
 
+        #region WindowActions
         private void DragWindow(object sender, MouseButtonEventArgs e)
         {
             try
@@ -65,6 +66,7 @@ namespace Quartz
         {
             SystemCommands.MinimizeWindow(this);
         }
+        #endregion
 
         #region ResizeWindows
         bool ResizeInProcess = false;

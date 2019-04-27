@@ -45,44 +45,8 @@
                     <Image VerticalAlignment="Center" HorizontalAlignment="Center" Source="Resources/quartz.png" Width="18" Margin="25,0,0,0" RenderOptions.BitmapScalingMode="NearestNeighbor" />
                     <Label x:Name="WindowTitle" MouseDown="DragWindow" Content="quartz" DockPanel.Dock="Left" VerticalAlignment="Top" Height="50" VerticalContentAlignment="Center" TextOptions.TextFormattingMode="Display" Background="{x:Null}" Foreground="#FF344055" Padding="5" FontSize="30" FontFamily="SF Square Root" Margin="15,0,0,0"/>
                     <StackPanel Height="50" Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Top" Width="100" HorizontalAlignment="Right" Margin="0,0,-4,0">
-                        <Button x:Name="MinimizeButton" Content="—" Width="50" Click="WindowMinimize" Background="{x:Null}" Foreground="#FF344055" BorderBrush="{x:Null}" VerticalContentAlignment="Center" Padding="1.7,1,1,1" Margin="0,0,0,0">
-                            <Button.Template>
-                                <ControlTemplate TargetType="{x:Type Button}">
-                                    <Border x:Name="bdr_main" Margin="0" BorderThickness="0" Background="Transparent">
-                                        <ContentPresenter x:Name="bdr_txt" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="8,6,8,6" ContentSource="Content" />
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter TargetName="bdr_main" Property="Background" Value="#FFDDDDDD"/>
-                                            <Setter TargetName="bdr_txt" Property="TextBlock.Foreground" Value="#FF000000"/>
-                                        </Trigger>
-                                        <Trigger Property="IsPressed" Value="True">
-                                            <Setter TargetName="bdr_main" Property="Background" Value="#FFAAAAAA"/>
-                                            <Setter TargetName="bdr_txt" Property="TextBlock.Foreground" Value="#FFFFFFFF"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Button.Template>
-                        </Button>
-                        <Button x:Name="CloseButton" Content="✕" Width="50" Click="WindowClose" Foreground="#FF344055" BorderBrush="{x:Null}" VerticalContentAlignment="Center" Background="{x:Null}" Margin="0">
-                            <Button.Template>
-                                <ControlTemplate TargetType="{x:Type Button}">
-                                    <Border x:Name="bdr_main" Margin="0" BorderThickness="0" Background="Transparent">
-                                        <ContentPresenter x:Name="bdr_txt" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="8,6,8,6" ContentSource="Content" />
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter TargetName="bdr_main" Property="Background" Value="#FFDDDDDD"/>
-                                            <Setter TargetName="bdr_txt" Property="TextBlock.Foreground" Value="#FF000000"/>
-                                        </Trigger>
-                                        <Trigger Property="IsPressed" Value="True">
-                                            <Setter TargetName="bdr_main" Property="Background" Value="#FFFE6F5E"/>
-                                            <Setter TargetName="bdr_txt" Property="TextBlock.Foreground" Value="#FFFFFFFF"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Button.Template>
-                        </Button>
+                        <Button x:Name="MinimizeButton" Content="—" Width="50" Template="{StaticResource UIButtonTemplateM}" Click="WindowMinimize" Background="{x:Null}" Foreground="#FF344055" BorderBrush="{x:Null}" VerticalContentAlignment="Center" Padding="1.7,1,1,1" Margin="0,0,0,0"></Button>
+                        <Button x:Name="CloseButton" Content="✕" Width="50" Template="{StaticResource UIButtonTemplateC}" Click="WindowClose" Foreground="#FF344055" BorderBrush="{x:Null}" VerticalContentAlignment="Center" Background="{x:Null}" Margin="0"></Button>
                     </StackPanel>
                 </DockPanel>
             </Border>
