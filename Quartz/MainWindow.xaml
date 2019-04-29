@@ -27,79 +27,46 @@
             <DropShadowEffect Color="#FF777777" BlurRadius="5" Direction="-90" RenderingBias="Quality" ShadowDepth="2"/>
         </Grid.Effect>
         <Grid.RowDefinitions>
-            <RowDefinition Height="49*"/>
-            <RowDefinition Height="631*"/>
+            <RowDefinition Height="25*"/>
+            <RowDefinition Height="12*"/>
+            <RowDefinition Height="303*"/>
         </Grid.RowDefinitions>
-        <Rectangle x:Name="RightResize" Style="{StaticResource RectBorderStyle}" Panel.ZIndex="10" Margin="0,0,-10,0" Width="10" HorizontalAlignment="Right" Height="680" VerticalAlignment="Bottom" Grid.RowSpan="2" Cursor="SizeWE" />
-        <Rectangle x:Name="LeftResize" Style="{StaticResource RectBorderStyle}" Panel.ZIndex="10" Width="10" HorizontalAlignment="Left" Height="680" VerticalAlignment="Bottom" Grid.RowSpan="2" Cursor="SizeWE" Margin="-10,0,0,0" />
-        <Rectangle x:Name="BottomResize" Style="{StaticResource RectBorderStyle}" Panel.ZIndex="10" Margin="0,0,0,-10" Grid.Row="1" Height="10" VerticalAlignment="Bottom" Cursor="SizeNS" />
+        <Rectangle x:Name="RightResize" Style="{StaticResource RectBorderStyle}" Panel.ZIndex="10" Margin="0,0,-10,0" Width="10" HorizontalAlignment="Right" Height="680" VerticalAlignment="Bottom" Grid.RowSpan="3" Cursor="SizeWE" />
+        <Rectangle x:Name="LeftResize" Style="{StaticResource RectBorderStyle}" Panel.ZIndex="10" Width="10" HorizontalAlignment="Left" Height="680" VerticalAlignment="Bottom" Grid.RowSpan="3" Cursor="SizeWE" Margin="-10,0,0,0" />
+        <Rectangle x:Name="BottomResize" Style="{StaticResource RectBorderStyle}" Panel.ZIndex="10" Margin="0,0,0,-10" Grid.Row="2" Height="10" VerticalAlignment="Bottom" Cursor="SizeNS" />
         <Rectangle x:Name="TopResize" Style="{StaticResource RectBorderStyle}" Panel.ZIndex="10" Margin="0,-10,0,0" Height="10" VerticalAlignment="Top" Cursor="SizeNS" />
         <Rectangle x:Name="TopRightResize" Style="{StaticResource RectBorderStyle}" Panel.ZIndex="10" Margin="0,-10,-10,0" Height="10" HorizontalAlignment="Right" Width="10" VerticalAlignment="Top" Cursor="SizeNESW" />
-        <Rectangle x:Name="BottomRightResize" Style="{StaticResource RectBorderStyle}" Panel.ZIndex="10" Margin="0,0,-10,-10" Height="10" HorizontalAlignment="Right" Width="10" VerticalAlignment="Bottom" Grid.Row="1" Cursor="SizeNWSE" />
-        <Rectangle x:Name="BottomLeftResize" Style="{StaticResource RectBorderStyle}" Panel.ZIndex="10" Margin="-10,0,0,-10" Height="10" HorizontalAlignment="Left" Width="10" VerticalAlignment="Bottom" Grid.Row="1" Cursor="SizeNESW" />
+        <Rectangle x:Name="BottomRightResize" Style="{StaticResource RectBorderStyle}" Panel.ZIndex="10" Margin="0,0,-10,-10" Height="10" HorizontalAlignment="Right" Width="10" VerticalAlignment="Bottom" Grid.Row="2" Cursor="SizeNWSE" />
+        <Rectangle x:Name="BottomLeftResize" Style="{StaticResource RectBorderStyle}" Panel.ZIndex="10" Margin="-10,0,0,-10" Height="10" HorizontalAlignment="Left" Width="10" VerticalAlignment="Bottom" Grid.Row="2" Cursor="SizeNESW" />
         <Rectangle x:Name="TopLeftResize" Style="{StaticResource RectBorderStyle}" Panel.ZIndex="10" Margin="-10,-10,0,0" Height="10" HorizontalAlignment="Left" Width="10" VerticalAlignment="Top" Cursor="SizeNWSE" />
-        <DockPanel Background="Transparent" Grid.RowSpan="2">
+        <DockPanel Background="Transparent" Grid.RowSpan="3">
             <Border BorderBrush="#FFFFFFFF" BorderThickness="4,0" CornerRadius="4,4,0,0" DockPanel.Dock="Top">
                 <DockPanel Name="WindowTopBar" MouseDown="DragWindow" Background="#FFFFFFFF" DockPanel.Dock="Top" VerticalAlignment="Top" Height="50">
-                    <Image VerticalAlignment="Center" HorizontalAlignment="Center" Source="Resources/Untitled.png" Width="18" Margin="25,0,0,0"/>
+                    <Image VerticalAlignment="Center" HorizontalAlignment="Center" Source="Resources/quartz.png" Width="18" Margin="25,0,0,0" RenderOptions.BitmapScalingMode="NearestNeighbor" />
                     <Label x:Name="WindowTitle" MouseDown="DragWindow" Content="quartz" DockPanel.Dock="Left" VerticalAlignment="Top" Height="50" VerticalContentAlignment="Center" TextOptions.TextFormattingMode="Display" Background="{x:Null}" Foreground="#FF344055" Padding="5" FontSize="30" FontFamily="SF Square Root" Margin="15,0,0,0"/>
                     <StackPanel Height="50" Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Top" Width="100" HorizontalAlignment="Right" Margin="0,0,-4,0">
-                        <Button x:Name="MinimizeButton" Content="—" Width="50" Click="WindowMinimize" Background="{x:Null}" Foreground="#FF344055" BorderBrush="{x:Null}" VerticalContentAlignment="Center" Padding="1.7,1,1,1" Margin="0,0,0,0">
-                            <Button.Template>
-                                <ControlTemplate TargetType="{x:Type Button}">
-                                    <Border x:Name="bdr_main" Margin="0" BorderThickness="0" Background="Transparent">
-                                        <ContentPresenter x:Name="bdr_txt" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="8,6,8,6" ContentSource="Content" />
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter TargetName="bdr_main" Property="Background" Value="#FFDDDDDD"/>
-                                            <Setter TargetName="bdr_txt" Property="TextBlock.Foreground" Value="#FF000000"/>
-                                        </Trigger>
-                                        <Trigger Property="IsPressed" Value="True">
-                                            <Setter TargetName="bdr_main" Property="Background" Value="#FFAAAAAA"/>
-                                            <Setter TargetName="bdr_txt" Property="TextBlock.Foreground" Value="#FFFFFFFF"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Button.Template>
-                        </Button>
-                        <Button x:Name="CloseButton" Content="✕" Width="50" Click="WindowClose" Foreground="#FF344055" BorderBrush="{x:Null}" VerticalContentAlignment="Center" Background="{x:Null}" Margin="0">
-                            <Button.Template>
-                                <ControlTemplate TargetType="{x:Type Button}">
-                                    <Border x:Name="bdr_main" Margin="0" BorderThickness="0" Background="Transparent">
-                                        <ContentPresenter x:Name="bdr_txt" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="8,6,8,6" ContentSource="Content" />
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter TargetName="bdr_main" Property="Background" Value="#FFDDDDDD"/>
-                                            <Setter TargetName="bdr_txt" Property="TextBlock.Foreground" Value="#FF000000"/>
-                                        </Trigger>
-                                        <Trigger Property="IsPressed" Value="True">
-                                            <Setter TargetName="bdr_main" Property="Background" Value="#FFFE6F5E"/>
-                                            <Setter TargetName="bdr_txt" Property="TextBlock.Foreground" Value="#FFFFFFFF"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Button.Template>
-                        </Button>
+                        <Button x:Name="MinimizeButton" Content="—" Width="50" Template="{StaticResource UIButtonTemplateM}" Click="WindowMinimize" Background="{x:Null}" Foreground="#FF344055" BorderBrush="{x:Null}" VerticalContentAlignment="Center" Padding="1.7,1,1,1" Margin="0,0,0,0"></Button>
+                        <Button x:Name="CloseButton" Content="✕" Width="50" Template="{StaticResource UIButtonTemplateC}" Click="WindowClose" Foreground="#FF344055" BorderBrush="{x:Null}" VerticalContentAlignment="Center" Background="{x:Null}" Margin="0"></Button>
                     </StackPanel>
                 </DockPanel>
             </Border>
             <StackPanel Background="#FFFFFFFF" DockPanel.Dock="Top">
-                <StackPanel Background="#FFFFFFFF" Panel.ZIndex="1" Height="25" VerticalAlignment="Top" Orientation="Horizontal" Margin="20,0,20,10">
-                    <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Placeholder" HorizontalAlignment="Left"/>
-                    <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Example" HorizontalAlignment="Left"/>
-                    <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Button" HorizontalAlignment="Left"/>
-                    <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Placeholder" HorizontalAlignment="Left"/>
-                    <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Example" HorizontalAlignment="Left"/>
-                    <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Button" HorizontalAlignment="Left"/>
-                    <Rectangle Width="1" Fill="#FFCCCCCC" Margin="10,0"></Rectangle>
-                    <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Settings" HorizontalAlignment="Left"/>
-                    <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Help" HorizontalAlignment="Left"/>
-                </StackPanel>
+                <Border BorderBrush="#FFCCCCCC" BorderThickness="0,0,0,1">
+                    <StackPanel Name="MainMenu" Background="#FFFFFFFF" Panel.ZIndex="1" Height="25" VerticalAlignment="Top" Orientation="Horizontal" Margin="20,0,20,5">
+                        <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Placeholder" HorizontalAlignment="Left"/>
+                        <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Example" HorizontalAlignment="Left"/>
+                        <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Button" HorizontalAlignment="Left"/>
+                        <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Placeholder" HorizontalAlignment="Left"/>
+                        <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Example" HorizontalAlignment="Left"/>
+                        <Button x:Name="FilesBtn" Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Files" HorizontalAlignment="Left" Click="RedirectToFiles"/>
+                        <Rectangle Width="1" Fill="#FFCCCCCC" Margin="10,0"/>
+                        <Button x:Name="SettingsBtn" Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Settings" HorizontalAlignment="Left"/>
+                        <Button x:Name="HelpBtn" Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Help" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </Border>
             </StackPanel>
-            <Border BorderBrush="#FFF2F2F2" BorderThickness="0,4" CornerRadius="0,0,4,4" DockPanel.Dock="Top">
-                <Frame Content="" DockPanel.Dock="Left" Background="#FFF2F2F2"/>
+            <Border BorderBrush="#FFF2F2F2" BorderThickness="0,0,0,4" CornerRadius="0,0,4,4" DockPanel.Dock="Top">
+                <Frame Name="ContentWrapper" Content="" DockPanel.Dock="Left" Background="#FFF2F2F2" NavigationUIVisibility="Hidden" />
             </Border>
         </DockPanel>
     </Grid>
