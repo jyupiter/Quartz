@@ -7,21 +7,53 @@
       Background="#FFFBFBFB"
       d:DesignHeight="565" d:DesignWidth="980"
       Title="FileWatcher">
-
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Dictionaries/GeneralDictionary.xaml"/>
+                <ResourceDictionary Source="/Dictionaries/DataGridDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+        
+    </Page.Resources>
     <DockPanel LastChildFill="True">
-        <Label DockPanel.Dock="Top" Content="Filesystem Scanning" Margin="20,10" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="15"/>
+        <Label DockPanel.Dock="Top" Content="Live Scanning" Margin="20,10" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="15"/>
         <Rectangle DockPanel.Dock="Top" Height="1" Fill="#FFCCCCCC" Margin="20,0"/>
-        <StackPanel DockPanel.Dock="Left" Width="199" Margin="20,20,0,20" HorizontalAlignment="Left">
+        <ScrollViewer DockPanel.Dock="Left" Width="199" Margin="20,20,0,20" HorizontalAlignment="Left">
             <StackPanel>
-                <Label Content="Live Scan" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
+                <Label Content="Tracking Activity" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13" />
                 <TextBlock Text="Detect, display, and log filesystem changes in real time." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
-                <Button Name="LiveScanBtn" Content="Start scan" Height="25" HorizontalAlignment="Left" Margin="5,0,5,25" Padding="5,3" Click="LiveScanBtn_Click"></Button>
-                <Label Content="Full Compare" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
-                <TextBlock Text="Scan and compare filesystem to a previous state. If no previous scan exists, new scan will become default." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
-                <Button Name="FullCompareBtn" Content="Start scan" Height="25" HorizontalAlignment="Left" Margin="5,0,5,25" Padding="5,3" Click="FullCompareBtn_Click"></Button>
+                <Expander>
+                    <StackPanel>
+                        <Label Content="Target" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13" Margin="0,15,0,0"/>
+                        <TextBlock Text="Tool will only record events happening within the specified directory." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,5"/>
+                        <TextBox Name="TargetDirectory" Margin="5,5,5,10" Text="C:\\"></TextBox>
+
+                        <Label Content="Filter" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13" Margin="0,15,0,0"/>
+                        <TextBlock Text="Set file types (eg.: .docx) to include or exclude." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,5"/>
+                        <CheckBox Name="EnableFiltering" Margin="5,0,5,10">Enable filtering</CheckBox>
+                        <Expander Margin="0,0,0,25">
+                            <StackPanel>
+                                <TextBlock Text="Separate multiple extensions with commas." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,20,5,10"/>
+                                <TextBox Name="FilterExtensions" Margin="5,0,5,5" Text=""></TextBox>
+                                <RadioButton GroupName="FilterType" Name="FilterInclude" Margin="5" Content="Include" IsChecked="True"></RadioButton>
+                                <RadioButton GroupName="FilterType" Name="FilterExclude" Margin="5,0,5,20" Content="Exclude"></RadioButton>
+                            </StackPanel>
+                        </Expander>
+
+                        <Label Content="Logs" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13" />
+                        <TextBlock Text="If enabled, logs will be created and saved in the specified directory." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,5"/>
+                        <TextBox Name="LoggingDirectory" Margin="5,5,5,10" Text=""></TextBox>
+                        <CheckBox Name="EnableLogs" Margin="5,0,5,20">Enable logs</CheckBox>
+                    </StackPanel>
+                </Expander>
+                <StackPanel Orientation="Horizontal" Margin="5,10,5,0">
+                    <Button Name="LiveScanBtn" Content="Start scan" Height="25" HorizontalAlignment="Left" Padding="5,3" Click="StartLiveScan" FontFamily="Arial"></Button>
+                    <Label Name="TimeElapsed" Content="" Margin="5,0,0,0" Height="25" HorizontalAlignment="Left" Padding="5" FontFamily="Arial"></Label>
+                </StackPanel>
             </StackPanel>
-        </StackPanel>
+        </ScrollViewer>
         <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20"/>
-        <DataGrid Name="ScanResultDataGrid" DockPanel.Dock="Right" Margin="0,20,20,20" BorderBrush="LightGray"/>
+        <DataGrid Name="ScanResultDataGrid" DockPanel.Dock="Right" Margin="0,20,20,20" BorderBrush="LightGray" />
     </DockPanel>
 </Page>
