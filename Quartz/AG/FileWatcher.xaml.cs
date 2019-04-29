@@ -24,5 +24,15 @@ namespace Quartz.AG
         {
             InitializeComponent();
         }
+
+        private void LiveScanBtn_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void FullCompareBtn_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
