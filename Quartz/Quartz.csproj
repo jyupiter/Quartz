@@ -70,27 +70,27 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Pages\Downloads.xaml">
+    <Page Include="AG\Files.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\FileWatcher.xaml">
+    <Page Include="AG\FileWatcher.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\_Template.xaml">
+    <Page Include="Templates\_Template.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Pages\Downloads.xaml.cs">
-      <DependentUpon>Downloads.xaml</DependentUpon>
+    <Compile Include="AG\Files.xaml.cs">
+      <DependentUpon>Files.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\FileWatcher.xaml.cs">
+    <Compile Include="AG\FileWatcher.xaml.cs">
       <DependentUpon>FileWatcher.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\_Template.xaml.cs">
+    <Compile Include="Templates\_Template.xaml.cs">
       <DependentUpon>_Template.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">

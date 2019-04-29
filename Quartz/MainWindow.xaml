@@ -27,9 +27,9 @@
             <DropShadowEffect Color="#FF777777" BlurRadius="5" Direction="-90" RenderingBias="Quality" ShadowDepth="2"/>
         </Grid.Effect>
         <Grid.RowDefinitions>
-            <RowDefinition Height="10*"/>
-            <RowDefinition Height="7*"/>
-            <RowDefinition Height="119*"/>
+            <RowDefinition Height="25*"/>
+            <RowDefinition Height="12*"/>
+            <RowDefinition Height="303*"/>
         </Grid.RowDefinitions>
         <Rectangle x:Name="RightResize" Style="{StaticResource RectBorderStyle}" Panel.ZIndex="10" Margin="0,0,-10,0" Width="10" HorizontalAlignment="Right" Height="680" VerticalAlignment="Bottom" Grid.RowSpan="3" Cursor="SizeWE" />
         <Rectangle x:Name="LeftResize" Style="{StaticResource RectBorderStyle}" Panel.ZIndex="10" Width="10" HorizontalAlignment="Left" Height="680" VerticalAlignment="Bottom" Grid.RowSpan="3" Cursor="SizeWE" Margin="-10,0,0,0" />
@@ -52,14 +52,14 @@
             </Border>
             <StackPanel Background="#FFFFFFFF" DockPanel.Dock="Top">
                 <Border BorderBrush="#FFCCCCCC" BorderThickness="0,0,0,1">
-                    <StackPanel Background="#FFFFFFFF" Panel.ZIndex="1" Height="25" VerticalAlignment="Top" Orientation="Horizontal" Margin="20,0,20,10">
+                    <StackPanel Name="MainMenu" Background="#FFFFFFFF" Panel.ZIndex="1" Height="25" VerticalAlignment="Top" Orientation="Horizontal" Margin="20,0,20,5">
                         <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Placeholder" HorizontalAlignment="Left"/>
                         <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Example" HorizontalAlignment="Left"/>
                         <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Button" HorizontalAlignment="Left"/>
                         <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Placeholder" HorizontalAlignment="Left"/>
                         <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Example" HorizontalAlignment="Left"/>
-                        <Button x:Name="DownloadsBtn" Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Downloads" HorizontalAlignment="Left" Click="RedirectToDownloads"/>
-                        <Rectangle Width="1" Fill="#FFCCCCCC" Margin="10,0"></Rectangle>
+                        <Button x:Name="FilesBtn" Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Files" HorizontalAlignment="Left" Click="RedirectToFiles"/>
+                        <Rectangle Width="1" Fill="#FFCCCCCC" Margin="10,0"/>
                         <Button x:Name="SettingsBtn" Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Settings" HorizontalAlignment="Left"/>
                         <Button x:Name="HelpBtn" Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Help" HorizontalAlignment="Left"/>
                     </StackPanel>

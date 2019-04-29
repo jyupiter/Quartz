@@ -13,16 +13,21 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Quartz.Pages
+namespace Quartz.AG
 {
     /// <summary>
-    /// Interaction logic for _Template.xaml
+    /// Interaction logic for Downloads.xaml
     /// </summary>
-    public partial class _Template : Page
+    public partial class Files : Page
     {
-        public _Template()
+        public Files()
         {
             InitializeComponent();
+        }
+
+        private void RedirectToFileWatcher(object sender, RoutedEventArgs e)
+        {
+            FilesWrapper.NavigationService.Navigate(new FileWatcher());
         }
     }
 }

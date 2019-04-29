@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Quartz.Pages
+namespace Quartz.AG
 {
     /// <summary>
-    /// Interaction logic for FileWatcher.xaml
+    /// Interaction logic for _Template.xaml
     /// </summary>
-    public partial class FileWatcher : Page
+    public partial class _Template : Page
     {
-        public FileWatcher()
+        public _Template()
         {
             InitializeComponent();
         }
