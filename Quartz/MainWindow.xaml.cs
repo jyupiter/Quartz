@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Quartz.AG;
+using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace Quartz
@@ -24,8 +19,17 @@ namespace Quartz
         public MainWindow()
         {
             InitializeComponent();
+            foreach(Button b in MainMenu.Children.OfType<Button>())
+            {
+                b.Click += FocusHandler;
+            }
         }
 
+        private void FocusHandler(object sender, RoutedEventArgs e)
+        {
+        }
+
+        #region WindowActions
         private void DragWindow(object sender, MouseButtonEventArgs e)
         {
             try
@@ -64,6 +68,7 @@ namespace Quartz
         {
             SystemCommands.MinimizeWindow(this);
         }
+        #endregion
 
         #region ResizeWindows
         bool ResizeInProcess = false;
@@ -134,5 +139,10 @@ namespace Quartz
             }
         }
         #endregion
+
+        private void RedirectToFiles(object sender, RoutedEventArgs e)
+        {
+            ContentWrapper.NavigationService.Navigate(new Files());
+        }
     }
 }
