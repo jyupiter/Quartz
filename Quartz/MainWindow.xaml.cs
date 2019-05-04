@@ -144,5 +144,10 @@ namespace Quartz
         {
             ContentWrapper.NavigationService.Navigate(new Files());
         }
+
+        private void RedirectToHome(object sender, RoutedEventArgs e)
+        {
+            ContentWrapper.NavigationService.Navigate(new Home());
+        }
     }
 }

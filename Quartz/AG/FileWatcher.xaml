@@ -14,7 +14,6 @@
                 <ResourceDictionary Source="/Dictionaries/DataGridDictionary.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
-        
     </Page.Resources>
     <DockPanel LastChildFill="True">
         <Label DockPanel.Dock="Top" Content="Live Scanning" Margin="20,10" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="15"/>
@@ -45,12 +44,15 @@
                         <TextBlock Text="If enabled, logs will be created and saved in the specified directory." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,5"/>
                         <TextBox Name="LoggingDirectory" Margin="5,5,5,10" Text=""></TextBox>
                         <CheckBox Name="EnableLogs" Margin="5,0,5,20">Enable logs</CheckBox>
+
+                        <Button Name="SaveBtn" Content="Save settings" Margin="5,0,5,20" Height="25" HorizontalAlignment="Left" Padding="5,3" Click="SavePreferences" FontFamily="Arial"></Button>
                     </StackPanel>
                 </Expander>
                 <StackPanel Orientation="Horizontal" Margin="5,10,5,0">
                     <Button Name="LiveScanBtn" Content="Start scan" Height="25" HorizontalAlignment="Left" Padding="5,3" Click="StartLiveScan" FontFamily="Arial"></Button>
-                    <Label Name="TimeElapsed" Content="" Margin="5,0,0,0" Height="25" HorizontalAlignment="Left" Padding="5" FontFamily="Arial"></Label>
+                    <Button Name="ClearBtn" Margin="10,0" Content="Clear" Height="25" HorizontalAlignment="Left" Padding="5,3" Click="ClearData" FontFamily="Arial" Visibility="Collapsed"></Button>
                 </StackPanel>
+                    <Label Name="TimeElapsed" Content="" Margin="5,10,5,0" Height="25" HorizontalAlignment="Left" Padding="5" FontFamily="Arial"></Label>
             </StackPanel>
         </ScrollViewer>
         <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20"/>

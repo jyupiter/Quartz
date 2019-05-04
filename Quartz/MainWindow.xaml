@@ -38,7 +38,7 @@
             <Border BorderBrush="#FFFFFFFF" BorderThickness="4,0" CornerRadius="4,4,0,0" DockPanel.Dock="Top">
                 <DockPanel Name="WindowTopBar" MouseDown="DragWindow" Background="#FFFFFFFF" DockPanel.Dock="Top" VerticalAlignment="Top" Height="50">
                     <Image VerticalAlignment="Center" HorizontalAlignment="Center" Source="Resources/quartz.png" Width="18" Margin="25,0,0,0" RenderOptions.BitmapScalingMode="NearestNeighbor" />
-                    <Label x:Name="WindowTitle" MouseDown="DragWindow" Content="quartz" DockPanel.Dock="Left" VerticalAlignment="Top" Height="50" VerticalContentAlignment="Center" TextOptions.TextFormattingMode="Display" Background="{x:Null}" Foreground="#FF344055" Padding="5" FontSize="30" FontFamily="SF Square Root" Margin="15,0,0,0"/>
+                    <Label x:Name="WindowTitle" Content="quartz" DockPanel.Dock="Left" VerticalAlignment="Top" Height="50" VerticalContentAlignment="Center" TextOptions.TextFormattingMode="Display" Background="{x:Null}" Foreground="#FF344055" Padding="5" FontSize="30" FontFamily="SF Square Root" Margin="15,0,0,0"/>
                     <StackPanel Height="50" Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Top" Width="100" HorizontalAlignment="Right" Margin="0,0,-4,0">
                         <Button x:Name="MinimizeButton" Content="—" Width="50" Template="{StaticResource UIButtonTemplateM}" Click="WindowMinimize" Background="{x:Null}" Foreground="#FF344055" BorderBrush="{x:Null}" VerticalContentAlignment="Center" Padding="1.7,1,1,1" Margin="0,0,0,0"></Button>
                         <Button x:Name="CloseButton" Content="✕" Width="50" Template="{StaticResource UIButtonTemplateC}" Click="WindowClose" Foreground="#FF344055" BorderBrush="{x:Null}" VerticalContentAlignment="Center" Background="{x:Null}" Margin="0"></Button>
@@ -48,11 +48,10 @@
             <StackPanel Background="#FFFFFFFF" DockPanel.Dock="Top">
                 <Border BorderBrush="#FFCCCCCC" BorderThickness="0,0,0,1">
                     <StackPanel Name="MainMenu" Background="#FFFFFFFF" Panel.ZIndex="1" Height="25" VerticalAlignment="Top" Orientation="Horizontal" Margin="20,0,20,5">
-                        <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Placeholder" HorizontalAlignment="Left"/>
+                        <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Click="RedirectToHome" Content="Home" HorizontalAlignment="Left"/>
                         <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Example" HorizontalAlignment="Left"/>
                         <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Button" HorizontalAlignment="Left"/>
-                        <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Placeholder" HorizontalAlignment="Left"/>
-                        <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Example" HorizontalAlignment="Left"/>
+                        <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Hmmm" HorizontalAlignment="Left"/>
                         <Button x:Name="FilesBtn" Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Files" HorizontalAlignment="Left" Click="RedirectToFiles"/>
                         <Rectangle Width="1" Fill="#FFCCCCCC" Margin="10,0"/>
                         <Button x:Name="SettingsBtn" Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Settings" HorizontalAlignment="Left"/>
@@ -61,7 +60,7 @@
                 </Border>
             </StackPanel>
             <Border BorderBrush="#FFF2F2F2" BorderThickness="0,0,0,4" CornerRadius="0,0,4,4" DockPanel.Dock="Top">
-                <Frame Name="ContentWrapper" Content="" DockPanel.Dock="Left" Background="#FFF2F2F2" NavigationUIVisibility="Hidden" />
+                <Frame Name="ContentWrapper" Content="" DockPanel.Dock="Left" Background="#FFF2F2F2" NavigationUIVisibility="Hidden" Source="/Quartz;component/Home.xaml" />
             </Border>
         </DockPanel>
     </Grid>

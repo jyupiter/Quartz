@@ -26,6 +26,6 @@
                 <Button Style="{StaticResource BSideButtonStyle}" Template="{StaticResource BSideButtonTemplate}" ToolTip="Aggregation of results" Content="Summary" HorizontalAlignment="Left"/>
             </StackPanel>
         </Border>
-        <Frame Name="FilesWrapper" Content="" NavigationUIVisibility="Hidden" DockPanel.Dock="Top"/>
+        <Frame Name="FilesWrapper" NavigationUIVisibility="Hidden" DockPanel.Dock="Top" Source="/Quartz;component/AG/FileWatcher.xaml"/>
     </DockPanel>
 </Page>
