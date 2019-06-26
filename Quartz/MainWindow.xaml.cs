@@ -1,4 +1,5 @@
 ﻿using Quartz.AG;
+using Quartz.HQ;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -144,5 +145,10 @@ namespace Quartz
         {
             ContentWrapper.NavigationService.Navigate(new Files());
         }
-    }
+
+		private void RedirectToMonitering(object sender, RoutedEventArgs e)
+		{
+			ContentWrapper.NavigationService.Navigate(new Cpu());
+		}
+	}
 }
