@@ -148,7 +148,7 @@ namespace Quartz
 
 		private void RedirectToMonitering(object sender, RoutedEventArgs e)
 		{
-			ContentWrapper.NavigationService.Navigate(new Cpu());
+			ContentWrapper.NavigationService.Navigate(new Overview());
 		}
 	}
 }
