@@ -15,6 +15,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using NvAPIWrapper;
+using NvAPIWrapper.GPU;
+using System.Threading;
 
 namespace Quartz.HQ
 {
@@ -32,35 +35,35 @@ namespace Quartz.HQ
 				new LineSeries
 				{
 					Title = "GPU",
-					Values = new ChartValues<double> {},
+					Values = new ChartValues<double> {1.0},
 					PointGeometry = DefaultGeometries.Diamond,
 					PointGeometrySize = 15
 				},
 				new LineSeries
 				{
 					Title = "CPU",
-					Values = new ChartValues<double> {},
+					Values = new ChartValues<double> {1.0},
 					PointGeometry = DefaultGeometries.Circle,
 					PointGeometrySize = 15
 				},
 				new LineSeries
 				{
 					Title = "RAM",
-					Values = new ChartValues<double> {},
+					Values = new ChartValues<double> {1.0},
 					PointGeometry = DefaultGeometries.Square,
 					PointGeometrySize = 15
 				},
 				new LineSeries
 				{
 					Title = "DISK",
-					Values = new ChartValues<double> {},
+					Values = new ChartValues<double> {1.0},
 					PointGeometry = DefaultGeometries.Cross,
 					PointGeometrySize = 15
 				},
 				new LineSeries
 				{
 					Title = "NETWORK",
-					Values = new ChartValues<double> {},
+					Values = new ChartValues<double> {1.0},
 					PointGeometry = DefaultGeometries.Triangle,
 					PointGeometrySize = 15
 				}
@@ -75,12 +78,64 @@ namespace Quartz.HQ
 			//3:ram
 			//4:disk
 			//5:network
-			SeriesCollection[3].Values.Add(5d);
+			Init();
 
 			DataContext = this;
 		}
+		public static void UpdateGraphs(int index, double value)
+		{
+			//Debug.WriteLine(index + "||" + value);
+			SeriesCollection[index].Values.Add(value);
 
-		public SeriesCollection SeriesCollection { get; set; }
+		}
+
+		public static void Init()
+		{
+			//new Thread(GetCpu).Start();
+			new Thread(GetGpu).Start();
+			//new Thread(GetRam).Start();
+			//new Thread(GetDisk).Start();
+			//new Thread(GetNetwork).Start();
+		}
+
+		public static void GetGpu()
+		{
+			var GPUs = PhysicalGPU.GetPhysicalGPUs();
+			while (true)
+			{
+				//Debug.WriteLine("\n<-----					----->");
+				//Debug.WriteLine(GPUs[0].FullName);
+				//Debug.WriteLine(GPUs[0].MemoryInformation);
+				//Debug.WriteLine(GPUs[0].ThermalInformation.CurrentThermalLevel);
+				//Debug.WriteLine(GPUs[0].UsageInformation.GPU);
+				//Debug.WriteLine("<-----					----->\n");
+				UpdateGraphs(0, GPUs[0].UsageInformation.GPU.Percentage);
+				Thread.Sleep(100);
+			}
+		}
+
+
+		public static void GetCpu()
+		{
+
+		}
+
+		public static void GetRam()
+		{
+
+		}
+
+		public static void GetDisk()
+		{
+
+		}
+
+		public static void GetNetwork()
+		{
+
+		}
+
+		public static SeriesCollection SeriesCollection { get; set; }
 		public string[] Labels { get; set; }
 		public Func<double, string> YFormatter { get; set; }
 
