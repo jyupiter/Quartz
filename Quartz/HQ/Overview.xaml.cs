@@ -18,59 +18,84 @@ using System.Windows.Shapes;
 using NvAPIWrapper;
 using NvAPIWrapper.GPU;
 using System.Threading;
+using LiveCharts.Configurations;
+using Quartz.Classes;
+using System.ComponentModel;
 
 namespace Quartz.HQ
 {
 	/// <summary>
 	/// Interaction logic for Overview.xaml
 	/// </summary>
-	public partial class Overview : Page
+	public partial class Overview : Page, INotifyPropertyChanged
 	{
 		public Overview()
 		{
 			InitializeComponent();
 			waitTime = 100; // 10secs
 			Debug.WriteLine("Loading graphs");
-			SeriesCollection = new SeriesCollection
-			{
-				new LineSeries
-				{
-					Title = "GPU",
-					Values = new ChartValues<double> {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0},
-					PointGeometry = DefaultGeometries.Diamond,
-					PointGeometrySize = 15
-				},
-				new LineSeries
-				{
-					Title = "CPU",
-					Values = new ChartValues<double> {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0},
-					PointGeometry = DefaultGeometries.Circle,
-					PointGeometrySize = 15
-				},
-				new LineSeries
-				{
-					Title = "RAM",
-					Values = new ChartValues<double> {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0},
-					PointGeometry = DefaultGeometries.Square,
-					PointGeometrySize = 15
-				},
-				new LineSeries
-				{
-					Title = "DISK",
-					Values = new ChartValues<double> {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0},
-					PointGeometry = DefaultGeometries.Cross,
-					PointGeometrySize = 15
-				},
-				new LineSeries
-				{
-					Title = "NETWORK",
-					Values = new ChartValues<double> {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0},
-					PointGeometry = DefaultGeometries.Triangle,
-					PointGeometrySize = 15
-				}
-			};
 
-			Labels = new[] { "Jan", "Feb", "Mar", "Apr", "May", "june" };
+			var mapper = Mappers.Xy<MeasureModel>()
+				.X(model => model.DateTime.Ticks)   //use DateTime.Ticks as X
+				.Y(model => model.Value);           //use the value property as Y
+
+			Charting.For<MeasureModel>(mapper);
+
+			//the values property will store our values array
+			GpuValues = new ChartValues<MeasureModel>();
+			CpuValues = new ChartValues<MeasureModel>();
+			MemValues = new ChartValues<MeasureModel>();
+			DiskValues = new ChartValues<MeasureModel>();
+			NetValues = new ChartValues<MeasureModel>();
+
+			//lets set how to display the X Labels
+			DateTimeFormatter = value => new DateTime((long)value).ToString("mm:ss");
+
+			//AxisStep forces the distance between each separator in the X axis
+			AxisStep = TimeSpan.FromSeconds(1).Ticks;
+			//AxisUnit forces lets the axis know that we are plotting seconds
+			//this is not always necessary, but it can prevent wrong labeling
+			AxisUnit = TimeSpan.TicksPerSecond;
+
+			SetAxisLimits(DateTime.Now);
+			//SeriesCollection = new SeriesCollection
+			//{
+			//	new LineSeries
+			//	{
+			//		Title = "GPU",
+			//		Values = new ChartValues<double> {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0},
+			//		PointGeometry = DefaultGeometries.Diamond,
+			//		PointGeometrySize = 15
+			//	},
+			//	new LineSeries
+			//	{
+			//		Title = "CPU",
+			//		Values = new ChartValues<double> {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0},
+			//		PointGeometry = DefaultGeometries.Circle,
+			//		PointGeometrySize = 15
+			//	},
+			//	new LineSeries
+			//	{
+			//		Title = "RAM",
+			//		Values = new ChartValues<double> {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0},
+			//		PointGeometry = DefaultGeometries.Square,
+			//		PointGeometrySize = 15
+			//	},
+			//	new LineSeries
+			//	{
+			//		Title = "DISK",
+			//		Values = new ChartValues<double> {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0},
+			//		PointGeometry = DefaultGeometries.Cross,
+			//		PointGeometrySize = 15
+			//	},
+			//	new LineSeries
+			//	{
+			//		Title = "NETWORK",
+			//		Values = new ChartValues<double> {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0},
+			//		PointGeometry = DefaultGeometries.Triangle,
+			//		PointGeometrySize = 15
+			//	}
+			//};
 			//YFormatter = value => value.ToString("C");
 
 
@@ -84,12 +109,62 @@ namespace Quartz.HQ
 
 			DataContext = this;
 		}
-		public static void UpdateGraphs(int index, double value)
+		public static void UpdateGraphs(int index, double value, double _trend)
 		{
 			//Debug.WriteLine(index + "||" + value);
-			SeriesCollection[index].Values.Add(value);
-			SeriesCollection[index].Values.RemoveAt(0);
+			//SeriesCollection[index].Values.Add(value);
+			//SeriesCollection[index].Values.RemoveAt(0);
+			switch (index)
+			{
+				case 0:
+					GpuValues.Add(new MeasureModel
+					{
+						DateTime = DateTime.Now,
+						Value = _trend
+					});
+					if (GpuValues.Count > 150) GpuValues.RemoveAt(0);
+					break;
+				case 2:
+					CpuValues.Add(new MeasureModel
+					{
+						DateTime = DateTime.Now,
+						Value = _trend
+					});
+					if (CpuValues.Count > 150) CpuValues.RemoveAt(0);
+					break;
+				case 3:
+					MemValues.Add(new MeasureModel
+					{
+						DateTime = DateTime.Now,
+						Value = _trend
+					});
+					if (MemValues.Count > 150) MemValues.RemoveAt(0);
+					break;
+				case 4:
+					DiskValues.Add(new MeasureModel
+					{
+						DateTime = DateTime.Now,
+						Value = _trend
+					});
+					if (DiskValues.Count > 150) DiskValues.RemoveAt(0);
+					break;
+				case 5:
+					NetValues.Add(new MeasureModel
+					{
+						DateTime = DateTime.Now,
+						Value = _trend
+					});
+					if (NetValues.Count > 150) NetValues.RemoveAt(0);
+					break;
 
+			}
+
+
+
+			SetAxisLimits(DateTime.Now);
+
+			//lets only use the last 150 values
+			
 		}
 
 		public static void Init()
@@ -101,19 +176,6 @@ namespace Quartz.HQ
 				new Thread(GetMem).Start();
 				new Thread(GetDisk).Start();
 				//new Thread(GetNetwork).Start();
-				Labels = new[] {
-					DateTime.Now.AddMilliseconds(-9*waitTime).ToString("hh:mm:ss"),
-					DateTime.Now.AddMilliseconds(-8*waitTime).ToString("hh:mm:ss"),
-					DateTime.Now.AddMilliseconds(-7*waitTime).ToString("hh:mm:ss"),
-					DateTime.Now.AddMilliseconds(-6*waitTime).ToString("hh:mm:ss"),
-					DateTime.Now.AddMilliseconds(-5*waitTime).ToString("hh:mm:ss"),
-					DateTime.Now.AddMilliseconds(-4*waitTime).ToString("hh:mm:ss"),
-					DateTime.Now.AddMilliseconds(-3*waitTime).ToString("hh:mm:ss"),
-					DateTime.Now.AddMilliseconds(-2*waitTime).ToString("hh:mm:ss"),
-					DateTime.Now.AddMilliseconds(-1*waitTime).ToString("hh:mm:ss"),
-					DateTime.Now.ToString("hh:mm:ss"),
-
-				};
 				Thread.Sleep(waitTime);
 			}
 		}
@@ -123,7 +185,7 @@ namespace Quartz.HQ
 			new Thread(CpuThread).Start();
 			new Thread(MemThread).Start();
 			new Thread(DiskThread).Start();
-		//	new Thread(NetThread).Start();
+			//	new Thread(NetThread).Start();
 		}
 
 		public static void GetGpu()
@@ -138,7 +200,10 @@ namespace Quartz.HQ
 				//Debug.WriteLine(GPUs[0].ThermalInformation.CurrentThermalLevel);
 				//Debug.WriteLine(GPUs[0].UsageInformation.GPU);
 				//Debug.WriteLine("<-----					----->\n");
-				UpdateGraphs(0, GPUs[0].UsageInformation.GPU.Percentage);
+				_gpuTrend = gpu;
+				gpu = GPUs[0].UsageInformation.GPU.Percentage;
+				_gpuTrend = gpu - _gpuTrend;
+				UpdateGraphs(0,gpu,_gpuTrend);
 			}
 			catch (Exception e)
 			{
@@ -149,22 +214,22 @@ namespace Quartz.HQ
 
 		public static void GetCpu()
 		{
-			UpdateGraphs(1,cpu);
+			UpdateGraphs(1, cpu,_cpuTrend);
 		}
 
 		public static void GetMem()
 		{
-			UpdateGraphs(2,mem);
+			UpdateGraphs(2, mem,_memTrend);
 		}
 
 		public static void GetDisk()
 		{
-			UpdateGraphs(3,disk);
+			UpdateGraphs(3, disk,_diskTrend);
 		}
 
 		public static void GetNetwork()
 		{
-			//UpdateGraphs(0, GPUs[0].UsageInformation.GPU.Percentage);
+			//UpdateGraphs(4, disk, _netTrend);
 		}
 
 		private static void CpuThread()
@@ -174,7 +239,9 @@ namespace Quartz.HQ
 				PerformanceCounter cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
 				cpuCounter.NextValue();
 				System.Threading.Thread.Sleep(waitTime);
+				_cpuTrend = cpu;
 				cpu = cpuCounter.NextValue();
+				_cpuTrend = cpu - _cpuTrend;
 				Console.WriteLine("Processor Usage: " + cpu);
 			}
 		}
@@ -185,7 +252,9 @@ namespace Quartz.HQ
 				PerformanceCounter ramCounter = new PerformanceCounter("Memory", "% Committed Bytes In Use");
 				ramCounter.NextValue();
 				System.Threading.Thread.Sleep(waitTime);
+				_memTrend = mem;
 				mem = ramCounter.NextValue();
+				_memTrend = mem - _memTrend;
 				Console.WriteLine("Memory Used: " + mem);
 			}
 		}
@@ -196,7 +265,9 @@ namespace Quartz.HQ
 				PerformanceCounter diskCounter = new PerformanceCounter("PhysicalDisk", "% Disk Time", "_Total");
 				diskCounter.NextValue();
 				System.Threading.Thread.Sleep(waitTime);
+				_diskTrend = disk;
 				disk = diskCounter.NextValue();
+				_diskTrend = disk - _diskTrend;
 				Console.WriteLine("Disk usage: " + disk);
 			}
 		}
@@ -204,14 +275,45 @@ namespace Quartz.HQ
 		{
 			while (true)
 			{
-				PerformanceCounter diskCounter = new PerformanceCounter("PhysicalDisk", "% Disk Time", "_Total");
-				diskCounter.NextValue();
+				PerformanceCounter netCounter = new PerformanceCounter("PhysicalDisk", "% Disk Time", "_Total");
+				netCounter.NextValue();
 				System.Threading.Thread.Sleep(waitTime);
-				disk = diskCounter.NextValue();
-				Console.WriteLine("Disk usage: " + disk);
+				_netTrend = net;
+				net = netCounter.NextValue();
+				_netTrend = net - _netTrend;
+				Console.WriteLine("Disk usage: " + net);
 			}
 		}
+		private static void SetAxisLimits(DateTime now)
+		{
+			AxisMax = now.Ticks + TimeSpan.FromSeconds(1).Ticks; // lets force the axis to be 1 second ahead
+			AxisMin = now.Ticks - TimeSpan.FromSeconds(8).Ticks; // and 8 seconds behind
+		}
 
+		public static double AxisMax;
+		//{
+		//	get { return _axisMax; }
+		//	set
+		//	{
+		//		_axisMax = value;
+		//		OnPropertyChanged("AxisMax");
+		//	}
+		//}
+		public static double AxisMin;
+		//{
+		//	get { return _axisMin; }
+		//	set
+		//	{
+		//		_axisMin = value;
+		//		OnPropertyChanged("AxisMin");
+		//	}
+		//}
+		protected virtual void OnPropertyChanged(string propertyName = null)
+		{
+			if (PropertyChanged != null)
+				PropertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+		public event PropertyChangedEventHandler PropertyChanged;
 		public static SeriesCollection SeriesCollection { get; set; }
 		public static string[] Labels { get; set; }
 		public Func<double, string> YFormatter { get; set; }
@@ -219,6 +321,23 @@ namespace Quartz.HQ
 		public static float mem;
 		public static float disk;
 		public static float net;
+		public static float gpu;
 		public static int waitTime; //ms
+		private static double _axisMax;
+		private static double _axisMin;
+		private static double _cpuTrend;
+		private static double _memTrend;
+		private static double _diskTrend;
+		private static double _netTrend;
+		private static double _gpuTrend;
+		public static ChartValues<MeasureModel> GpuValues { get; set; }
+		public static ChartValues<MeasureModel> CpuValues { get; set; }
+		public static ChartValues<MeasureModel> MemValues { get; set; }
+		public static ChartValues<MeasureModel> DiskValues { get; set; }
+		public static ChartValues<MeasureModel> NetValues { get; set; }
+		public Func<double, string> DateTimeFormatter { get; set; }
+		public static double AxisStep { get; set; }
+		public static double AxisUnit { get; set; }
+
 	}
 }
