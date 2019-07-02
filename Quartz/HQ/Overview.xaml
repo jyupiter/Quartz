@@ -22,22 +22,24 @@
                                 PointGeometry="{x:Null}" 
                                 LineSmoothness="1"
                                 StrokeThickness="2" 
-                                Stroke="Aqua"
+                                Stroke="Navy"
+                                Fill="Transparent"/>
+                <lvc:LineSeries Values="{Binding MemValues}" 
+                                PointGeometry="{x:Null}" 
+                                LineSmoothness="1"
+                                StrokeThickness="2" 
+                                Stroke="Crimson"
+                                Fill="Transparent"/>
+                <lvc:LineSeries Values="{Binding DiskValues}" 
+                                PointGeometry="{x:Null}" 
+                                LineSmoothness="1"
+                                StrokeThickness="2" 
+                                Stroke="Green"
                                 Fill="Transparent"/>
             </lvc:CartesianChart.Series>
 
-            <!--<lvc:LineSeries Values="{Binding MemValues}" 
-                                PointGeometry="{x:Null}" 
-                                LineSmoothness="1"
-                                StrokeThickness="6" 
-                                Stroke="#F34336"
-                                Fill="Transparent"/>-->
-                <!--<lvc:LineSeries Values="{Binding DiskValues}" 
-                                PointGeometry="{x:Null}" 
-                                LineSmoothness="1"
-                                StrokeThickness="6" 
-                                Stroke="#F34336"
-                                Fill="Transparent"/>
+            
+                <!--
                 <lvc:LineSeries Values="{Binding NetValues}" 
                                 PointGeometry="{x:Null}" 
                                 LineSmoothness="1"

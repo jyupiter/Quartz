@@ -112,8 +112,10 @@ namespace Quartz.HQ
 			//Debug.WriteLine(index + "||" + value);
 			//SeriesCollection[index].Values.Add(value);
 			//SeriesCollection[index].Values.RemoveAt(0);
+			//Debug.Write(value + "|\n");
 			switch (index)
 			{
+				
 				case 0:
 					GpuValues.Add(new MeasureModel
 					{
@@ -122,7 +124,7 @@ namespace Quartz.HQ
 					});
 					if (GpuValues.Count > 150) GpuValues.RemoveAt(0);
 					break;
-				case 2:
+				case 1:
 					CpuValues.Add(new MeasureModel
 					{
 						DateTime = DateTime.Now,
@@ -130,7 +132,7 @@ namespace Quartz.HQ
 					});
 					if (CpuValues.Count > 150) CpuValues.RemoveAt(0);
 					break;
-				case 3:
+				case 2:
 					MemValues.Add(new MeasureModel
 					{
 						DateTime = DateTime.Now,
@@ -138,7 +140,7 @@ namespace Quartz.HQ
 					});
 					if (MemValues.Count > 150) MemValues.RemoveAt(0);
 					break;
-				case 4:
+				case 3:
 					DiskValues.Add(new MeasureModel
 					{
 						DateTime = DateTime.Now,
@@ -146,7 +148,7 @@ namespace Quartz.HQ
 					});
 					if (DiskValues.Count > 150) DiskValues.RemoveAt(0);
 					break;
-				case 5:
+				case 4:
 					NetValues.Add(new MeasureModel
 					{
 						DateTime = DateTime.Now,
@@ -154,6 +156,10 @@ namespace Quartz.HQ
 					});
 					if (NetValues.Count > 150) NetValues.RemoveAt(0);
 					break;
+				default:
+					Debug.WriteLine("Invalid Index " + index);
+					break;
+
 
 			}
 
@@ -167,6 +173,13 @@ namespace Quartz.HQ
 
 		public static void StartMonitering()
 		{
+			PerformanceCounterCategory category = new PerformanceCounterCategory("Network Interface");
+			String[] instancename = category.GetInstanceNames();
+
+			foreach (string name in instancename)
+			{
+				Console.WriteLine(name);
+			}
 			new Thread(CpuThread).Start();
 			new Thread(MemThread).Start();
 			new Thread(DiskThread).Start();
@@ -201,6 +214,7 @@ namespace Quartz.HQ
 				PerformanceCounter cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
 				cpuCounter.NextValue();
 				System.Threading.Thread.Sleep(waitTime);
+				cpu = cpuCounter.NextValue();
 				UpdateGraphs(1, cpu);
 			}
 		}
@@ -210,8 +224,9 @@ namespace Quartz.HQ
 			{
 				PerformanceCounter ramCounter = new PerformanceCounter("Memory", "% Committed Bytes In Use");
 				ramCounter.NextValue();
-				System.Threading.Thread.Sleep(waitTime/2);
+				System.Threading.Thread.Sleep(waitTime);
 				mem = ramCounter.NextValue();
+				//Debug.Write(mem + "-");
 				UpdateGraphs(2, mem);
 				//Console.WriteLine("Memory Used: " + mem);
 			}
@@ -222,7 +237,7 @@ namespace Quartz.HQ
 			{
 				PerformanceCounter diskCounter = new PerformanceCounter("PhysicalDisk", "% Disk Time", "_Total");
 				diskCounter.NextValue();
-				System.Threading.Thread.Sleep(waitTime/2);
+				System.Threading.Thread.Sleep(waitTime);
 				disk = diskCounter.NextValue();
 				UpdateGraphs(3, disk);
 				//Console.WriteLine("Disk usage: " + disk);
