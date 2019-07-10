@@ -16,16 +16,21 @@ using System.Windows.Shapes;
 namespace Quartz.AG
 {
     /// <summary>
-    /// Interaction logic for FileComparer.xaml
+    /// Interaction logic for SearchLogs.xaml
     /// </summary>
-    public partial class FileComparer : Page
+    public partial class SearchLogs : Page
     {
-        public FileComparer()
+        public SearchLogs()
         {
             InitializeComponent();
         }
 
-        private void FullCompareBtn_Click(object sender, RoutedEventArgs e)
+        private void SearchLogsBtn_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void SaveSearchBtn_Click(object sender, RoutedEventArgs e)
         {
 
         }

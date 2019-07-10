@@ -1,0 +1,42 @@
+﻿<Page x:Class="Quartz.AG.SearchLogs"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      mc:Ignorable="d"
+      Background="#FFFBFBFB"
+      d:DesignHeight="565" d:DesignWidth="980"
+      Title="SearchLogs">
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Dictionaries/GeneralDictionary.xaml"/>
+                <ResourceDictionary Source="/Dictionaries/DataGridDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+
+    </Page.Resources>
+    <DockPanel LastChildFill="True">
+        <Label DockPanel.Dock="Top" Content="Search Logs" Margin="20,10" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="15"/>
+        <Rectangle DockPanel.Dock="Top" Height="1" Fill="#FFCCCCCC" Margin="20,0"/>
+        <StackPanel DockPanel.Dock="Left" Width="199" Margin="20,20,0,20" HorizontalAlignment="Left">
+            <StackPanel>
+                <Label Content="Description" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
+                <TextBlock Text="Search through all file CRUD operations recorded by the live scanner." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
+                <Label Content="Keywords" Margin="0,15,0,0" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
+                <TextBox Name="SearchKeywprds" Margin="5,5,5,10" Text="hmmm"></TextBox>
+                <Label Content="Operations" Margin="0,15,0,0" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
+                <CheckBox Margin="5,5,5,0" Content="Create"/>
+                <CheckBox Margin="5,5,5,0" Content="Rename"/>
+                <CheckBox Margin="5,5,5,0" Content="Update"/>
+                <CheckBox Margin="5,5,5,10" Content="Delete"/>
+                <StackPanel Orientation="Horizontal" Margin="5,10,5,0">
+                    <Button Name="SearchLogsBtn" Content="Search" Height="25" HorizontalAlignment="Left" Margin="0,0,0,0" Padding="5,3" Click="SearchLogsBtn_Click"></Button>
+                    <Button Name="SaveSearchBtn" Content="Save Results" Height="25" HorizontalAlignment="Left" Margin="10,0,0,0" Padding="5,3" Click="SaveSearchBtn_Click"></Button>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+        <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20"/>
+        <DataGrid Name="SearchResultDataGrid" DockPanel.Dock="Right" Margin="0,20,20,20" BorderBrush="LightGray" />
+    </DockPanel>
+</Page>

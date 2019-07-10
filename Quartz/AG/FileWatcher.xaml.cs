@@ -1,14 +1,15 @@
-﻿using System;
+﻿using Quartz.Classes;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Security.Permissions;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Threading;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace Quartz.AG
 {
@@ -21,6 +22,8 @@ namespace Quartz.AG
         {
             InitializeComponent();
             IDG();
+            InitializePreferences();
+            LoadFromPreferences();
         }
 
         #region SetUp
@@ -64,8 +67,10 @@ namespace Quartz.AG
 
         private static int id = 0;
         private FileSystemWatcher watcher;
-        private string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Quartz", "0_qtz.txt");
-
+        private string path = _Folder.BaseFolder;
+        private string F = "";
+        private string P = "";
+        
         [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         private void Run()
         {
@@ -102,22 +107,23 @@ namespace Quartz.AG
 
         private void OnChanged(object source, FileSystemEventArgs x)
         {
-            if(x.FullPath.Contains("qtz.txt"))
+            if(x.FullPath.Contains(".qtz"))
                 return;
 
             int _I = id;
-            string _E = ("" + x.ChangeType);
-            string _D = (x.FullPath + " was " + x.ChangeType);
+            string _E = "" + x.ChangeType;
+            string _D = x.FullPath + " was " + x.ChangeType;
             string _A = DateTime.Today.ToString("dd-MM-yyyy");
             string _T = DateTime.Now.ToString("HH:mm:ss tt");
 
-            string ext = Path.GetExtension(x.FullPath);
             Dispatcher.Invoke(() => {
+                string pattern = @"^(?:[\w]\:|\\)(\\[a-z_\-\s0-9\.]+)+\.(" + FilterExtensions.Text + ")$";
+
                 if((bool)EnableFiltering.IsChecked)
                 {
                     if((bool)FilterInclude.IsChecked)
                     {
-                        if(Regex.IsMatch(ext, FilterExtensions.Text, RegexOptions.IgnoreCase))
+                        if(Regex.IsMatch(x.FullPath, pattern, RegexOptions.IgnoreCase))
                         {
                             Display(_I, _E, _D, _A, _T);
                             id++;
@@ -127,7 +133,7 @@ namespace Quartz.AG
                     }
                     else
                     {
-                        if(!Regex.IsMatch(ext, FilterExtensions.Text, RegexOptions.IgnoreCase))
+                        if(!Regex.IsMatch(x.FullPath, pattern, RegexOptions.IgnoreCase))
                         {
                             Display(_I, _E, _D, _A, _T);
                             id++;
@@ -148,7 +154,7 @@ namespace Quartz.AG
 
         private void OnRenamed(object source, RenamedEventArgs x)
         {
-            if(x.FullPath.Contains("qtz.txt"))
+            if(x.FullPath.Contains(".qtz"))
                 return;
 
             int _I = id;
@@ -192,6 +198,29 @@ namespace Quartz.AG
             });
         }
 
+        // Environment
+
+        private void SetPath()
+        {
+            bool skip = true;
+            Dispatcher.Invoke(() => {
+                if((bool)EnableLogs.IsChecked)
+                    skip = false;
+                if(skip)
+                    return;
+                
+                if(Directory.Exists(LoggingDirectory.Text))
+                    path = LoggingDirectory.Text;
+                
+                Directory.CreateDirectory(Path.Combine(path, "Quartz/Logs"));
+
+                string filename = string.Format("{0:dd-MM-yyyy}_{1:HH-mm-ss}.qtz", DateTime.Now, DateTime.Now);
+                F = Path.Combine(path, "Quartz/Logs", filename);
+            });
+        }
+
+        // User-facing
+
         private void Display(int _I, string _E, string _D, string _A, string _T)
         {
             Dispatcher.Invoke(() =>
@@ -207,42 +236,24 @@ namespace Quartz.AG
             });
         }
 
-        private void SetPath()
-        {
-            bool skip = true;
-            Dispatcher.Invoke(() => {
-                if((bool)EnableLogs.IsChecked)
-                    skip = false;
-                if(skip)
-                    return;
-
-                string directory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                if(Directory.Exists(LoggingDirectory.Text))
-                    directory = LoggingDirectory.Text;
-
-                string filename = String.Format("{0:dd-MM-yyyy}_{1:HH-mm-ss}_qtz.txt", DateTime.Now, DateTime.Now);
-                path = Path.Combine(directory, "Quartz", filename);
-            });
-        }
-
         private async void WriteToLogs(int _I, string _E, string _D, string _A, string _T)
         {
-            if(!File.Exists(path))
+            if(!File.Exists(F))
             {
-                using(var str = new StreamWriter(path))
+                using(var str = new StreamWriter(F))
                 {
                     await str.WriteLineAsync(
-                    "[" + _I + "] " + _E.ToUpper() + " | " + _A + " | " + _T + " | " + _D
+                        _I + "|" + _E.ToUpper() + "|" + _A + "|" + _T + "|" + _D
                     );
                     str.Flush();
                 }
             }
             else
             {
-                using(var str = new StreamWriter(path, true))
+                using(var str = new StreamWriter(F, true))
                 {
                     await str.WriteLineAsync(
-                    "[" + _I + "] " + _E.ToUpper() + " | " + _A + " | " + _T + " | " + _D
+                        _I + "|" + _E.ToUpper() + "|" + _A + "|" + _T + "|" + _D
                     );
                     str.Flush();
                 }
@@ -255,61 +266,84 @@ namespace Quartz.AG
             id = 0;
         }
 
-        #endregion
-
-        #region Timer
-
-        Stopwatch stopWatch = new Stopwatch();
-        string currentTime = string.Empty;
-
-        private void Clock()
+        private void FolderDialog(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Tick += Tick;
-            stopWatch.Start();
-            timer.Start();
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog
+            {
+                InitialDirectory = "C:\\Users",
+                IsFolderPicker = true
+            };
+            if(dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                TextBox x = (TextBox)sender;
+                x.Text = dialog.FileName;
+            }
         }
 
-        private void Tick(object sender, EventArgs e)
+        #endregion
+
+        #region Settings
+
+        private void SaveSettings(object sender, RoutedEventArgs e)
         {
-            if(stopWatch.IsRunning)
+            WriteToPreferences();
+        }
+
+        private void InitializePreferences()
+        {
+            Directory.CreateDirectory(Path.Combine(path, "Quartz/Preferences"));
+            P = Path.Combine(path, "Quartz/Preferences", "filewatcher.qonf");
+        }
+
+        private async void WriteToPreferences()
+        {
+            using(var str = new StreamWriter(P))
             {
-                TimeSpan ts = stopWatch.Elapsed;
-                currentTime = String.Format("{0:00}:{1:00}:{2:00}", ts.Hours, ts.Minutes, ts.Seconds / 10);
+                await str.WriteLineAsync(
+                    "TargetDirectory=[" + TargetDirectory.Text + "]\n" +
+                    "FilterEnable=[" + EnableFiltering.IsChecked + "]\n" +
+                    "FilterExtensions=[" + FilterExtensions.Text + "]\n" +
+                    "FilterInclude=[" + FilterInclude.IsChecked + "]\n" +
+                    "LogsDirectory=[" + LoggingDirectory.Text + "]\n" +
+                    "LogsEnable=[" + EnableLogs.IsChecked + "]"
+                );
+                str.Flush();
+            }
+        }
+
+        private void LoadFromPreferences()
+        {
+            string[] raw = File.ReadAllLines(P);
+            List<string> l = new List<string>();
+
+            foreach(string s in raw)
+                l.Add(Regex.Match(s, @"\[([^)]*)\]").Groups[1].Value);
+            try
+            {
                 Dispatcher.Invoke(() =>
                 {
-                    TimeElapsed.Content = currentTime;
+                    TargetDirectory.Text = l[0];
+                    EnableFiltering.IsChecked = bool.Parse(l[1]);
+                    FilterExtensions.Text = l[2];
+                    FilterInclude.IsChecked = bool.Parse(l[3]);
+                    FilterExclude.IsChecked = !bool.Parse(l[3]);
+                    LoggingDirectory.Text = l[4];
+                    EnableLogs.IsChecked = bool.Parse(l[5]);
                 });
             }
-        }
-
-        private void Tock()
-        {
-            if(stopWatch.IsRunning)
+            catch(Exception)
             {
-                stopWatch.Stop();
-                Dispatcher.Invoke(() => {
-                    TimeElapsed.Content = "";
-                });
+                //
             }
-            
         }
 
         #endregion
-
-        private void ClearData(object sender, RoutedEventArgs e)
-        {
-            ScanResultDataGrid.Items.Clear();
-            ClearBtn.Visibility = Visibility.Collapsed;
-        }
 
         private void StartLiveScan(object sender, RoutedEventArgs e)
         {
             LiveScanBtn.Content = "Stop scan";
             SetPath();
             Run();
-            Clock();
             LiveScanBtn.Click -= StartLiveScan;
             LiveScanBtn.Click += StopLiveScan;
         }
@@ -318,7 +352,6 @@ namespace Quartz.AG
         {
             LiveScanBtn.Content = "Start scan";
             Terminate();
-            Tock();
             if(ScanResultDataGrid.HasItems)
             {
                 ClearBtn.Visibility = Visibility.Visible;
@@ -327,9 +360,10 @@ namespace Quartz.AG
             LiveScanBtn.Click += StartLiveScan;
         }
 
-        private void SavePreferences(object sender, RoutedEventArgs e)
+        private void ClearData(object sender, RoutedEventArgs e)
         {
-
+            ScanResultDataGrid.Items.Clear();
+            ClearBtn.Visibility = Visibility.Collapsed;
         }
     }
 }

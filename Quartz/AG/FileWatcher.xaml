@@ -26,14 +26,14 @@
                     <StackPanel>
                         <Label Content="Target" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13" Margin="0,15,0,0"/>
                         <TextBlock Text="Tool will only record events happening within the specified directory." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,5"/>
-                        <TextBox Name="TargetDirectory" Margin="5,5,5,10" Text="C:\\"></TextBox>
+                        <TextBox Name="TargetDirectory" Margin="5,5,5,10" Text="C:\\" PreviewMouseDown="FolderDialog"></TextBox>
 
                         <Label Content="Filter" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13" Margin="0,15,0,0"/>
                         <TextBlock Text="Set file types (eg.: .docx) to include or exclude." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,5"/>
                         <CheckBox Name="EnableFiltering" Margin="5,0,5,10">Enable filtering</CheckBox>
                         <Expander Margin="0,0,0,25">
                             <StackPanel>
-                                <TextBlock Text="Separate multiple extensions with commas." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,20,5,10"/>
+                                <TextBlock Text="Separate extensions with ''|'' (eg.: docx|xml|ppt)" Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,20,5,10"/>
                                 <TextBox Name="FilterExtensions" Margin="5,0,5,5" Text=""></TextBox>
                                 <RadioButton GroupName="FilterType" Name="FilterInclude" Margin="5" Content="Include" IsChecked="True"></RadioButton>
                                 <RadioButton GroupName="FilterType" Name="FilterExclude" Margin="5,0,5,20" Content="Exclude"></RadioButton>
@@ -41,18 +41,17 @@
                         </Expander>
 
                         <Label Content="Logs" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13" />
-                        <TextBlock Text="If enabled, logs will be created and saved in the specified directory." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,5"/>
-                        <TextBox Name="LoggingDirectory" Margin="5,5,5,10" Text=""></TextBox>
-                        <CheckBox Name="EnableLogs" Margin="5,0,5,20">Enable logs</CheckBox>
+                        <TextBlock Text="If enabled, logs will be created and saved in the specified directory. Leave the field empty to use the default location." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,5"/>
+                        <TextBox Name="LoggingDirectory" Margin="5,5,5,10" Text="" PreviewMouseDown="FolderDialog"></TextBox>
+                        <CheckBox Name="EnableLogs" Margin="5,0,5,20" IsChecked="True">Enable logs</CheckBox>
 
-                        <Button Name="SaveBtn" Content="Save settings" Margin="5,0,5,20" Height="25" HorizontalAlignment="Left" Padding="5,3" Click="SavePreferences" FontFamily="Arial"></Button>
+                        <Button Name="SaveBtn" Content="Save settings" Margin="5,0,5,20" Height="25" HorizontalAlignment="Left" Padding="5,3" Click="SaveSettings" FontFamily="Arial"></Button>
                     </StackPanel>
                 </Expander>
                 <StackPanel Orientation="Horizontal" Margin="5,10,5,0">
                     <Button Name="LiveScanBtn" Content="Start scan" Height="25" HorizontalAlignment="Left" Padding="5,3" Click="StartLiveScan" FontFamily="Arial"></Button>
                     <Button Name="ClearBtn" Margin="10,0" Content="Clear" Height="25" HorizontalAlignment="Left" Padding="5,3" Click="ClearData" FontFamily="Arial" Visibility="Collapsed"></Button>
                 </StackPanel>
-                    <Label Name="TimeElapsed" Content="" Margin="5,10,5,0" Height="25" HorizontalAlignment="Left" Padding="5" FontFamily="Arial"></Label>
             </StackPanel>
         </ScrollViewer>
         <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20"/>

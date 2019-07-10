@@ -20,7 +20,7 @@ namespace Quartz.AG
 
         private void RedirectToFileComparer(object sender, RoutedEventArgs e)
         {
-            FilesWrapper.NavigationService.Navigate(new FileComparer());
+            FilesWrapper.NavigationService.Navigate(new SearchLogs());
         }
     }
 }
