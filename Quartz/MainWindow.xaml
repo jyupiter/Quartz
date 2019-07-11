@@ -57,7 +57,7 @@
                         <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Example" HorizontalAlignment="Left"/>
                         <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Button" HorizontalAlignment="Left"/>
                         <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Placeholder" HorizontalAlignment="Left"/>
-                        <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Example" HorizontalAlignment="Left"/>
+                        <Button x:Name="UpdatesBtn" Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Updates" HorizontalAlignment="Left" Click="RedirectToUpdates"/>
                         <Button x:Name="FilesBtn" Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Files" HorizontalAlignment="Left" Click="RedirectToFiles"/>
                         <Rectangle Width="1" Fill="#FFCCCCCC" Margin="10,0"/>
                         <Button x:Name="SettingsBtn" Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Settings" HorizontalAlignment="Left"/>

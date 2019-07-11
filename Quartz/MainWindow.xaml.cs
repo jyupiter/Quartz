@@ -1,4 +1,5 @@
 ﻿using Quartz.AG;
+using Quartz.AV;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -143,6 +144,11 @@ namespace Quartz
         private void RedirectToFiles(object sender, RoutedEventArgs e)
         {
             ContentWrapper.NavigationService.Navigate(new Files());
+        }
+
+        private void RedirectToUpdates(object sender, RoutedEventArgs e)
+        {
+            ContentWrapper.NavigationService.Navigate(new CheckUpdater());
         }
     }
 }
