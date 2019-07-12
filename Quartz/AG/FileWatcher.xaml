@@ -41,8 +41,7 @@
                         </Expander>
 
                         <Label Content="Logs" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13" />
-                        <TextBlock Text="If enabled, logs will be created and saved in the specified directory. Leave the field empty to use the default location." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,5"/>
-                        <TextBox Name="LoggingDirectory" Margin="5,5,5,10" Text="" PreviewMouseDown="FolderDialog"></TextBox>
+                        <TextBlock Text="Logs are saved to the program folder." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,5"/>
                         <CheckBox Name="EnableLogs" Margin="5,0,5,20" IsChecked="True">Enable logs</CheckBox>
 
                         <Button Name="SaveBtn" Content="Save settings" Margin="5,0,5,20" Height="25" HorizontalAlignment="Left" Padding="5,3" Click="SaveSettings" FontFamily="Arial"></Button>
