@@ -21,6 +21,8 @@ using System.Threading;
 using LiveCharts.Configurations;
 using Quartz.Classes;
 using System.ComponentModel;
+using System.Collections;
+using System.IO;
 
 namespace Quartz.HQ
 {
@@ -32,7 +34,7 @@ namespace Quartz.HQ
 		public Overview()
 		{
 			InitializeComponent();
-			waitTime = 100; // 10secs
+			waitTime = 1000; 
 			Debug.WriteLine("Loading graphs");
 
 			var mapper = Mappers.Xy<MeasureModel>()
@@ -57,62 +59,18 @@ namespace Quartz.HQ
 			AxisUnit = TimeSpan.TicksPerSecond;
 
 			SetAxisLimits(DateTime.Now);
-			//SeriesCollection = new SeriesCollection
-			//{
-			//	new LineSeries
-			//	{
-			//		Title = "GPU",
-			//		Values = new ChartValues<double> {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0},
-			//		PointGeometry = DefaultGeometries.Diamond,
-			//		PointGeometrySize = 15
-			//	},
-			//	new LineSeries
-			//	{
-			//		Title = "CPU",
-			//		Values = new ChartValues<double> {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0},
-			//		PointGeometry = DefaultGeometries.Circle,
-			//		PointGeometrySize = 15
-			//	},
-			//	new LineSeries
-			//	{
-			//		Title = "RAM",
-			//		Values = new ChartValues<double> {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0},
-			//		PointGeometry = DefaultGeometries.Square,
-			//		PointGeometrySize = 15
-			//	},
-			//	new LineSeries
-			//	{
-			//		Title = "DISK",
-			//		Values = new ChartValues<double> {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0},
-			//		PointGeometry = DefaultGeometries.Cross,
-			//		PointGeometrySize = 15
-			//	},
-			//	new LineSeries
-			//	{
-			//		Title = "NETWORK",
-			//		Values = new ChartValues<double> {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0},
-			//		PointGeometry = DefaultGeometries.Triangle,
-			//		PointGeometrySize = 15
-			//	}
-			//};
-			//YFormatter = value => value.ToString("C");
-
 
 			//1:gpu 
 			//2:cpu
 			//3:ram
 			//4:disk
 			//5:network
-			new Thread(StartMonitering).Start();
+			StartMonitering();
 
 			DataContext = this;
 		}
 		public static void UpdateGraphs(int index, double value)
 		{
-			//Debug.WriteLine(index + "||" + value);
-			//SeriesCollection[index].Values.Add(value);
-			//SeriesCollection[index].Values.RemoveAt(0);
-			//Debug.Write(value + "|\n");
 			switch (index)
 			{
 				
@@ -180,10 +138,43 @@ namespace Quartz.HQ
 			{
 				Console.WriteLine(name);
 			}
-			new Thread(CpuThread).Start();
-			new Thread(MemThread).Start();
-			new Thread(DiskThread).Start();
-			//	new Thread(NetThread).Start();
+			//new Thread(CpuThread).Start();
+			//new Thread(MemThread).Start();
+			//new Thread(DiskThread).Start();
+			//new Thread(NetThread).Start();
+			
+			allProcesses = new ArrayList(Process.GetProcesses());
+			CheckWhiteList();
+			foreach (Process process in allProcesses)
+			{
+				Debug.WriteLine(process.ProcessName);
+				Thread PMoniter = new Thread(new ParameterizedThreadStart(MoniterProcess));
+				//PMoniter.Start(process);
+			}
+
+		}
+		public static void MoniterProcess(object arg)
+		{
+			Process process = (Process)arg;
+			
+			while (true)
+			{
+				Process[] pname = Process.GetProcessesByName(process.ProcessName);
+				if (pname.Length == 0)
+				{
+					allProcesses.Remove(process);
+					break;
+				}
+				else
+				{
+					//Debug.WriteLine("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+					Debug.WriteLine(process.ProcessName);
+					//Debug.WriteLine(process.TotalProcessorTime);
+					//Debug.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+				}
+				System.Threading.Thread.Sleep(waitTime);
+			}
+			
 		}
 
 		public static void GetGpu()
@@ -192,12 +183,6 @@ namespace Quartz.HQ
 			{
 				var GPUs = PhysicalGPU.GetPhysicalGPUs();
 
-				//Debug.WriteLine("\n<-----					----->");
-				//Debug.WriteLine(GPUs[0].FullName);
-				//Debug.WriteLine(GPUs[0].MemoryInformation);
-				//Debug.WriteLine(GPUs[0].ThermalInformation.CurrentThermalLevel);
-				//Debug.WriteLine(GPUs[0].UsageInformation.GPU);
-				//Debug.WriteLine("<-----					----->\n");
 				gpu = GPUs[0].UsageInformation.GPU.Percentage;
 				UpdateGraphs(0,gpu);
 			}
@@ -245,14 +230,37 @@ namespace Quartz.HQ
 		}
 		private static void NetThread()
 		{
+			PerformanceCounterCategory category = new PerformanceCounterCategory("Network Interface");
+			String[] instancename = category.GetInstanceNames();
 			while (true)
 			{
 				PerformanceCounter netCounter = new PerformanceCounter("PhysicalDisk", "% Disk Time", "_Total");
 				netCounter.NextValue();
-				System.Threading.Thread.Sleep(waitTime/2);
+				System.Threading.Thread.Sleep(waitTime);
 				net = netCounter.NextValue();
 				//Console.WriteLine("Disk usage: " + net);
 			}
+		}
+
+		public static void CheckWhiteList()
+		{
+			string[] lines = File.ReadAllLines("..\\..\\..\\HQ\\Filters\\ProcessW.txt");
+
+			foreach (string line in lines)
+			{
+				Process[] processes = Process.GetProcessesByName(line);
+				if (processes.Length != 0)
+				{
+					foreach(Process process in processes)
+					{
+						allProcesses.Remove(process);
+						Console.WriteLine("removing: " + line);
+					}
+				}
+				
+
+			}
+				
 		}
 		private static void SetAxisLimits(DateTime now)
 		{
@@ -261,23 +269,7 @@ namespace Quartz.HQ
 		}
 
 		public static double AxisMax;
-		//{
-		//	get { return _axisMax; }
-		//	set
-		//	{
-		//		_axisMax = value;
-		//		OnPropertyChanged("AxisMax");
-		//	}
-		//}
 		public static double AxisMin;
-		//{
-		//	get { return _axisMin; }
-		//	set
-		//	{
-		//		_axisMin = value;
-		//		OnPropertyChanged("AxisMin");
-		//	}
-		//}
 		protected virtual void OnPropertyChanged(string propertyName = null)
 		{
 			if (PropertyChanged != null)
@@ -302,5 +294,6 @@ namespace Quartz.HQ
 		public static double AxisStep { get; set; }
 		public static double AxisUnit { get; set; }
 		public static double ticks;
+		public static ArrayList allProcesses;
 	}
 }
