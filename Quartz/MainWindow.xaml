@@ -51,7 +51,7 @@
                         <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Click="RedirectToHome" Content="Home" HorizontalAlignment="Left"/>
                         <Button x:Name="Moniterng" Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Task Managering" HorizontalAlignment="Left" Click="RedirectToMonitering" Margin="0,0,0,0.6" VerticalAlignment="Bottom"/>
                         <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Example" HorizontalAlignment="Left"/>
-                        <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Button" HorizontalAlignment="Left"/>
+                        <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Click="RedirectMarcusHome" Content="SecLogin" HorizontalAlignment="Left"/>
                         <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Hmmm" HorizontalAlignment="Left"/>
                         <Button x:Name="FilesBtn" Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Files" HorizontalAlignment="Left" Click="RedirectToFiles"/>
                         <Rectangle Width="1" Fill="#FFCCCCCC" Margin="10,0"/>

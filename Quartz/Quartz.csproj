@@ -178,6 +178,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="MARC\MarcusHome.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\C1.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -233,6 +237,9 @@
     </Compile>
     <Compile Include="AG\FileWatcher.xaml.cs">
       <DependentUpon>FileWatcher.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MARC\MarcusHome.xaml.cs">
+      <DependentUpon>MarcusHome.xaml</DependentUpon>
     </Compile>
     <Compile Include="Templates\_Template.xaml.cs">
       <DependentUpon>_Template.xaml</DependentUpon>
