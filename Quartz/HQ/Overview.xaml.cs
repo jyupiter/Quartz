@@ -142,12 +142,17 @@ namespace Quartz.HQ
 			//new Thread(MemThread).Start();
 			//new Thread(DiskThread).Start();
 			//new Thread(NetThread).Start();
-			
-			allProcesses = new ArrayList(Process.GetProcesses());
-			CheckWhiteList();
-			foreach (Process process in allProcesses)
+
+			ArrayList allProcesses = new ArrayList(Process.GetProcesses());
+			ArrayList processNames = new ArrayList();
+			foreach(Process process in allProcesses)
 			{
-				Debug.WriteLine(process.ProcessName);
+				processNames.Add(process.ProcessName);
+			}
+			processNames = CheckWhiteList(processNames);
+			foreach (string process in processNames)
+			{
+				Debug.WriteLine(process);
 				Thread PMoniter = new Thread(new ParameterizedThreadStart(MoniterProcess));
 				//PMoniter.Start(process);
 			}
@@ -162,13 +167,12 @@ namespace Quartz.HQ
 				Process[] pname = Process.GetProcessesByName(process.ProcessName);
 				if (pname.Length == 0)
 				{
-					allProcesses.Remove(process);
-					break;
+					return;
 				}
 				else
 				{
 					//Debug.WriteLine("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-					Debug.WriteLine(process.ProcessName);
+					//Debug.WriteLine(process.ProcessName);
 					//Debug.WriteLine(process.TotalProcessorTime);
 					//Debug.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 				}
@@ -242,25 +246,25 @@ namespace Quartz.HQ
 			}
 		}
 
-		public static void CheckWhiteList()
+		public static ArrayList CheckWhiteList(ArrayList allProcesses)
 		{
 			string[] lines = File.ReadAllLines("..\\..\\..\\HQ\\Filters\\ProcessW.txt");
 
 			foreach (string line in lines)
 			{
-				Process[] processes = Process.GetProcessesByName(line);
-				if (processes.Length != 0)
+				foreach(string process in allProcesses.ToArray())
 				{
-					foreach(Process process in processes)
+					if(line == process)
 					{
+						//Console.WriteLine(allProcesses.Capacity);
 						allProcesses.Remove(process);
-						Console.WriteLine("removing: " + line);
+						//Console.WriteLine(allProcesses.Capacity);
+						//Console.WriteLine("removing: " + line);
+
 					}
 				}
-				
-
 			}
-				
+			return allProcesses;	
 		}
 		private static void SetAxisLimits(DateTime now)
 		{
@@ -294,6 +298,5 @@ namespace Quartz.HQ
 		public static double AxisStep { get; set; }
 		public static double AxisUnit { get; set; }
 		public static double ticks;
-		public static ArrayList allProcesses;
 	}
 }
