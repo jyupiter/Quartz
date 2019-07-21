@@ -5,11 +5,14 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Threading;
+using Microsoft.Win32;
 
 namespace Quartz
 {
@@ -21,10 +24,13 @@ namespace Quartz
 		public MainWindow()
 		{
 			InitializeComponent();
+			marcustimer();
+            marcusLoginLogoutDetector();
 			foreach(Button b in MainMenu.Children.OfType<Button>())
 			{
 				b.Click += FocusHandler;
 			}
+
 		}
 
 		private void FocusHandler(object sender, RoutedEventArgs e)
@@ -163,7 +169,43 @@ namespace Quartz
 			ContentWrapper.NavigationService.Navigate(new MarcusHome());
 		}
 
+        //temp func, delete if not used in final product
+		public void marcustimer()
+		{
+			System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+			dispatcherTimer.Tick += dispatcherTimer_Tick;
+			dispatcherTimer.Interval = new TimeSpan(0, 0, 30);
+			dispatcherTimer.Start();
 
+			 void dispatcherTimer_Tick(object sender, EventArgs e)
+			 {
+				// code goes here
+				
+
+			 }
+
+		}
+
+        // detect if user locks / unlocks their screen, done so by pressing windows+L
+        public void marcusLoginLogoutDetector()
+        {
+            Microsoft.Win32.SystemEvents.SessionSwitch += new Microsoft.Win32.SessionSwitchEventHandler(SystemEvents_SessionSwitch);
+
+            void SystemEvents_SessionSwitch(object sender, Microsoft.Win32.SessionSwitchEventArgs e)
+            {
+                if (e.Reason == SessionSwitchReason.SessionLock)
+                {
+                    //User locks screen
+                    MessageBox.Show("i left my desk");
+                }
+                else if (e.Reason == SessionSwitchReason.SessionUnlock)
+                {
+                    //User logs back in
+                    MessageBox.Show("i returned to desk");
+                }
+            }
+        }
+		
 
 	}
 }
