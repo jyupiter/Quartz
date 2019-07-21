@@ -25,7 +25,7 @@ namespace Quartz
 		{
 			InitializeComponent();
 			marcustimer();
-            marcusLoginLogoutDetector();
+			marcusLoginLogoutDetector();
 			foreach(Button b in MainMenu.Children.OfType<Button>())
 			{
 				b.Click += FocusHandler;
@@ -169,7 +169,7 @@ namespace Quartz
 			ContentWrapper.NavigationService.Navigate(new MarcusHome());
 		}
 
-        //temp func, delete if not used in final product
+		//temp func, delete if not used in final product
 		public void marcustimer()
 		{
 			System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
@@ -186,25 +186,25 @@ namespace Quartz
 
 		}
 
-        // detect if user locks / unlocks their screen, done so by pressing windows+L
-        public void marcusLoginLogoutDetector()
-        {
-            Microsoft.Win32.SystemEvents.SessionSwitch += new Microsoft.Win32.SessionSwitchEventHandler(SystemEvents_SessionSwitch);
+		// detect if user locks / unlocks their screen, done so by pressing windows+L
+		public void marcusLoginLogoutDetector()
+		{
+			Microsoft.Win32.SystemEvents.SessionSwitch += new Microsoft.Win32.SessionSwitchEventHandler(SystemEvents_SessionSwitch);
 
-            void SystemEvents_SessionSwitch(object sender, Microsoft.Win32.SessionSwitchEventArgs e)
-            {
-                if (e.Reason == SessionSwitchReason.SessionLock)
-                {
-                    //User locks screen
-                    MessageBox.Show("i left my desk");
-                }
-                else if (e.Reason == SessionSwitchReason.SessionUnlock)
-                {
-                    //User logs back in
-                    MessageBox.Show("i returned to desk");
-                }
-            }
-        }
+			void SystemEvents_SessionSwitch(object sender, Microsoft.Win32.SessionSwitchEventArgs e)
+			{
+				if (e.Reason == SessionSwitchReason.SessionLock)
+				{
+					//User locks screen
+					MessageBox.Show("i left my desk");
+				}
+				else if (e.Reason == SessionSwitchReason.SessionUnlock)
+				{
+					//User logs back in
+					MessageBox.Show("i returned to desk");
+				}
+			}
+		}
 		
 
 	}
