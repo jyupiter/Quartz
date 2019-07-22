@@ -333,7 +333,7 @@ namespace Quartz.HQ
 		{
 			
 
-			foreach (string line in lines)
+			foreach (string line in whiteList)
 			{
 				if (line == process)
 				{
