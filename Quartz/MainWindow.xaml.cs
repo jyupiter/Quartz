@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Threading;
 using Microsoft.Win32;
+using Quartz.AV;
 
 namespace Quartz
 {
@@ -211,7 +212,10 @@ namespace Quartz
 				}
 			}
 		}
-		
 
-	}
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            ContentWrapper.NavigationService.Navigate(new CheckUpdater());
+        }
+    }
 }
