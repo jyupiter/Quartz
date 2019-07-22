@@ -197,6 +197,8 @@ namespace Quartz.HQ
 		}
 		public static void MoniterProcess(object arg)
 		{
+			TimeSpan runTime = new TimeSpan(0);
+			DateTime startTime = DateTime.Now;
 			DateTime lastTime = new DateTime();
 			TimeSpan lastTotalProcessorTime = new TimeSpan();
 			DateTime curTime;
@@ -209,6 +211,7 @@ namespace Quartz.HQ
 				Process[] pname = Process.GetProcessesByName(process);
 				if (pname.Length == 0)
 				{
+					LogPcsTime(process, startTime, runTime, DateTime.Now);
 					allProcesses.Remove(process);
 					return;
 				}
@@ -217,6 +220,7 @@ namespace Quartz.HQ
 					try
 					{
 						Process p = pname[0];
+						runTime = p.TotalProcessorTime;
 						if (lastTime == null || lastTime == new DateTime())
 						{
 							lastTime = DateTime.Now;
@@ -259,6 +263,21 @@ namespace Quartz.HQ
 				System.Threading.Thread.Sleep(waitTime);
 			}
 
+		}
+
+		public static void LogPcsTime(string process, DateTime start, TimeSpan runTime, DateTime end)
+		{
+			Debug.WriteLine("Logging: " + process + "|" + start + "|" + runTime + "|" + end);
+			string path = "..\\..\\..\\HQ\\Logs\\ProcessTimes.txt";
+			// This text is added only once to the file.
+			//if (!File.Exists(path))
+			//{
+			// Create a file to write to.
+			using (StreamWriter sw = File.AppendText(path))
+			{
+				sw.WriteLine(process + "|" + start + "|" + runTime + "|" + end);
+			}
+			//}
 		}
 
 		public static void GpuThread()
