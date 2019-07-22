@@ -273,10 +273,26 @@ namespace Quartz.HQ
 			//if (!File.Exists(path))
 			//{
 			// Create a file to write to.
-			using (StreamWriter sw = File.AppendText(path))
+			while (true)
 			{
-				sw.WriteLine(process + "|" + start + "|" + runTime + "|" + end);
+				try
+				{
+					using (StreamWriter sw = File.AppendText(path))
+					{
+						sw.WriteLine(process + "|" + start + "|" + runTime + "|" + end);
+					}
+					return;
+				}
+				catch(Exception e)
+				{
+					Random rnd = new Random();
+					int waitTime = rnd.Next(10, 100);
+					Debug.WriteLine("File in use! Waiting for " + waitTime );
+					Thread.Sleep(waitTime);
+				}
 			}
+			
+			
 			//}
 		}
 
