@@ -214,39 +214,46 @@ namespace Quartz.HQ
 				}
 				else
 				{
-					Process p = pname[0];
-					if (lastTime == null || lastTime == new DateTime())
+					try
 					{
-						lastTime = DateTime.Now;
-						lastTotalProcessorTime = p.TotalProcessorTime;
-					}
-					else
-					{
-						//Debug.WriteLine("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-						curTime = DateTime.Now;
-						curTotalProcessorTime = p.TotalProcessorTime;
-
-						double CPUUsage = (curTotalProcessorTime.TotalMilliseconds - lastTotalProcessorTime.TotalMilliseconds) / curTime.Subtract(lastTime).TotalMilliseconds / Convert.ToDouble(Environment.ProcessorCount);
-						Console.WriteLine("{0} CPU: {1:0.0}%", p.ProcessName, CPUUsage );
-						if (CPUUsage > 0.1)
+						Process p = pname[0];
+						if (lastTime == null || lastTime == new DateTime())
 						{
-							if (cycles < 10)
-							{
-								cycles++;
-							}
-							else
-							{
-								Overview ovw = new Overview();
-								ovw.Toast(p.ProcessName, "Warn");
-								cycles = 0;
-							}
+							lastTime = DateTime.Now;
+							lastTotalProcessorTime = p.TotalProcessorTime;
 						}
 						else
 						{
-							cycles = 0;
+							//Debug.WriteLine("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+							curTime = DateTime.Now;
+							curTotalProcessorTime = p.TotalProcessorTime;
+
+							double CPUUsage = (curTotalProcessorTime.TotalMilliseconds - lastTotalProcessorTime.TotalMilliseconds) / curTime.Subtract(lastTime).TotalMilliseconds / Convert.ToDouble(Environment.ProcessorCount);
+							Console.WriteLine("{0} CPU: {1:0.0}%", p.ProcessName, CPUUsage);
+							if (CPUUsage > 0.1)
+							{
+								if (cycles < 10)
+								{
+									cycles++;
+								}
+								else
+								{
+									Overview ovw = new Overview();
+									ovw.Toast(p.ProcessName, "Warn");
+									cycles = 0;
+								}
+							}
+							else
+							{
+								cycles = 0;
+							}
+							lastTime = curTime;
+							lastTotalProcessorTime = curTotalProcessorTime;
 						}
-						lastTime = curTime;
-						lastTotalProcessorTime = curTotalProcessorTime;
+					}
+					catch (Exception e)
+					{
+
 					}
 				}
 				System.Threading.Thread.Sleep(waitTime);
@@ -331,7 +338,7 @@ namespace Quartz.HQ
 
 		public static bool NotInWhiteList(string process)
 		{
-			
+
 
 			foreach (string line in whiteList)
 			{
@@ -364,10 +371,11 @@ namespace Quartz.HQ
 
 		private void Toast(string message, string type)
 		{
-			Application.Current.Dispatcher.Invoke((Action)delegate {
+			Application.Current.Dispatcher.Invoke((Action)delegate
+			{
 				notifier.ShowWarning(message);
 			});
-			
+
 		}
 
 		Notifier notifier = new Notifier(cfg =>
