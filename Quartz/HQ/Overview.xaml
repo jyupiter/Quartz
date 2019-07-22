@@ -16,25 +16,13 @@
         </Grid.RowDefinitions>
 
         <!--Here we disable tooltips and hovering to get a better performance-->
-        <lvc:CartesianChart Grid.Row="1" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}">
+        <lvc:CartesianChart Grid.Row="1" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}" Margin="0,292,0,-0.4">
             <lvc:CartesianChart.Series>
                 <lvc:LineSeries Values="{Binding CpuValues}" 
                                 PointGeometry="{x:Null}" 
                                 LineSmoothness="1"
                                 StrokeThickness="2" 
                                 Stroke="Navy"
-                                Fill="Transparent"/>
-                <lvc:LineSeries Values="{Binding MemValues}" 
-                                PointGeometry="{x:Null}" 
-                                LineSmoothness="1"
-                                StrokeThickness="2" 
-                                Stroke="Crimson"
-                                Fill="Transparent"/>
-                <lvc:LineSeries Values="{Binding DiskValues}" 
-                                PointGeometry="{x:Null}" 
-                                LineSmoothness="1"
-                                StrokeThickness="2" 
-                                Stroke="Green"
                                 Fill="Transparent"/>
             </lvc:CartesianChart.Series>
 

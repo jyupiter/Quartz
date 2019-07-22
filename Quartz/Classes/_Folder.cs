@@ -8,6 +8,8 @@ namespace Quartz.Classes
 {
     class _Folder
     {
-        public static string BaseFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        public static string BaseFolder = "..\\..\\..\\";
+        public static string PTemplate = "..\\..\\..\\AG\\filewatcher.qonf";
+        //public static string BaseFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
     }
 }

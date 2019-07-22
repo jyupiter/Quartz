@@ -1,26 +1,21 @@
 ﻿using LiveCharts;
-using LiveCharts.Wpf;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using NvAPIWrapper;
 using NvAPIWrapper.GPU;
 using System.Threading;
 using LiveCharts.Configurations;
 using Quartz.Classes;
 using System.ComponentModel;
+using System.Collections;
+using System.IO;
+using ToastNotifications;
+using ToastNotifications.Lifetime;
+using ToastNotifications.Position;
+using System.Windows;
+using ToastNotifications.Messages;
+using System.Windows.Threading;
 
 namespace Quartz.HQ
 {
@@ -29,11 +24,33 @@ namespace Quartz.HQ
 	/// </summary>
 	public partial class Overview : Page, INotifyPropertyChanged
 	{
+		public static double AxisMax;
+		public static double AxisMin;
+		public event PropertyChangedEventHandler PropertyChanged;
+		public static SeriesCollection SeriesCollection { get; set; }
+		public static string[] Labels { get; set; }
+		public Func<double, string> YFormatter { get; set; }
+		public static float cpu;
+		public static float mem;
+		public static float disk;
+		public static float net;
+		public static float gpu;
+		public static int waitTime; //ms
+		public static ChartValues<MeasureModel> GpuValues { get; set; }
+		public static ChartValues<MeasureModel> CpuValues { get; set; }
+		public static ChartValues<MeasureModel> MemValues { get; set; }
+		public static ChartValues<MeasureModel> DiskValues { get; set; }
+		public static ChartValues<MeasureModel> NetValues { get; set; }
+		public Func<double, string> DateTimeFormatter { get; set; }
+		public static double AxisStep { get; set; }
+		public static double AxisUnit { get; set; }
+		public static double ticks;
+		public static ArrayList allProcesses;
+		public static string[] whiteList;
 		public Overview()
 		{
 			InitializeComponent();
-			waitTime = 100; // 10secs
-			Debug.WriteLine("Loading graphs");
+			waitTime = 1000;
 
 			var mapper = Mappers.Xy<MeasureModel>()
 				.X(model => model.DateTime.Ticks)   //use DateTime.Ticks as X
@@ -57,65 +74,26 @@ namespace Quartz.HQ
 			AxisUnit = TimeSpan.TicksPerSecond;
 
 			SetAxisLimits(DateTime.Now);
-			//SeriesCollection = new SeriesCollection
-			//{
-			//	new LineSeries
-			//	{
-			//		Title = "GPU",
-			//		Values = new ChartValues<double> {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0},
-			//		PointGeometry = DefaultGeometries.Diamond,
-			//		PointGeometrySize = 15
-			//	},
-			//	new LineSeries
-			//	{
-			//		Title = "CPU",
-			//		Values = new ChartValues<double> {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0},
-			//		PointGeometry = DefaultGeometries.Circle,
-			//		PointGeometrySize = 15
-			//	},
-			//	new LineSeries
-			//	{
-			//		Title = "RAM",
-			//		Values = new ChartValues<double> {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0},
-			//		PointGeometry = DefaultGeometries.Square,
-			//		PointGeometrySize = 15
-			//	},
-			//	new LineSeries
-			//	{
-			//		Title = "DISK",
-			//		Values = new ChartValues<double> {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0},
-			//		PointGeometry = DefaultGeometries.Cross,
-			//		PointGeometrySize = 15
-			//	},
-			//	new LineSeries
-			//	{
-			//		Title = "NETWORK",
-			//		Values = new ChartValues<double> {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0},
-			//		PointGeometry = DefaultGeometries.Triangle,
-			//		PointGeometrySize = 15
-			//	}
-			//};
-			//YFormatter = value => value.ToString("C");
-
 
 			//1:gpu 
 			//2:cpu
 			//3:ram
 			//4:disk
 			//5:network
-			new Thread(StartMonitering).Start();
+			ReloadWhiteList();
+			StartMonitering();
 
+			//notifier.ShowSuccess(message);
+			//notifier.ShowWarning(message);
+			//notifier.ShowError(message);
 			DataContext = this;
 		}
 		public static void UpdateGraphs(int index, double value)
 		{
-			//Debug.WriteLine(index + "||" + value);
-			//SeriesCollection[index].Values.Add(value);
-			//SeriesCollection[index].Values.RemoveAt(0);
-			//Debug.Write(value + "|\n");
+			//Debug.WriteLine("UpdateGraphs: " + index + " | " + value);
 			switch (index)
 			{
-				
+
 				case 0:
 					GpuValues.Add(new MeasureModel
 					{
@@ -168,43 +146,132 @@ namespace Quartz.HQ
 			SetAxisLimits(DateTime.Now);
 
 			//lets only use the last 150 values
-			
+
 		}
 
 		public static void StartMonitering()
 		{
-			PerformanceCounterCategory category = new PerformanceCounterCategory("Network Interface");
-			String[] instancename = category.GetInstanceNames();
+			//PerformanceCounterCategory category = new PerformanceCounterCategory("Network Interface");
+			//String[] instancename = category.GetInstanceNames();
 
-			foreach (string name in instancename)
-			{
-				Console.WriteLine(name);
-			}
+			//foreach (string name in instancename)
+			//{
+			//	Console.WriteLine(name);
+			//}
+			//NVIDIA.Initialize();
+			//new Thread(GpuThread).Start();
 			new Thread(CpuThread).Start();
-			new Thread(MemThread).Start();
-			new Thread(DiskThread).Start();
-			//	new Thread(NetThread).Start();
+			//new Thread(MemThread).Start();
+			//new Thread(DiskThread).Start();
+			//new Thread(NetThread).Start();
+
+			allProcesses = GetProcessNames();
+			foreach (string process in allProcesses)
+			{
+				Debug.WriteLine(process);
+				Thread PMoniter = new Thread(new ParameterizedThreadStart(MoniterProcess));
+				PMoniter.SetApartmentState(ApartmentState.STA);
+				PMoniter.Start(process);
+
+			}
+			new Thread(CheckNewProcesses).Start();
+		}
+		public static void CheckNewProcesses()
+		{
+			ArrayList currentProcesses = new ArrayList();
+			while (true)
+			{
+				currentProcesses = GetProcessNames();
+				foreach (string process in currentProcesses)
+				{
+					if (!allProcesses.Contains(process))
+					{
+						allProcesses.Add(process);
+						Debug.WriteLine("New Process detected! " + process);
+						Thread PMoniter = new Thread(new ParameterizedThreadStart(MoniterProcess));
+						PMoniter.SetApartmentState(ApartmentState.STA);
+						PMoniter.Start(process);
+					}
+				}
+			}
+		}
+		public static void MoniterProcess(object arg)
+		{
+			DateTime lastTime = new DateTime();
+			TimeSpan lastTotalProcessorTime = new TimeSpan();
+			DateTime curTime;
+			TimeSpan curTotalProcessorTime = new TimeSpan();
+			string process = (string)arg;
+			int cycles = 0;
+			while (true)
+			{
+				//Debug.WriteLine("cycles: " + cycles);
+				Process[] pname = Process.GetProcessesByName(process);
+				if (pname.Length == 0)
+				{
+					allProcesses.Remove(process);
+					return;
+				}
+				else
+				{
+					Process p = pname[0];
+					if (lastTime == null || lastTime == new DateTime())
+					{
+						lastTime = DateTime.Now;
+						lastTotalProcessorTime = p.TotalProcessorTime;
+					}
+					else
+					{
+						//Debug.WriteLine("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+						curTime = DateTime.Now;
+						curTotalProcessorTime = p.TotalProcessorTime;
+
+						double CPUUsage = (curTotalProcessorTime.TotalMilliseconds - lastTotalProcessorTime.TotalMilliseconds) / curTime.Subtract(lastTime).TotalMilliseconds / Convert.ToDouble(Environment.ProcessorCount);
+						Console.WriteLine("{0} CPU: {1:0.0}%", p.ProcessName, CPUUsage );
+						if (CPUUsage > 0.1)
+						{
+							if (cycles < 10)
+							{
+								cycles++;
+							}
+							else
+							{
+								Overview ovw = new Overview();
+								ovw.Toast(p.ProcessName, "Warn");
+								cycles = 0;
+							}
+						}
+						else
+						{
+							cycles = 0;
+						}
+						lastTime = curTime;
+						lastTotalProcessorTime = curTotalProcessorTime;
+					}
+				}
+				System.Threading.Thread.Sleep(waitTime);
+			}
+
 		}
 
-		public static void GetGpu()
+		public static void GpuThread()
 		{
-			try
+			var GPUs = PhysicalGPU.GetPhysicalGPUs();
+			while (true)
 			{
-				var GPUs = PhysicalGPU.GetPhysicalGPUs();
+				try
+				{
+					System.Threading.Thread.Sleep(waitTime);
+					gpu = GPUs[0].UsageInformation.GPU.Percentage;
+					UpdateGraphs(0, gpu);
+					//Debug.WriteLine("updating gpu: " + gpu);
+				}
+				catch (Exception e)
+				{
+					Debug.WriteLine("<---!	GPU inactive !--->");
+				}
+			}
 
-				//Debug.WriteLine("\n<-----					----->");
-				//Debug.WriteLine(GPUs[0].FullName);
-				//Debug.WriteLine(GPUs[0].MemoryInformation);
-				//Debug.WriteLine(GPUs[0].ThermalInformation.CurrentThermalLevel);
-				//Debug.WriteLine(GPUs[0].UsageInformation.GPU);
-				//Debug.WriteLine("<-----					----->\n");
-				gpu = GPUs[0].UsageInformation.GPU.Percentage;
-				UpdateGraphs(0,gpu);
-			}
-			catch (Exception e)
-			{
-				Debug.WriteLine("<---!	NVApi not found	!--->");
-			}
 		}
 
 		private static void CpuThread()
@@ -245,14 +312,49 @@ namespace Quartz.HQ
 		}
 		private static void NetThread()
 		{
+			PerformanceCounterCategory category = new PerformanceCounterCategory("Network Interface");
+			String[] instancename = category.GetInstanceNames();
 			while (true)
 			{
 				PerformanceCounter netCounter = new PerformanceCounter("PhysicalDisk", "% Disk Time", "_Total");
 				netCounter.NextValue();
-				System.Threading.Thread.Sleep(waitTime/2);
+				System.Threading.Thread.Sleep(waitTime);
 				net = netCounter.NextValue();
 				//Console.WriteLine("Disk usage: " + net);
 			}
+		}
+
+		public static void ReloadWhiteList()
+		{
+			whiteList = File.ReadAllLines("..\\..\\..\\HQ\\Filters\\ProcessW.txt");
+		}
+
+		public static bool NotInWhiteList(string process)
+		{
+			
+
+			foreach (string line in whiteList)
+			{
+				if (line == process)
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		public static ArrayList GetProcessNames()
+		{
+			ArrayList currentProcesses = new ArrayList(Process.GetProcesses());
+			ArrayList pcsNames = new ArrayList();
+			foreach (Process process in currentProcesses)
+			{
+				if (NotInWhiteList(process.ProcessName))
+				{
+					pcsNames.Add(process.ProcessName);
+				}
+			}
+			return pcsNames;
 		}
 		private static void SetAxisLimits(DateTime now)
 		{
@@ -260,47 +362,28 @@ namespace Quartz.HQ
 			AxisMin = now.Ticks - TimeSpan.FromSeconds(8).Ticks; // and 8 seconds behind
 		}
 
-		public static double AxisMax;
-		//{
-		//	get { return _axisMax; }
-		//	set
-		//	{
-		//		_axisMax = value;
-		//		OnPropertyChanged("AxisMax");
-		//	}
-		//}
-		public static double AxisMin;
-		//{
-		//	get { return _axisMin; }
-		//	set
-		//	{
-		//		_axisMin = value;
-		//		OnPropertyChanged("AxisMin");
-		//	}
-		//}
-		protected virtual void OnPropertyChanged(string propertyName = null)
+		private void Toast(string message, string type)
 		{
-			if (PropertyChanged != null)
-				PropertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
+			Application.Current.Dispatcher.Invoke((Action)delegate {
+				notifier.ShowWarning(message);
+			});
+			
 		}
-		public event PropertyChangedEventHandler PropertyChanged;
-		public static SeriesCollection SeriesCollection { get; set; }
-		public static string[] Labels { get; set; }
-		public Func<double, string> YFormatter { get; set; }
-		public static float cpu;
-		public static float mem;
-		public static float disk;
-		public static float net;
-		public static float gpu;
-		public static int waitTime; //ms
-		public static ChartValues<MeasureModel> GpuValues { get; set; }
-		public static ChartValues<MeasureModel> CpuValues { get; set; }
-		public static ChartValues<MeasureModel> MemValues { get; set; }
-		public static ChartValues<MeasureModel> DiskValues { get; set; }
-		public static ChartValues<MeasureModel> NetValues { get; set; }
-		public Func<double, string> DateTimeFormatter { get; set; }
-		public static double AxisStep { get; set; }
-		public static double AxisUnit { get; set; }
-		public static double ticks;
+
+		Notifier notifier = new Notifier(cfg =>
+		{
+			cfg.PositionProvider = new WindowPositionProvider(
+				parentWindow: Application.Current.MainWindow,
+				corner: Corner.TopRight,
+				offsetX: 10,
+				offsetY: 10);
+
+			cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
+				notificationLifetime: TimeSpan.FromSeconds(3),
+				maximumNotificationCount: MaximumNotificationCount.FromCount(5));
+
+			cfg.Dispatcher = Application.Current.Dispatcher;
+		});
 	}
+
 }

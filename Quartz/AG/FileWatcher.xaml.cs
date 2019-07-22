@@ -1,7 +1,6 @@
 ﻿using Quartz.Classes;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Security.Permissions;
 using System.Text.RegularExpressions;
@@ -10,6 +9,12 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Threading;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using Lucene.Net.Analysis.Standard;
+using Version = Lucene.Net.Util.Version;
+using Lucene.Net.Index;
+using Lucene.Net.Store;
+using Lucene.Net.Documents;
+using System.Diagnostics;
 
 namespace Quartz.AG
 {
@@ -32,33 +37,67 @@ namespace Quartz.AG
         {
             DataGridTextColumn indx = new DataGridTextColumn();
             DataGridTextColumn evnt = new DataGridTextColumn();
-            DataGridTextColumn desc = new DataGridTextColumn();
             DataGridTextColumn date = new DataGridTextColumn();
             DataGridTextColumn time = new DataGridTextColumn();
+            DataGridTextColumn desc = new DataGridTextColumn();
             ScanResultDataGrid.Columns.Add(indx);
             ScanResultDataGrid.Columns.Add(evnt);
-            ScanResultDataGrid.Columns.Add(desc);
             ScanResultDataGrid.Columns.Add(date);
             ScanResultDataGrid.Columns.Add(time);
+            ScanResultDataGrid.Columns.Add(desc);
             indx.Header = "#";
             evnt.Header = "Event";
-            desc.Header = "Description";
             date.Header = "Date";
             time.Header = "Time";
+            desc.Header = "Description";
             indx.Binding = new Binding("I");
             evnt.Binding = new Binding("E");
-            desc.Binding = new Binding("D");
             date.Binding = new Binding("A");
             time.Binding = new Binding("T");
+            desc.Binding = new Binding("D");
         }
 
         private struct Record
         {
             public int I { get; set; }
             public string E { get; set; }
-            public string D { get; set; }
             public string A { get; set; }
             public string T { get; set; }
+            public string D { get; set; }
+        }
+
+        // Environment
+
+        private void SetPath()
+        {
+            bool skip = true;
+            Dispatcher.Invoke(() => {
+                if((bool)EnableLogs.IsChecked)
+                    skip = false;
+                if(skip)
+                    return;
+                System.IO.Directory.CreateDirectory(Path.Combine(path, "Quartz/Logs"));
+
+                string filename = string.Format("{0:dd-MM-yyyy}_{1:HH-mm-ss}.qtz", DateTime.Now, DateTime.Now);
+                F = Path.Combine(path, "Quartz/Logs", filename);
+            });
+        }
+
+        // User-facing
+
+        private void Display(int _I, string _E, string _A, string _T, string _D)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                ScanResultDataGrid.Items.Add(new Record
+                {
+                    I = _I,
+                    E = _E,
+                    A = _A,
+                    T = _T,
+                    D = _D
+                });
+            });
         }
 
         #endregion
@@ -112,9 +151,9 @@ namespace Quartz.AG
 
             int _I = id;
             string _E = "" + x.ChangeType;
-            string _D = x.FullPath + " was " + x.ChangeType;
             string _A = DateTime.Today.ToString("dd-MM-yyyy");
             string _T = DateTime.Now.ToString("HH:mm:ss tt");
+            string _D = x.FullPath + " was " + x.ChangeType;
 
             Dispatcher.Invoke(() => {
                 string pattern = @"^(?:[\w]\:|\\)(\\[a-z_\-\s0-9\.]+)+\.(" + FilterExtensions.Text + ")$";
@@ -125,29 +164,29 @@ namespace Quartz.AG
                     {
                         if(Regex.IsMatch(x.FullPath, pattern, RegexOptions.IgnoreCase))
                         {
-                            Display(_I, _E, _D, _A, _T);
+                            Display(_I, _E, _A, _T, _D);
                             id++;
                             if((bool)EnableLogs.IsChecked)
-                                WriteToLogs(_I, _E, _D, _A, _T);
+                                WriteToLogs(_I, _E, _A, _T, _D);
                         }
                     }
                     else
                     {
                         if(!Regex.IsMatch(x.FullPath, pattern, RegexOptions.IgnoreCase))
                         {
-                            Display(_I, _E, _D, _A, _T);
+                            Display(_I, _E, _A, _T, _D);
                             id++;
                             if((bool)EnableLogs.IsChecked)
-                                WriteToLogs(_I, _E, _D, _A, _T);
+                                WriteToLogs(_I, _E, _A, _T, _D);
                         }
                     }
                 }
                 else
                 {
-                    Display(_I, _E, _D, _A, _T);
+                    Display(_I, _E, _A, _T, _D);
                     id++;
                     if((bool)EnableLogs.IsChecked)
-                        WriteToLogs(_I, _E, _D, _A, _T);
+                        WriteToLogs(_I, _E, _A, _T, _D);
                 }
             });
         }
@@ -159,9 +198,9 @@ namespace Quartz.AG
 
             int _I = id;
             string _E = "Renamed";
-            string _D = x.OldFullPath + " was Renamed to " + x.FullPath;
             string _A = DateTime.Today.ToString("dd-MM-yyyy");
             string _T = DateTime.Now.ToString("HH:mm:ss tt");
+            string _D = x.OldFullPath + " was Renamed to " + x.FullPath;
 
             string ext = Path.GetExtension(x.FullPath);
             Dispatcher.Invoke(() => {
@@ -171,72 +210,34 @@ namespace Quartz.AG
                     {
                         if(Regex.IsMatch(ext, FilterExtensions.Text, RegexOptions.IgnoreCase))
                         {
-                            Display(_I, _E, _D, _A, _T);
+                            Display(_I, _E, _A, _T, _D);
                             id++;
                             if((bool)EnableLogs.IsChecked)
-                                WriteToLogs(_I, _E, _D, _A, _T);
+                                WriteToLogs(_I, _E, _A, _T, _D);
                         }
                     }
                     else
                     {
                         if(!Regex.IsMatch(ext, FilterExtensions.Text, RegexOptions.IgnoreCase))
                         {
-                            Display(_I, _E, _D, _A, _T);
+                            Display(_I, _E, _A, _T, _D);
                             id++;
                             if((bool)EnableLogs.IsChecked)
-                                WriteToLogs(_I, _E, _D, _A, _T);
+                                WriteToLogs(_I, _E, _A, _T, _D);
                         }
                     }
                 }
                 else
                 {
-                    Display(_I, _E, _D, _A, _T);
+                    Display(_I, _E, _A, _T, _D);
                     id++;
                     if((bool)EnableLogs.IsChecked)
-                        WriteToLogs(_I, _E, _D, _A, _T);
+                        WriteToLogs(_I, _E, _A, _T, _D);
                 }
             });
         }
 
-        // Environment
-
-        private void SetPath()
-        {
-            bool skip = true;
-            Dispatcher.Invoke(() => {
-                if((bool)EnableLogs.IsChecked)
-                    skip = false;
-                if(skip)
-                    return;
-                
-                if(Directory.Exists(LoggingDirectory.Text))
-                    path = LoggingDirectory.Text;
-                
-                Directory.CreateDirectory(Path.Combine(path, "Quartz/Logs"));
-
-                string filename = string.Format("{0:dd-MM-yyyy}_{1:HH-mm-ss}.qtz", DateTime.Now, DateTime.Now);
-                F = Path.Combine(path, "Quartz/Logs", filename);
-            });
-        }
-
-        // User-facing
-
-        private void Display(int _I, string _E, string _D, string _A, string _T)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                ScanResultDataGrid.Items.Add(new Record
-                {
-                    I = _I,
-                    E = _E,
-                    D = _D,
-                    A = _A,
-                    T = _T
-                });
-            });
-        }
-
-        private async void WriteToLogs(int _I, string _E, string _D, string _A, string _T)
+        private async void WriteToLogs(int _I, string _E, string _A, string _T, string _D)
         {
             if(!File.Exists(F))
             {
@@ -291,8 +292,11 @@ namespace Quartz.AG
 
         private void InitializePreferences()
         {
-            Directory.CreateDirectory(Path.Combine(path, "Quartz/Preferences"));
+            System.IO.Directory.CreateDirectory(Path.Combine(path, "Quartz/Preferences"));
             P = Path.Combine(path, "Quartz/Preferences", "filewatcher.qonf");
+            Console.WriteLine("p is" +P);
+            if(!File.Exists(P))
+                File.Copy(_Folder.PTemplate, P, true);
         }
 
         private async void WriteToPreferences()
@@ -304,7 +308,6 @@ namespace Quartz.AG
                     "FilterEnable=[" + EnableFiltering.IsChecked + "]\n" +
                     "FilterExtensions=[" + FilterExtensions.Text + "]\n" +
                     "FilterInclude=[" + FilterInclude.IsChecked + "]\n" +
-                    "LogsDirectory=[" + LoggingDirectory.Text + "]\n" +
                     "LogsEnable=[" + EnableLogs.IsChecked + "]"
                 );
                 str.Flush();
@@ -327,13 +330,48 @@ namespace Quartz.AG
                     FilterExtensions.Text = l[2];
                     FilterInclude.IsChecked = bool.Parse(l[3]);
                     FilterExclude.IsChecked = !bool.Parse(l[3]);
-                    LoggingDirectory.Text = l[4];
-                    EnableLogs.IsChecked = bool.Parse(l[5]);
+                    EnableLogs.IsChecked = bool.Parse(l[4]);
                 });
             }
             catch(Exception)
             {
                 //
+            }
+        }
+
+        #endregion
+
+        #region Lucene
+
+        private void IndexToLucene()
+        {
+            Lucene.Net.Store.Directory dir = FSDirectory.Open(Path.Combine(path,"Lucene"));
+            var analyzer = new StandardAnalyzer(Version.LUCENE_30);
+
+            using(var writer = new IndexWriter(dir, analyzer, IndexWriter.MaxFieldLength.UNLIMITED))
+            {
+                string[] raw = File.ReadAllLines(F);
+                foreach(var line in raw)
+                {
+                    string[] entry = line.Split('|');
+
+                    var id = new Field("id", entry[0], Field.Store.YES, Field.Index.NOT_ANALYZED);
+                    var ev = new Field("event", entry[1], Field.Store.YES, Field.Index.ANALYZED);
+                    var dt = new Field("date", entry[2], Field.Store.YES, Field.Index.ANALYZED);
+                    var tm = new Field("time", entry[3], Field.Store.YES, Field.Index.ANALYZED);
+                    var ds = new Field("description", entry[4], Field.Store.YES, Field.Index.ANALYZED);
+               
+                    var document = new Document();
+                    document.Add(id);
+                    document.Add(ev);
+                    document.Add(dt);
+                    document.Add(tm);
+                    document.Add(ds);
+
+                    writer.AddDocument(document);
+                }
+
+                writer.Optimize();
             }
         }
 
@@ -358,6 +396,7 @@ namespace Quartz.AG
             }
             LiveScanBtn.Click -= StopLiveScan;
             LiveScanBtn.Click += StartLiveScan;
+            IndexToLucene();
         }
 
         private void ClearData(object sender, RoutedEventArgs e)
