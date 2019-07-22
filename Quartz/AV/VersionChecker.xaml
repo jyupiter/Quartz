@@ -20,6 +20,8 @@
             </StackPanel>
         </StackPanel>
         <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20"/>
-        <DataGrid DockPanel.Dock="Right" Name="DatagridAvan1" Margin="0,20,20,20" BorderBrush="LightGray" ItemsSource="{Binding}"/>
+        <Grid>
+            <DataGrid DockPanel.Dock="Right" Name="DatagridAvan1" Margin="0,20,20,20" BorderBrush="LightGray" ItemsSource="{Binding}" AutoGenerateColumns="False" RowHeight="15" ColumnWidth="100"/>
+        </Grid>
     </DockPanel>
 </Page>

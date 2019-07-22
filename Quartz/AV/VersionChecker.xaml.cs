@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Quartz.Classes;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -24,32 +25,38 @@ namespace Quartz.AV
         public VersionChecker()
         {
             InitializeComponent();
+            LoadDataGridData();
         }
 
-        private void HellothereStranger()
+        private List<UpdateStuff> HellothereStranger()
         {
+            List<UpdateStuff> applist = new List<UpdateStuff>();
+
             Microsoft.Win32.RegistryKey regKey = Microsoft.Win32.Registry.LocalMachine;
-            Microsoft.Win32.RegistryKey subKey1 =
-                regKey.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\C urrentVersion\\Uninstall");
-            string[] subKeyNames = subKey1.GetSubKeyNames();
+            string subKey1 =
+                "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall";
+
+            Microsoft.Win32.RegistryKey uinstallkey = regKey.OpenSubKey(subKey1);
+
+            string[] subKeyNames = uinstallkey.GetSubKeyNames();
+
+
 
             foreach (string subKeyName in subKeyNames)
             {
-                Microsoft.Win32.RegistryKey regKey = Microsoft.Win32.Registry.LocalMachine;
-                Microsoft.Win32.RegistryKey subKey2 = subKey1.OpenSubKey(subKeyName);
+                Microsoft.Win32.RegistryKey subKey2 = regKey.OpenSubKey(subKey1 + "\\" + subKeyName);
 
                 if (ValueNameExists(subKey2.GetValueNames(), "DisplayName") &&
                 ValueNameExists(subKey2.GetValueNames(), "DisplayVersion"))
                 {
-                    DatagridAvan1.Items.Add(new DataGridItem(new string[]{
-                    subKey2.GetValue("DisplayName").ToString(),
-                    subKey2.GetValue("DisplayVersion").ToString() }));
+                    applist.Add(new UpdateStuff((string)subKey2.GetValue("DisplayName"), (string)subKey2.GetValue("DisplayVersion")));
                 }
 
                 subKey2.Close();
             }
 
-            subKey1.Close();
+            uinstallkey.Close();
+            return applist;
         }
 
 
@@ -77,7 +84,15 @@ namespace Quartz.AV
             DatagridAvan1.ItemsSource = dt.DefaultView;
         }
 
+        private void LoadDataGridData()
+        {
+            List<UpdateStuff> applist = HellothereStranger();
 
+            DatagridAvan1.ItemsSource = applist;
+        }
 
     }
 }
+//DatagridAvan1.Items.Add(new DataGridItem(new string[]{
+//                    subKey2.GetValue("DisplayName").ToString(),
+//                   subKey2.GetValue("DisplayVersion").ToString() }));

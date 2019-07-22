@@ -80,6 +80,7 @@
     <Compile Include="AV\VersionChecker.xaml.cs">
       <DependentUpon>VersionChecker.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Classes\UpdateStuff.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -132,9 +133,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Classes\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Resources\quartz.png" />
   </ItemGroup>
