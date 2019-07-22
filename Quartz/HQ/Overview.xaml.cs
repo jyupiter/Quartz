@@ -156,7 +156,7 @@ namespace Quartz.HQ
 			//{
 			//	Console.WriteLine(name);
 			//}
-			NVIDIA.Initialize();
+			//NVIDIA.Initialize();
 			//new Thread(GpuThread).Start();
 			new Thread(CpuThread).Start();
 			//new Thread(MemThread).Start();
@@ -187,32 +187,12 @@ namespace Quartz.HQ
 						allProcesses.Add(process);
 						Debug.WriteLine("New Process detected! " + process);
 						Thread PMoniter = new Thread(new ParameterizedThreadStart(MoniterProcess));
+						PMoniter.SetApartmentState(ApartmentState.STA);
 						PMoniter.Start(process);
 					}
 				}
 			}
 		}
-		//public static void CheckNewProcesses(object arg)
-		//{
-		//	ArrayList initProcesses = new ArrayList((ArrayList)arg);
-		//	ArrayList currentProcesses = new ArrayList();
-		//	while (true)
-		//	{
-		//		currentProcesses = GetProcessNames();
-		//		foreach (string pcs in currentProcesses)
-		//		{
-		//			if (!initProcesses.Contains(pcs) && NotInWhiteList(pcs))
-		//			{
-		//				Debug.WriteLine("New Process detected! " + pcs);
-		//				Thread PMoniter = new Thread(new ParameterizedThreadStart(MoniterProcess));
-		//				PMoniter.Start(pcs);
-		//			}
-		//		}
-		//		initProcesses = GetProcessNames();
-		//		System.Threading.Thread.Sleep(waitTime);
-		//	}
-
-		//}
 		public static void MoniterProcess(object arg)
 		{
 			DateTime lastTime = new DateTime();
