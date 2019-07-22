@@ -196,12 +196,18 @@ namespace Quartz
 				if (e.Reason == SessionSwitchReason.SessionLock)
 				{
 					//User locks screen
+					// call get logs method and begin monitoring for unauthorized access
 					MessageBox.Show("i left my desk");
+					Class1 clas = new Class1();
+					clas.printlinetest();
+					
 				}
 				else if (e.Reason == SessionSwitchReason.SessionUnlock)
 				{
 					//User logs back in
 					MessageBox.Show("i returned to desk");
+					Class1 clas = new Class1();
+					clas.printlinetest2();
 				}
 			}
 		}
