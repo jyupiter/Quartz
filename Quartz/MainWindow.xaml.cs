@@ -1,5 +1,6 @@
 ﻿using Quartz.AG;
 using Quartz.AV;
+using Quartz.HQ;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -149,6 +150,15 @@ namespace Quartz
         private void RedirectToUpdates(object sender, RoutedEventArgs e)
         {
             ContentWrapper.NavigationService.Navigate(new CheckUpdater());
+=======
+		    private void RedirectToMonitering(object sender, RoutedEventArgs e)
+		    {
+			      ContentWrapper.NavigationService.Navigate(new Overview());
+		    }
+        
+        private void RedirectToHome(object sender, RoutedEventArgs e)
+        {
+            ContentWrapper.NavigationService.Navigate(new Home());
         }
     }
 }

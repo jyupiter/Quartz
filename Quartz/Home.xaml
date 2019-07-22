@@ -1,0 +1,21 @@
+﻿<Page x:Class="Quartz.Home"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      mc:Ignorable="d"
+      Background="#FFFFFFFF"
+      d:DesignHeight="590" d:DesignWidth="980"
+      Title="Home">
+    <DockPanel LastChildFill="True">
+        <StackPanel DockPanel.Dock="Left" Width="250px" Margin="50,100" HorizontalAlignment="Left" Orientation="Horizontal">
+            <StackPanel Orientation="Vertical" Width="229px">
+                <TextBlock Text="A Title Here" TextWrapping="Wrap" FontFamily="Helvetica Neue" FontSize="30" FontWeight="Bold" TextAlignment="Right"></TextBlock>
+                <TextBlock Text="A series of words which when fully read will impart no new knowledge to the reader but still exacts the price of a couple of seconds that could have been put to better use." TextAlignment="Right" FontSize="15" Margin="0,10" TextWrapping="Wrap"></TextBlock>
+            </StackPanel>
+        </StackPanel>
+        <Grid DockPanel.Dock="Left">
+            <Image Source="https://cdn1.eyeem.com/thumb/1041eb361773c1b2ed61862d34b03b32b333d438-1452607889656/w/800" Opacity="0.7"></Image>
+        </Grid>
+    </DockPanel>
+</Page>

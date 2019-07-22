@@ -1,0 +1,7 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+
+    <Style TargetType="Label" >
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display"></Setter>
+    </Style>
+
+</ResourceDictionary>
