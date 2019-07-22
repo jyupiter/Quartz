@@ -46,6 +46,7 @@ namespace Quartz.HQ
 		public static double AxisUnit { get; set; }
 		public static double ticks;
 		public static ArrayList allProcesses;
+		public static string[] whiteList;
 		public Overview()
 		{
 			InitializeComponent();
@@ -79,6 +80,7 @@ namespace Quartz.HQ
 			//3:ram
 			//4:disk
 			//5:network
+			ReloadWhiteList();
 			StartMonitering();
 
 			//notifier.ShowSuccess(message);
@@ -203,7 +205,7 @@ namespace Quartz.HQ
 			int cycles = 0;
 			while (true)
 			{
-				Debug.WriteLine("cycles: " + cycles);
+				//Debug.WriteLine("cycles: " + cycles);
 				Process[] pname = Process.GetProcessesByName(process);
 				if (pname.Length == 0)
 				{
@@ -220,7 +222,7 @@ namespace Quartz.HQ
 					}
 					else
 					{
-						Debug.WriteLine("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+						//Debug.WriteLine("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 						curTime = DateTime.Now;
 						curTotalProcessorTime = p.TotalProcessorTime;
 
@@ -322,9 +324,14 @@ namespace Quartz.HQ
 			}
 		}
 
+		public static void ReloadWhiteList()
+		{
+			whiteList = File.ReadAllLines("..\\..\\..\\HQ\\Filters\\ProcessW.txt");
+		}
+
 		public static bool NotInWhiteList(string process)
 		{
-			string[] lines = File.ReadAllLines("..\\..\\..\\HQ\\Filters\\ProcessW.txt");
+			
 
 			foreach (string line in lines)
 			{
