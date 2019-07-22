@@ -25,7 +25,8 @@
                 <TextBlock Text="Search through all file CRUD operations recorded by the live scanner." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
                 <!--something here-->
                 <Label Content="Keywords" Margin="0,15,0,0" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
-                <TextBox Name="SearchKeywords" Margin="5,5,5,10" Text="hmmm"></TextBox>
+                <TextBlock Text="Separate search terms with the pipe symbol ''|''." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
+                <TextBox Name="SearchKeywords" Margin="5,5,5,10" Text=""></TextBox>
                 <Label Content="Operations" Margin="0,15,0,0" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
                 <CheckBox Margin="5,5,5,0" Content="Create"/>
                 <CheckBox Margin="5,5,5,0" Content="Rename"/>

@@ -1,18 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Lucene.Net.Analysis.Standard;
+using Lucene.Net.Documents;
+using Lucene.Net.QueryParsers;
+using Lucene.Net.Search;
+using Lucene.Net.Store;
+using Quartz.Classes;
+using System;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Version = Lucene.Net.Util.Version;
 
 namespace Quartz.AG
 {
@@ -31,16 +30,19 @@ namespace Quartz.AG
 
         private void IDG()
         {
+            DataGridTextColumn mtch = new DataGridTextColumn();
             DataGridTextColumn indx = new DataGridTextColumn();
             DataGridTextColumn evnt = new DataGridTextColumn();
             DataGridTextColumn date = new DataGridTextColumn();
             DataGridTextColumn time = new DataGridTextColumn();
             DataGridTextColumn desc = new DataGridTextColumn();
+            SearchResultDataGrid.Columns.Add(mtch);
             SearchResultDataGrid.Columns.Add(indx);
             SearchResultDataGrid.Columns.Add(evnt);
             SearchResultDataGrid.Columns.Add(date);
             SearchResultDataGrid.Columns.Add(time);
             SearchResultDataGrid.Columns.Add(desc);
+            mtch.Header = "Match";
             indx.Header = "#";
             evnt.Header = "Event";
             date.Header = "Date";
@@ -55,6 +57,7 @@ namespace Quartz.AG
 
         private struct Record
         {
+            public string M { get; set; }
             public int I { get; set; }
             public string E { get; set; }
             public string A { get; set; }
@@ -62,12 +65,13 @@ namespace Quartz.AG
             public string D { get; set; }
         }
 
-        private void Display(int _I, string _E, string _A, string _T, string _D)
+        private void Display(string _M, int _I, string _E, string _A, string _T, string _D)
         {
             Dispatcher.Invoke(() =>
             {
                 SearchResultDataGrid.Items.Add(new Record
                 {
+                    M = _M,
                     I = _I,
                     E = _E,
                     A = _A,
@@ -80,6 +84,8 @@ namespace Quartz.AG
         #endregion
 
         #region SearchLogs
+
+        string path = _Folder.BaseFolder;
 
         private void LoadFromLogs()
         {
@@ -109,16 +115,55 @@ namespace Quartz.AG
             */
         }
 
+        private string[] Keywords()
+        {
+            string[] k = { "" };
+            Dispatcher.Invoke(() =>
+            {
+                string key = SearchKeywords.Text;
+                key = Regex.Replace(key, @"\s", "");
+                k = key.Split('|');
+            });
+            return k;
+        }
+
         private void RetrieveFromLucene()
         {
+            Lucene.Net.Store.Directory dir = FSDirectory.Open(Path.Combine(path, "Lucene"));
+            var analyzer = new StandardAnalyzer(Version.LUCENE_30);
+            using(var indexSearcher = new IndexSearcher(dir))
+            {
+                var queryParser = new QueryParser(Version.LUCENE_30, "description", analyzer);
 
+                if(Keywords().Length < 1)
+                    return;
+
+                foreach(var term in Keywords())
+                {
+                    Query query = queryParser.Parse(term);
+                    TopDocs hits = indexSearcher.Search(query, null, 100);
+
+                    foreach(ScoreDoc scoreDoc in hits.ScoreDocs)
+                    {
+                        Document document = indexSearcher.Doc(scoreDoc.Doc);
+                        
+                        string __M = document.Get("score");
+                        int __I = int.Parse(document.Get("id"));
+                        string __E = document.Get("event");
+                        string __A = document.Get("date");
+                        string __T = document.Get("time");
+                        string __D = document.Get("description");
+                        Display(__M, __I, __E, __A, __T, __D);
+                    }
+                }
+            }
         }
 
         #endregion
 
         private void SearchLogsBtn_Click(object sender, RoutedEventArgs e)
         {
-
+            RetrieveFromLucene();
         }
 
         private void SaveSearchBtn_Click(object sender, RoutedEventArgs e)
