@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Threading;
+using Lucene.Net.Messages;
 using Microsoft.Win32;
 
 namespace Quartz
@@ -232,8 +233,10 @@ namespace Quartz
 				if (events.Contains(4648))
 				{
 					// wrong password
-					Console.Write("4648 detected -> attacker brute force detected");
-				}
+					Console.WriteLine("4648 detected -> attacker brute force detected");
+                    MessageBox.Show("4648 detected -> attacker brute force detected");
+                    System.Media.SystemSounds.Question.Play();
+                }
 				else if (events.Contains(e.Entry.EventID))
 					System.IO.File.AppendAllLines(@"d:\log.txt", new string[] {
 						string.Format("{0}:{1}",  e.Entry.EventID, e.Entry.Message)
