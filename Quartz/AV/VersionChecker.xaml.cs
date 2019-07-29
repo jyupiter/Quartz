@@ -49,7 +49,12 @@ namespace Quartz.AV
                 if (ValueNameExists(subKey2.GetValueNames(), "DisplayName") &&
                 ValueNameExists(subKey2.GetValueNames(), "DisplayVersion"))
                 {
-                    applist.Add(new UpdateStuff((string)subKey2.GetValue("DisplayName"), (string)subKey2.GetValue("DisplayVersion")));
+                    string appName = (string)subKey2.GetValue("DisplayName");
+                    string appVersion = (string)subKey2.GetValue("DisplayVersion");
+                    Console.WriteLine("Name:{0}, Version{1}", appName, appVersion);
+                    UpdateStuff game = new UpdateStuff(appName, appVersion);
+                    applist.Add(game);
+
                 }
 
                 subKey2.Close();
