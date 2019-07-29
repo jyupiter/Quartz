@@ -402,6 +402,10 @@ namespace Quartz.HQ
 				bandwidth = bandwidthCounter.NextValue();
 				sendSum = dataSentCounter.NextValue();
 				receiveSum = dataReceivedCounter.NextValue();
+				System.Threading.Thread.Sleep(waitTime);
+				bandwidth = bandwidthCounter.NextValue();
+				sendSum = dataSentCounter.NextValue();
+				receiveSum = dataReceivedCounter.NextValue();
 				net = (8 * (sendSum + receiveSum) / bandwidth );
 				UpdateGraphs(4, net);
 			}
