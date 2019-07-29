@@ -47,6 +47,11 @@ namespace Quartz.HQ
 		public static double ticks;
 		public static ArrayList allProcesses;
 		public static string[] whiteList;
+		public static double cpuWarnLvl = 0.1;
+		public static double gpuWarnLvl = 0.1;
+		public static double diskWarnLvl = 0.1;
+		public static double netWarnLvl = 0.1;
+		public static double ramWarnLvl = 1048576;
 		public Overview()
 		{
 			InitializeComponent();
@@ -161,9 +166,9 @@ namespace Quartz.HQ
 			//NVIDIA.Initialize();
 			//new Thread(GpuThread).Start();
 			new Thread(CpuThread).Start();
-			//new Thread(MemThread).Start();
-			//new Thread(DiskThread).Start();
-			//new Thread(NetThread).Start();
+			new Thread(MemThread).Start();
+			new Thread(DiskThread).Start();
+			new Thread(NetThread).Start();
 
 			allProcesses = GetProcessNames();
 			foreach (string process in allProcesses)
@@ -204,7 +209,8 @@ namespace Quartz.HQ
 			DateTime curTime;
 			TimeSpan curTotalProcessorTime = new TimeSpan();
 			string process = (string)arg;
-			int cycles = 0;
+			int cpuCycles = 0;
+			int ramCycles = 0;
 			while (true)
 			{
 				//Debug.WriteLine("cycles: " + cycles);
@@ -220,6 +226,8 @@ namespace Quartz.HQ
 					try
 					{
 						Process p = pname[0];
+
+						//<----------	CPU Monitering	--------->
 						runTime = p.TotalProcessorTime;
 						if (lastTime == null || lastTime == new DateTime())
 						{
@@ -233,27 +241,49 @@ namespace Quartz.HQ
 							curTotalProcessorTime = p.TotalProcessorTime;
 
 							double CPUUsage = (curTotalProcessorTime.TotalMilliseconds - lastTotalProcessorTime.TotalMilliseconds) / curTime.Subtract(lastTime).TotalMilliseconds / Convert.ToDouble(Environment.ProcessorCount);
-							Console.WriteLine("{0} CPU: {1:0.0}%", p.ProcessName, CPUUsage);
-							if (CPUUsage > 0.1)
+							Console.WriteLine("{0} CPU: {1:0.0}%", p.ProcessName, CPUUsage * 100);
+							if (CPUUsage > cpuWarnLvl)
 							{
-								if (cycles < 10)
+								if (cpuCycles < 10)
 								{
-									cycles++;
+									cpuCycles++;
 								}
 								else
 								{
 									Overview ovw = new Overview();
 									ovw.Toast(p.ProcessName, "Warn");
-									cycles = 0;
+									cpuCycles = 0;
 								}
 							}
 							else
 							{
-								cycles = 0;
+								cpuCycles = 0;
 							}
 							lastTime = curTime;
 							lastTotalProcessorTime = curTotalProcessorTime;
 						}
+
+						//<----------	RAM Monitering	--------->
+						double ramUsage = p.PagedSystemMemorySize64;
+						Console.WriteLine(p.ProcessName + " : " + ramUsage);
+						if(ramUsage > ramWarnLvl)
+						{
+							if (ramCycles < 10)
+							{
+								ramCycles++;
+							}
+							else
+							{
+								Overview ovw = new Overview();
+								ovw.Toast(p.ProcessName, "Warn");
+								ramCycles = 0;
+							}
+						}
+						else
+						{
+							ramCycles = 0;
+						}
+
 					}
 					catch (Exception e)
 					{
@@ -273,7 +303,7 @@ namespace Quartz.HQ
 			//if (!File.Exists(path))
 			//{
 			// Create a file to write to.
-			while (true)
+			for(var i =0; i<10; i++)
 			{
 				try
 				{
@@ -285,10 +315,8 @@ namespace Quartz.HQ
 				}
 				catch(Exception e)
 				{
-					Random rnd = new Random();
-					int waitTime = rnd.Next(10, 100);
-					Debug.WriteLine("File in use! Waiting for " + waitTime );
-					Thread.Sleep(waitTime);
+					Debug.WriteLine("File in use! Try " + i );
+					Thread.Sleep(waitTime/2);
 				}
 			}
 			
@@ -354,15 +382,28 @@ namespace Quartz.HQ
 		}
 		private static void NetThread()
 		{
+			PerformanceCounter bandwidthCounter;
+			float bandwidth;
+
+			PerformanceCounter dataSentCounter;
+
+			PerformanceCounter dataReceivedCounter;
+
+			float sendSum = 0;
+			float receiveSum = 0;
+
 			PerformanceCounterCategory category = new PerformanceCounterCategory("Network Interface");
-			String[] instancename = category.GetInstanceNames();
+			String[] instanceName = category.GetInstanceNames();
 			while (true)
 			{
-				PerformanceCounter netCounter = new PerformanceCounter("PhysicalDisk", "% Disk Time", "_Total");
-				netCounter.NextValue();
-				System.Threading.Thread.Sleep(waitTime);
-				net = netCounter.NextValue();
-				//Console.WriteLine("Disk usage: " + net);
+				bandwidthCounter = new PerformanceCounter("Network Interface", "Current Bandwidth", instanceName[0]);
+				dataSentCounter = new PerformanceCounter("Network Interface", "Bytes Sent/sec", instanceName[0]);
+				dataReceivedCounter = new PerformanceCounter("Network Interface", "Bytes Received/sec", instanceName[0]);
+				bandwidth = bandwidthCounter.NextValue();
+				sendSum = dataSentCounter.NextValue();
+				receiveSum = dataReceivedCounter.NextValue();
+				net = (8 * (sendSum + receiveSum) / bandwidth );
+				UpdateGraphs(4, net);
 			}
 		}
 
