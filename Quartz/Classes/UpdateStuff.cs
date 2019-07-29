@@ -18,8 +18,8 @@ namespace Quartz.Classes
 
         public UpdateStuff(string AppName, string AppVers)
         {
-            AppName = this.AppName;
-            AppVers = this.AppVers;
+            this.AppName = AppName;
+            this.AppVers = AppVers;
         }
     }
 }
