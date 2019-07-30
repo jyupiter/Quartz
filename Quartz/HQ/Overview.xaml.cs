@@ -16,6 +16,7 @@ using ToastNotifications.Position;
 using System.Windows;
 using ToastNotifications.Messages;
 using System.Windows.Threading;
+using System.Collections.ObjectModel;
 
 namespace Quartz.HQ
 {
@@ -47,11 +48,12 @@ namespace Quartz.HQ
 		public static double ticks;
 		public static ArrayList allProcesses;
 		public static string[] whiteList;
-		public static double cpuWarnLvl = 0.1;
-		public static double gpuWarnLvl = 0.1;
-		public static double diskWarnLvl = 0.1;
-		public static double netWarnLvl = 0.1;
-		public static double ramWarnLvl = 1048576;
+		private static double cpuWarnLvl = 0.1;
+		private static double gpuWarnLvl = 0.1;
+		private static double diskWarnLvl = 0.1;
+		private static double netWarnLvl = 0.1;
+		private static double ramWarnLvl = 1048576;
+		public static ObservableCollection<ProcessInfo> pcsdata;
 		public Overview()
 		{
 			InitializeComponent();
@@ -92,6 +94,10 @@ namespace Quartz.HQ
 			//notifier.ShowWarning(message);
 			//notifier.ShowError(message);
 			DataContext = this;
+
+			//<-----	Datagrid stufff	----->
+			pcsdata = new ObservableCollection<ProcessInfo>();
+			pcsDataGrid.DataContext = pcsdata;
 		}
 		public static void UpdateGraphs(int index, double value)
 		{
@@ -164,7 +170,7 @@ namespace Quartz.HQ
 			//	Console.WriteLine(name);
 			//}
 			//NVIDIA.Initialize();
-			//new Thread(GpuThread).Start();
+			new Thread(GpuThread).Start();
 			new Thread(CpuThread).Start();
 			new Thread(MemThread).Start();
 			new Thread(DiskThread).Start();
@@ -209,12 +215,18 @@ namespace Quartz.HQ
 			DateTime curTime;
 			TimeSpan curTotalProcessorTime = new TimeSpan();
 			string process = (string)arg;
+			int gpuCycles = 0;
 			int cpuCycles = 0;
 			int ramCycles = 0;
+			int diskCycles = 0;
+			int netCycles = 0;
+			double CPUUsage = 0;
+			ProcessInfo pcsInfo;
+
 			while (true)
 			{
 				//Debug.WriteLine("cycles: " + cycles);
-				Process[] pname = Process.GetProcessesByName(process);
+				System.Diagnostics.Process[] pname = System.Diagnostics.Process.GetProcessesByName(process);
 				if (pname.Length == 0)
 				{
 					LogPcsTime(process, startTime, runTime, DateTime.Now);
@@ -225,7 +237,7 @@ namespace Quartz.HQ
 				{
 					try
 					{
-						Process p = pname[0];
+						System.Diagnostics.Process p = pname[0];
 
 						//<----------	CPU Monitering	--------->
 						runTime = p.TotalProcessorTime;
@@ -240,7 +252,7 @@ namespace Quartz.HQ
 							curTime = DateTime.Now;
 							curTotalProcessorTime = p.TotalProcessorTime;
 
-							double CPUUsage = (curTotalProcessorTime.TotalMilliseconds - lastTotalProcessorTime.TotalMilliseconds) / curTime.Subtract(lastTime).TotalMilliseconds / Convert.ToDouble(Environment.ProcessorCount);
+							CPUUsage = (curTotalProcessorTime.TotalMilliseconds - lastTotalProcessorTime.TotalMilliseconds) / curTime.Subtract(lastTime).TotalMilliseconds / Convert.ToDouble(Environment.ProcessorCount);
 							Console.WriteLine("{0} CPU: {1:0.0}%", p.ProcessName, CPUUsage * 100);
 							if (CPUUsage > cpuWarnLvl)
 							{
@@ -283,7 +295,8 @@ namespace Quartz.HQ
 						{
 							ramCycles = 0;
 						}
-
+						pcsInfo = new ProcessInfo(p.ProcessName,CPUUsage,p.PagedMemorySize64);
+						pcsdata.Add(pcsInfo);
 					}
 					catch (Exception e)
 					{
@@ -432,9 +445,9 @@ namespace Quartz.HQ
 
 		public static ArrayList GetProcessNames()
 		{
-			ArrayList currentProcesses = new ArrayList(Process.GetProcesses());
+			ArrayList currentProcesses = new ArrayList(System.Diagnostics.Process.GetProcesses());
 			ArrayList pcsNames = new ArrayList();
-			foreach (Process process in currentProcesses)
+			foreach (System.Diagnostics.Process process in currentProcesses)
 			{
 				if (NotInWhiteList(process.ProcessName))
 				{

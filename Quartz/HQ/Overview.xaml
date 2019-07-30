@@ -10,13 +10,10 @@
       Title="Overview">
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-        </Grid.RowDefinitions>
+        <DataGrid x:Name="pcsDataGrid" ItemsSource="{Binding pcsdata}" Margin="0,0,0,162.6" />
 
         <!--Here we disable tooltips and hovering to get a better performance-->
-        <lvc:CartesianChart Grid.Row="1" Visibility="Collapsed" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}" Margin="0,292,0,-0.4">
+        <lvc:CartesianChart Grid.Row="1" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}" Margin="0,292,0,-0.4">
             <lvc:CartesianChart.Series>
                 <lvc:LineSeries Values="{Binding GpuValues}" 
                                 PointGeometry="{x:Null}" 
@@ -117,7 +114,7 @@
             </lvc:CartesianChart.AxisY>
         </lvc:CartesianChart>
 
-        <lvc:CartesianChart Grid.Row="5"  AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}" Margin="0,292,0,-0.4">
+        <lvc:CartesianChart Grid.Row="5" Visibility="Collapsed" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}" Margin="0,292,0,-0.4">
             <lvc:CartesianChart.Series>
                 <lvc:LineSeries Values="{Binding NetValues}" 
                                 PointGeometry="{x:Null}" 

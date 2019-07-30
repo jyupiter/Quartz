@@ -136,23 +136,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Home.xaml" />
-    <Page Include="HQ\cpu.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="HQ\disk.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="HQ\gpu.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="HQ\Overview.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="HQ\ram.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -174,26 +158,15 @@
       <DependentUpon>VersionChecker.xaml</DependentUpon>
     </Compile>
     <Compile Include="Class1.cs" />
+    <Compile Include="Classes\ProcessInfo.cs" />
     <Compile Include="Classes\UpdateStuff.cs" />
     <Compile Include="Classes\_Folder.cs" />
     <Compile Include="Home.xaml.cs">
       <DependentUpon>Home.xaml</DependentUpon>
     </Compile>
     <Compile Include="Classes\MeasureModel.cs" />
-    <Compile Include="HQ\cpu.xaml.cs">
-      <DependentUpon>cpu.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="HQ\disk.xaml.cs">
-      <DependentUpon>disk.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="HQ\gpu.xaml.cs">
-      <DependentUpon>gpu.xaml</DependentUpon>
-    </Compile>
     <Compile Include="HQ\Overview.xaml.cs">
       <DependentUpon>Overview.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="HQ\ram.xaml.cs">
-      <DependentUpon>ram.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
