@@ -139,7 +139,7 @@ namespace Quartz.AG
                     if(kw.Count < 1)
                     {
                         Query query = new MatchAllDocsQuery();
-                        TopDocs hits = indexSearcher.Search(query, null, 1000000000);
+                        TopDocs hits = indexSearcher.Search(query, null, 100);
 
                         foreach(ScoreDoc scoreDoc in hits.ScoreDocs)
                         {
@@ -155,6 +155,7 @@ namespace Quartz.AG
                             string __T = document.Get("time");
                             string __D = document.Get("description");
                             Display(__K, __I, __E, __A, __T, __D);
+
                         }
                     }
                     else
@@ -178,6 +179,7 @@ namespace Quartz.AG
                                 string __T = document.Get("time");
                                 string __D = document.Get("description");
                                 Display(__K, __I, __E, __A, __T, __D);
+
                             }
                         }
                     }
