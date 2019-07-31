@@ -245,9 +245,9 @@ namespace Quartz
 			}
 		}
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            ContentWrapper.NavigationService.Navigate(new CheckUpdater());
-        }
-    }
+		private void Button_Click(object sender, RoutedEventArgs e)
+		{
+			ContentWrapper.NavigationService.Navigate(new CheckUpdater());
+		}
+	}
 }
