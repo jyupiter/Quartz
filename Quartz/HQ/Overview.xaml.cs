@@ -229,6 +229,7 @@ namespace Quartz.HQ
 				System.Diagnostics.Process[] pname = System.Diagnostics.Process.GetProcessesByName(process);
 				if (pname.Length == 0)
 				{
+                    //
 					LogPcsTime(process, startTime, runTime, DateTime.Now);
 					allProcesses.Remove(process);
 					return;

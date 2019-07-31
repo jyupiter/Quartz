@@ -21,7 +21,7 @@
             <StackPanel Background="#FFF2F2F2" Height="25" Orientation="Horizontal">
                 <Button Style="{StaticResource BSideButtonStyle}" Template="{StaticResource BSideButtonTemplate}" Click="RedirectToFileWatcher" Content="Live Scanning" HorizontalAlignment="Left" Margin="20,0,0,0"/>
                 <Button Style="{StaticResource BSideButtonStyle}" Template="{StaticResource BSideButtonTemplate}" Click="RedirectToFileComparer" Content="Search Logs" HorizontalAlignment="Left"/>
-                <Button Style="{StaticResource BSideButtonStyle}" Template="{StaticResource BSideButtonTemplate}" Click="RedirectToFileProtector" Content="Protect Files" HorizontalAlignment="Left"/>
+                <Button Style="{StaticResource BSideButtonStyle}" Template="{StaticResource BSideButtonTemplate}"  Content="Protect Files" HorizontalAlignment="Left"/>
                 <Rectangle Width="1" Fill="#FFCCCCCC" Margin="10,0"></Rectangle>
                 <Button Style="{StaticResource BSideButtonStyle}" Template="{StaticResource BSideButtonTemplate}" ToolTip="Aggregation of results" Content="Summary" HorizontalAlignment="Left"/>
             </StackPanel>

@@ -93,7 +93,26 @@ namespace Quartz.AV
         {
             List<UpdateStuff> applist = HellothereStranger();
 
+            DatagridAvan1.ItemsSource = "{Binding UpdateStuff}";
+            DataGridTextColumn ColName = new DataGridTextColumn();
+            ColName.Header = "Name";
+            ColName.Binding = new Binding("AppName");
+            
+            DataGridTextColumn ColName1 = new DataGridTextColumn();
+            ColName1.Header = "Version";
+            ColName1.Binding = new Binding("AppVers");
+
+            DatagridAvan1.Columns.Add(ColName);
+            DatagridAvan1.Columns.Add(ColName1);
             DatagridAvan1.ItemsSource = applist;
+            for (int i = 0; i < applist.Count; i++)
+            {
+                UpdateStuff hello = applist[i];
+                string Appsnames = hello.AppName;
+                string appverss = hello.AppVers;
+                
+                
+            } 
         }
     }
 }

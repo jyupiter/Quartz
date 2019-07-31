@@ -119,6 +119,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="AV\ProcessRunner.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="AV\VersionChecker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -153,6 +157,9 @@
     </Compile>
     <Compile Include="AV\CheckUpdater.xaml.cs">
       <DependentUpon>CheckUpdater.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AV\ProcessRunner.xaml.cs">
+      <DependentUpon>ProcessRunner.xaml</DependentUpon>
     </Compile>
     <Compile Include="AV\VersionChecker.xaml.cs">
       <DependentUpon>VersionChecker.xaml</DependentUpon>
