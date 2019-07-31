@@ -139,7 +139,7 @@ namespace Quartz.AG
                     if(kw.Count < 1)
                     {
                         Query query = new MatchAllDocsQuery();
-                        TopDocs hits = indexSearcher.Search(query, null, 100);
+                        TopDocs hits = indexSearcher.Search(query, null, 10000);
 
                         foreach(ScoreDoc scoreDoc in hits.ScoreDocs)
                         {
