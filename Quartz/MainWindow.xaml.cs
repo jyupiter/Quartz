@@ -237,6 +237,7 @@ namespace Quartz
 					Console.WriteLine("4648 detected -> attacker brute force detected");
 					MessageBox.Show("4648 detected -> attacker brute force detected");
 					System.Media.SystemSounds.Question.Play();
+				    //e.Entry.EventID
 				}
 				else if (events.Contains(e.Entry.EventID))
 					System.IO.File.AppendAllLines(@"d:\log.txt", new string[] {
