@@ -8,8 +8,8 @@ namespace Quartz.Classes
 {
     class UpdateStuff
     {
-        private string AppName { get; set; }
-        private string AppVers { get; set; }
+        public string AppName { get; set; }
+        public string AppVers { get; set; }
 
         public UpdateStuff()
         {
@@ -18,8 +18,8 @@ namespace Quartz.Classes
 
         public UpdateStuff(string AppName, string AppVers)
         {
-            AppName = this.AppName;
-            AppVers = this.AppVers;
+            this.AppName = AppName;
+            this.AppVers = AppVers;
         }
     }
 }

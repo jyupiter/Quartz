@@ -49,7 +49,12 @@ namespace Quartz.AV
                 if (ValueNameExists(subKey2.GetValueNames(), "DisplayName") &&
                 ValueNameExists(subKey2.GetValueNames(), "DisplayVersion"))
                 {
-                    applist.Add(new UpdateStuff((string)subKey2.GetValue("DisplayName"), (string)subKey2.GetValue("DisplayVersion")));
+                    string appName = (string)subKey2.GetValue("DisplayName");
+                    string appVersion = (string)subKey2.GetValue("DisplayVersion");
+                    Console.WriteLine("Name:{0}, Version{1}", appName, appVersion);
+                    UpdateStuff game = new UpdateStuff(appName, appVersion);
+                    applist.Add(game);
+
                 }
 
                 subKey2.Close();
@@ -88,7 +93,26 @@ namespace Quartz.AV
         {
             List<UpdateStuff> applist = HellothereStranger();
 
+            DatagridAvan1.ItemsSource = "{Binding UpdateStuff}";
+            DataGridTextColumn ColName = new DataGridTextColumn();
+            ColName.Header = "Name";
+            ColName.Binding = new Binding("AppName");
+            
+            DataGridTextColumn ColName1 = new DataGridTextColumn();
+            ColName1.Header = "Version";
+            ColName1.Binding = new Binding("AppVers");
+
+            DatagridAvan1.Columns.Add(ColName);
+            DatagridAvan1.Columns.Add(ColName1);
             DatagridAvan1.ItemsSource = applist;
+            for (int i = 0; i < applist.Count; i++)
+            {
+                UpdateStuff hello = applist[i];
+                string Appsnames = hello.AppName;
+                string appverss = hello.AppVers;
+                
+                
+            } 
         }
     }
 }

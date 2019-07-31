@@ -1,3 +1,5 @@
+backgroundTaskHost
+git
 Microsoft.Msn.Weather
 jucheck
 ielowutil
