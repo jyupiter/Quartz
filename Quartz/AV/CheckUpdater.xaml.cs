@@ -31,5 +31,9 @@ namespace Quartz.AV
             UpdateWrapper.NavigationService.Navigate(new VersionChecker());
         }
 
+        private void RedirectToProcessRunner(object sender, RoutedEventArgs e)
+        {
+            UpdateWrapper.NavigationService.Navigate(new ProcessRunner());
+        }
     }
 }
