@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Threading;
+using Lucene.Net.Messages;
 using Microsoft.Win32;
 using Quartz.AV;
 
@@ -25,8 +26,8 @@ namespace Quartz
 		public MainWindow()
 		{
 			InitializeComponent();
-			marcustimer();
-			marcusLoginLogoutDetector();
+			marcustimer();// delete if not used in final product
+			marcusLoginLogoutDetector();//entry point for marcus function
 			foreach(Button b in MainMenu.Children.OfType<Button>())
 			{
 				b.Click += FocusHandler;
@@ -201,7 +202,11 @@ namespace Quartz
 					MessageBox.Show("i left my desk");
 					Class1 clas = new Class1();
 					clas.printlinetest();
-					
+
+					EventLog logListener = new EventLog("Security");
+					logListener.EntryWritten += logListener_EntryWritten;
+					logListener.EnableRaisingEvents = true;
+
 				}
 				else if (e.Reason == SessionSwitchReason.SessionUnlock)
 				{
@@ -209,13 +214,41 @@ namespace Quartz
 					MessageBox.Show("i returned to desk");
 					Class1 clas = new Class1();
 					clas.printlinetest2();
+
+					
 				}
+			}
+
+			void logListener_EntryWritten(object sender, EntryWrittenEventArgs e)
+			{
+				//4624: An account was successfully logged on.
+				//4625: An account failed to log on.
+				//4648: A logon was attempted using explicit credentials.
+				//4675: SIDs were filtered.
+				var events = new int[] { 4624, 4625, 4648, 4675 };
+				//if (events.Contains(4624))
+				//{
+				//    //successful login
+				//    MessageBox.Show("4624 detected -> successful login");
+				//}
+				if (events.Contains(4648))
+				{
+					// wrong password
+					Console.WriteLine("4648 detected -> attacker brute force detected");
+					MessageBox.Show("4648 detected -> attacker brute force detected");
+					System.Media.SystemSounds.Question.Play();
+				    //e.Entry.EventID
+				}
+				else if (events.Contains(e.Entry.EventID))
+					System.IO.File.AppendAllLines(@"d:\log.txt", new string[] {
+						string.Format("{0}:{1}",  e.Entry.EventID, e.Entry.Message)
+					});
 			}
 		}
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            ContentWrapper.NavigationService.Navigate(new CheckUpdater());
-        }
-    }
+		private void Button_Click(object sender, RoutedEventArgs e)
+		{
+			ContentWrapper.NavigationService.Navigate(new CheckUpdater());
+		}
+	}
 }
