@@ -93,7 +93,18 @@ namespace Quartz.AV
         {
             List<UpdateStuff> applist = HellothereStranger();
 
+            
+            DataColumn named = new DataColumn("Process Name", typeof(string));
+            DataColumn version = new DataColumn("Version", typeof(string));
+
             DatagridAvan1.ItemsSource = applist;
+            dt.Columns.Add(named);
+            dt.Columns.Add(version);
+            DatagridAvan1.DataContext = dt.DefaultView;
+            
+            
         }
+
+       
     }
 }
