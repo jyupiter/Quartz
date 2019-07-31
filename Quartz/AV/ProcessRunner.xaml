@@ -1,0 +1,27 @@
+﻿<Page x:Class="Quartz.AV.ProcessRunner"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Quartz.AV"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="ProcessRunner">
+
+    <DockPanel LastChildFill="True">
+        <Label DockPanel.Dock="Top" Content="File Version Checker" Margin="20,10" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="15"/>
+        <Rectangle DockPanel.Dock="Top" Height="1" Fill="#FFCCCCCC" Margin="20,0"/>
+        <StackPanel DockPanel.Dock="Left" Width="199" Margin="20,20,0,20" HorizontalAlignment="Left">
+            <StackPanel>
+                <Label Content="Report on Unused Processes" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
+                <TextBlock Text="Yerr Processes are running. Thy must be wary of thou which is rarely used." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
+                <Button Content="Check yerr Processes" Height="25" HorizontalAlignment="Left" Margin="5,0,5,25" Padding="5,3" Click="Button_Click"></Button>
+
+            </StackPanel>
+        </StackPanel>
+        <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20"/>
+        <Grid Margin="0,0,0,-0.4">
+            <DataGrid DockPanel.Dock="Right" Name="DatagridAvan2" Margin="0,20,20,20" BorderBrush="LightGray" AutoGenerateColumns="False" RowHeight="15" ColumnWidth="100" IsReadOnly="True" CanUserAddRows="False"/>
+        </Grid>
+    </DockPanel>
+</Page>

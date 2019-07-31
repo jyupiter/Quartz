@@ -16,6 +16,7 @@ using ToastNotifications.Position;
 using System.Windows;
 using ToastNotifications.Messages;
 using System.Windows.Threading;
+using System.Collections.ObjectModel;
 
 namespace Quartz.HQ
 {
@@ -47,6 +48,12 @@ namespace Quartz.HQ
 		public static double ticks;
 		public static ArrayList allProcesses;
 		public static string[] whiteList;
+		private static double cpuWarnLvl = 0.1;
+		private static double gpuWarnLvl = 0.1;
+		private static double diskWarnLvl = 0.1;
+		private static double netWarnLvl = 0.1;
+		private static double ramWarnLvl = 1048576;
+		public static ObservableCollection<ProcessInfo> pcsdata;
 		public Overview()
 		{
 			InitializeComponent();
@@ -87,6 +94,10 @@ namespace Quartz.HQ
 			//notifier.ShowWarning(message);
 			//notifier.ShowError(message);
 			DataContext = this;
+
+			//<-----	Datagrid stufff	----->
+			pcsdata = new ObservableCollection<ProcessInfo>();
+			pcsDataGrid.DataContext = pcsdata;
 		}
 		public static void UpdateGraphs(int index, double value)
 		{
@@ -137,16 +148,10 @@ namespace Quartz.HQ
 				default:
 					Debug.WriteLine("Invalid Index " + index);
 					break;
-
-
 			}
-
-
-
 			SetAxisLimits(DateTime.Now);
 
 			//lets only use the last 150 values
-
 		}
 
 		public static void StartMonitering()
@@ -161,9 +166,9 @@ namespace Quartz.HQ
 			//NVIDIA.Initialize();
 			//new Thread(GpuThread).Start();
 			new Thread(CpuThread).Start();
-			//new Thread(MemThread).Start();
-			//new Thread(DiskThread).Start();
-			//new Thread(NetThread).Start();
+			new Thread(MemThread).Start();
+			new Thread(DiskThread).Start();
+			new Thread(NetThread).Start();
 
 			allProcesses = GetProcessNames();
 			foreach (string process in allProcesses)
@@ -197,61 +202,134 @@ namespace Quartz.HQ
 		}
 		public static void MoniterProcess(object arg)
 		{
+			TimeSpan runTime = new TimeSpan(0);
+			DateTime startTime = DateTime.Now;
 			DateTime lastTime = new DateTime();
 			TimeSpan lastTotalProcessorTime = new TimeSpan();
 			DateTime curTime;
 			TimeSpan curTotalProcessorTime = new TimeSpan();
 			string process = (string)arg;
-			int cycles = 0;
+			int gpuCycles = 0;
+			int cpuCycles = 0;
+			int ramCycles = 0;
+			int diskCycles = 0;
+			int netCycles = 0;
+			double CPUUsage = 0;
+			ProcessInfo pcsInfo;
+
 			while (true)
 			{
 				//Debug.WriteLine("cycles: " + cycles);
-				Process[] pname = Process.GetProcessesByName(process);
+				System.Diagnostics.Process[] pname = System.Diagnostics.Process.GetProcessesByName(process);
 				if (pname.Length == 0)
 				{
+                    //
+					LogPcsTime(process, startTime, runTime, DateTime.Now);
 					allProcesses.Remove(process);
 					return;
 				}
 				else
 				{
-					Process p = pname[0];
-					if (lastTime == null || lastTime == new DateTime())
+					try
 					{
-						lastTime = DateTime.Now;
-						lastTotalProcessorTime = p.TotalProcessorTime;
-					}
-					else
-					{
-						//Debug.WriteLine("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-						curTime = DateTime.Now;
-						curTotalProcessorTime = p.TotalProcessorTime;
+						System.Diagnostics.Process p = pname[0];
 
-						double CPUUsage = (curTotalProcessorTime.TotalMilliseconds - lastTotalProcessorTime.TotalMilliseconds) / curTime.Subtract(lastTime).TotalMilliseconds / Convert.ToDouble(Environment.ProcessorCount);
-						Console.WriteLine("{0} CPU: {1:0.0}%", p.ProcessName, CPUUsage );
-						if (CPUUsage > 0.1)
+						//<----------	CPU Monitering	--------->
+						runTime = p.TotalProcessorTime;
+						if (lastTime == null || lastTime == new DateTime())
 						{
-							if (cycles < 10)
+							lastTime = DateTime.Now;
+							lastTotalProcessorTime = p.TotalProcessorTime;
+						}
+						else
+						{
+							//Debug.WriteLine("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+							curTime = DateTime.Now;
+							curTotalProcessorTime = p.TotalProcessorTime;
+
+							CPUUsage = (curTotalProcessorTime.TotalMilliseconds - lastTotalProcessorTime.TotalMilliseconds) / curTime.Subtract(lastTime).TotalMilliseconds / Convert.ToDouble(Environment.ProcessorCount);
+							Console.WriteLine("{0} CPU: {1:0.0}%", p.ProcessName, CPUUsage * 100);
+							if (CPUUsage > cpuWarnLvl)
 							{
-								cycles++;
+								if (cpuCycles < 10)
+								{
+									cpuCycles++;
+								}
+								else
+								{
+									Overview ovw = new Overview();
+									ovw.Toast(p.ProcessName, "Warn");
+									cpuCycles = 0;
+								}
+							}
+							else
+							{
+								cpuCycles = 0;
+							}
+							lastTime = curTime;
+							lastTotalProcessorTime = curTotalProcessorTime;
+						}
+
+						//<----------	RAM Monitering	--------->
+						double ramUsage = p.PagedSystemMemorySize64;
+						Console.WriteLine(p.ProcessName + " : " + ramUsage);
+						if(ramUsage > ramWarnLvl)
+						{
+							if (ramCycles < 10)
+							{
+								ramCycles++;
 							}
 							else
 							{
 								Overview ovw = new Overview();
 								ovw.Toast(p.ProcessName, "Warn");
-								cycles = 0;
+								ramCycles = 0;
 							}
 						}
 						else
 						{
-							cycles = 0;
+							ramCycles = 0;
 						}
-						lastTime = curTime;
-						lastTotalProcessorTime = curTotalProcessorTime;
+						pcsInfo = new ProcessInfo(p.ProcessName,CPUUsage,p.PagedMemorySize64);
+						pcsdata.Add(pcsInfo);
+					}
+					catch (Exception e)
+					{
+
 					}
 				}
 				System.Threading.Thread.Sleep(waitTime);
 			}
 
+		}
+
+		public static void LogPcsTime(string process, DateTime start, TimeSpan runTime, DateTime end)
+		{
+			Debug.WriteLine("Logging: " + process + "|" + start + "|" + runTime + "|" + end);
+			string path = "..\\..\\..\\HQ\\Logs\\ProcessTimes.txt";
+			// This text is added only once to the file.
+			//if (!File.Exists(path))
+			//{
+			// Create a file to write to.
+			for(var i =0; i<10; i++)
+			{
+				try
+				{
+					using (StreamWriter sw = File.AppendText(path))
+					{
+						sw.WriteLine(process + "|" + start + "|" + runTime + "|" + end);
+					}
+					return;
+				}
+				catch(Exception e)
+				{
+					Debug.WriteLine("File in use! Try " + i );
+					Thread.Sleep(waitTime/2);
+				}
+			}
+			
+			
+			//}
 		}
 
 		public static void GpuThread()
@@ -285,6 +363,7 @@ namespace Quartz.HQ
 				UpdateGraphs(1, cpu);
 			}
 		}
+
 		private static void MemThread()
 		{
 			while (true)
@@ -298,6 +377,7 @@ namespace Quartz.HQ
 				//Console.WriteLine("Memory Used: " + mem);
 			}
 		}
+
 		private static void DiskThread()
 		{
 			while (true)
@@ -310,17 +390,35 @@ namespace Quartz.HQ
 				//Console.WriteLine("Disk usage: " + disk);
 			}
 		}
+
 		private static void NetThread()
 		{
+			PerformanceCounter bandwidthCounter;
+			float bandwidth;
+
+			PerformanceCounter dataSentCounter;
+
+			PerformanceCounter dataReceivedCounter;
+
+			float sendSum = 0;
+			float receiveSum = 0;
+
 			PerformanceCounterCategory category = new PerformanceCounterCategory("Network Interface");
-			String[] instancename = category.GetInstanceNames();
+			String[] instanceName = category.GetInstanceNames();
 			while (true)
 			{
-				PerformanceCounter netCounter = new PerformanceCounter("PhysicalDisk", "% Disk Time", "_Total");
-				netCounter.NextValue();
+				bandwidthCounter = new PerformanceCounter("Network Interface", "Current Bandwidth", instanceName[0]);
+				dataSentCounter = new PerformanceCounter("Network Interface", "Bytes Sent/sec", instanceName[0]);
+				dataReceivedCounter = new PerformanceCounter("Network Interface", "Bytes Received/sec", instanceName[0]);
+				bandwidth = bandwidthCounter.NextValue();
+				sendSum = dataSentCounter.NextValue();
+				receiveSum = dataReceivedCounter.NextValue();
 				System.Threading.Thread.Sleep(waitTime);
-				net = netCounter.NextValue();
-				//Console.WriteLine("Disk usage: " + net);
+				bandwidth = bandwidthCounter.NextValue();
+				sendSum = dataSentCounter.NextValue();
+				receiveSum = dataReceivedCounter.NextValue();
+				net = (8 * (sendSum + receiveSum) / bandwidth );
+				UpdateGraphs(4, net);
 			}
 		}
 
@@ -331,7 +429,7 @@ namespace Quartz.HQ
 
 		public static bool NotInWhiteList(string process)
 		{
-			
+
 
 			foreach (string line in whiteList)
 			{
@@ -345,9 +443,9 @@ namespace Quartz.HQ
 
 		public static ArrayList GetProcessNames()
 		{
-			ArrayList currentProcesses = new ArrayList(Process.GetProcesses());
+			ArrayList currentProcesses = new ArrayList(System.Diagnostics.Process.GetProcesses());
 			ArrayList pcsNames = new ArrayList();
-			foreach (Process process in currentProcesses)
+			foreach (System.Diagnostics.Process process in currentProcesses)
 			{
 				if (NotInWhiteList(process.ProcessName))
 				{
@@ -356,6 +454,7 @@ namespace Quartz.HQ
 			}
 			return pcsNames;
 		}
+
 		private static void SetAxisLimits(DateTime now)
 		{
 			AxisMax = now.Ticks + TimeSpan.FromSeconds(1).Ticks; // lets force the axis to be 1 second ahead
@@ -364,10 +463,11 @@ namespace Quartz.HQ
 
 		private void Toast(string message, string type)
 		{
-			Application.Current.Dispatcher.Invoke((Action)delegate {
+			Application.Current.Dispatcher.Invoke((Action)delegate
+			{
 				notifier.ShowWarning(message);
 			});
-			
+
 		}
 
 		Notifier notifier = new Notifier(cfg =>

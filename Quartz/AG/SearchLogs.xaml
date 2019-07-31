@@ -25,15 +25,15 @@
                 <TextBlock Text="Search through all file CRUD operations recorded by the live scanner." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
                 <!--something here-->
                 <Label Content="Keywords" Margin="0,15,0,0" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
-                <TextBox Name="SearchKeywords" Margin="5,5,5,10" Text="hmmm"></TextBox>
+                <TextBlock Text="Separate search terms with the pipe symbol ''|''." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
+                <TextBox Name="SearchKeywords" Margin="5,5,5,10" Text=""></TextBox>
                 <Label Content="Operations" Margin="0,15,0,0" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
-                <CheckBox Margin="5,5,5,0" Content="Create"/>
-                <CheckBox Margin="5,5,5,0" Content="Rename"/>
-                <CheckBox Margin="5,5,5,0" Content="Update"/>
-                <CheckBox Margin="5,5,5,10" Content="Delete"/>
+                <CheckBox x:Name="CreateLogShow" Margin="5,5,5,0" Content="Create" IsChecked="True"/>
+                <CheckBox x:Name="RenameLogShow" Margin="5,5,5,0" Content="Rename" IsChecked="True"/>
+                <CheckBox x:Name="UpdateLogShow" Margin="5,5,5,0" Content="Update" IsChecked="True"/>
+                <CheckBox x:Name="DeleteLogShow" Margin="5,5,5,10" Content="Delete" IsChecked="True"/>
                 <StackPanel Orientation="Horizontal" Margin="5,10,5,0">
-                    <Button Name="SearchLogsBtn" Content="Search" Height="25" HorizontalAlignment="Left" Margin="0,0,0,0" Padding="5,3" Click="SearchLogsBtn_Click"></Button>
-                    <Button Name="SaveSearchBtn" Content="Save Results" Height="25" HorizontalAlignment="Left" Margin="10,0,0,0" Padding="5,3" Click="SaveSearchBtn_Click"></Button>
+                    <Button Name="SearchLogsBtn" Content="Search logs" Height="25" HorizontalAlignment="Left" Margin="0,0,0,0" Padding="5,3" Click="SearchLogsBtn_Click"></Button>
                 </StackPanel>
             </StackPanel>
         </StackPanel>

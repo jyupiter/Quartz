@@ -294,7 +294,6 @@ namespace Quartz.AG
         {
             System.IO.Directory.CreateDirectory(Path.Combine(path, "Quartz/Preferences"));
             P = Path.Combine(path, "Quartz/Preferences", "filewatcher.qonf");
-            Console.WriteLine("p is" +P);
             if(!File.Exists(P))
                 File.Copy(_Folder.PTemplate, P, true);
         }

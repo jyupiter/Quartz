@@ -54,6 +54,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
@@ -111,7 +114,23 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="AG\FileProtector.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="AG\SearchLogs.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AV\CheckUpdater.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AV\ProcessRunner.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AV\VersionChecker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -128,23 +147,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Home.xaml" />
-    <Page Include="HQ\cpu.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="HQ\disk.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="HQ\gpu.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="HQ\Overview.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="HQ\ram.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -152,6 +155,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="AG\FileProtector.xaml.cs">
+      <DependentUpon>FileProtector.xaml</DependentUpon>
+    </Compile>
     <Compile Include="AG\SearchLogs.xaml.cs">
       <DependentUpon>SearchLogs.xaml</DependentUpon>
     </Compile>
@@ -159,26 +165,26 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="AV\CheckUpdater.xaml.cs">
+      <DependentUpon>CheckUpdater.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AV\ProcessRunner.xaml.cs">
+      <DependentUpon>ProcessRunner.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AV\VersionChecker.xaml.cs">
+      <DependentUpon>VersionChecker.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Class1.cs" />
+    <Compile Include="Classes\ProcessInfo.cs" />
+    <Compile Include="Classes\ProcTime.cs" />
+    <Compile Include="Classes\UpdateStuff.cs" />
     <Compile Include="Classes\_Folder.cs" />
     <Compile Include="Home.xaml.cs">
       <DependentUpon>Home.xaml</DependentUpon>
     </Compile>
     <Compile Include="Classes\MeasureModel.cs" />
-    <Compile Include="HQ\cpu.xaml.cs">
-      <DependentUpon>cpu.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="HQ\disk.xaml.cs">
-      <DependentUpon>disk.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="HQ\gpu.xaml.cs">
-      <DependentUpon>gpu.xaml</DependentUpon>
-    </Compile>
     <Compile Include="HQ\Overview.xaml.cs">
       <DependentUpon>Overview.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="HQ\ram.xaml.cs">
-      <DependentUpon>ram.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -275,6 +281,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="app.manifest" />
     <None Include="AG\filewatcher.qonf" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
