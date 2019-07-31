@@ -22,14 +22,15 @@
         <StackPanel DockPanel.Dock="Left" Width="199" Margin="20,20,0,20" HorizontalAlignment="Left">
             <StackPanel>
                 <Label Content="Description" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
-                <TextBlock Text="Search through all file CRUD operations recorded by the live scanner." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
+                <TextBlock Text="Lock selected files to prevent tampering and deletion." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
                 
                 <StackPanel Orientation="Horizontal" Margin="5,10,5,0">
-                    <Button Name="SearchLogsBtn" Content="Search logs" Height="25" HorizontalAlignment="Left" Margin="0,0,0,0" Padding="5,3"></Button>
+                    <Button Name="SelectFileBtn" Content="Select File" Height="25" HorizontalAlignment="Left" Margin="0,0,0,0" Padding="5,3" Click="SelectFileBtn_Click"></Button>
+                    <Button Name="DeleteFileBtn" Content="Unlock" Height="25" HorizontalAlignment="Left" Margin="10,0,0,0" Padding="5,3" Click="DeleteFileBtn_Click"></Button>
                 </StackPanel>
             </StackPanel>
         </StackPanel>
         <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20"/>
-        <DataGrid Name="SearchResultDataGrid" DockPanel.Dock="Right" Margin="0,20,20,20" BorderBrush="LightGray" />
+        <DataGrid Name="ProtectedFilesDataGrid" DockPanel.Dock="Right" Margin="0,20,20,20" BorderBrush="LightGray" />
     </DockPanel>
 </Page>
