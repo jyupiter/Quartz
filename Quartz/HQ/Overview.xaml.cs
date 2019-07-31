@@ -148,16 +148,10 @@ namespace Quartz.HQ
 				default:
 					Debug.WriteLine("Invalid Index " + index);
 					break;
-
-
 			}
-
-
-
 			SetAxisLimits(DateTime.Now);
 
 			//lets only use the last 150 values
-
 		}
 
 		public static void StartMonitering()
@@ -369,6 +363,7 @@ namespace Quartz.HQ
 				UpdateGraphs(1, cpu);
 			}
 		}
+
 		private static void MemThread()
 		{
 			while (true)
@@ -382,6 +377,7 @@ namespace Quartz.HQ
 				//Console.WriteLine("Memory Used: " + mem);
 			}
 		}
+
 		private static void DiskThread()
 		{
 			while (true)
@@ -394,6 +390,7 @@ namespace Quartz.HQ
 				//Console.WriteLine("Disk usage: " + disk);
 			}
 		}
+
 		private static void NetThread()
 		{
 			PerformanceCounter bandwidthCounter;
@@ -457,6 +454,7 @@ namespace Quartz.HQ
 			}
 			return pcsNames;
 		}
+
 		private static void SetAxisLimits(DateTime now)
 		{
 			AxisMax = now.Ticks + TimeSpan.FromSeconds(1).Ticks; // lets force the axis to be 1 second ahead
