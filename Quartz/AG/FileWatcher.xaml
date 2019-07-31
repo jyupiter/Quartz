@@ -54,6 +54,6 @@
             </StackPanel>
         </ScrollViewer>
         <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20"/>
-        <DataGrid Name="ScanResultDataGrid" DockPanel.Dock="Right" Margin="0,20,20,20" BorderBrush="LightGray" />
+        <DataGrid Name="ScanResultDataGrid" DockPanel.Dock="Right" Margin="0,20,20,20" BorderBrush="LightGray" SelectionChanged="ScanResultDataGrid_SelectionChanged" />
     </DockPanel>
 </Page>
