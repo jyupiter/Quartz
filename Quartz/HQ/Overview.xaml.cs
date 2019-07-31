@@ -164,7 +164,7 @@ namespace Quartz.HQ
 			//	Console.WriteLine(name);
 			//}
 			//NVIDIA.Initialize();
-			new Thread(GpuThread).Start();
+			//new Thread(GpuThread).Start();
 			new Thread(CpuThread).Start();
 			new Thread(MemThread).Start();
 			new Thread(DiskThread).Start();

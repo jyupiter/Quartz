@@ -29,11 +29,6 @@ namespace Quartz.AV
         public static ArrayList allProcesses;
         public static int waitTime; //ms
         public static ObservableCollection<ProcessInfo> pcsdata;
-        private static double cpuWarnLvl = 0.1;
-        private static double gpuWarnLvl = 0.1;
-        private static double diskWarnLvl = 0.1;
-        private static double netWarnLvl = 0.1;
-        private static double ramWarnLvl = 1048576;
         public static ArrayList currentprocesses;
 
         public ProcessRunner()
@@ -153,6 +148,20 @@ namespace Quartz.AV
         {
             //DatagridAvan2.
             //
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            //Display Process Name, StartTime, Runtime here
+            DatagridAvan2.ItemsSource = "{Binding UpdateStuff}";
+            DataGridTextColumn ColName = new DataGridTextColumn();
+            ColName.Header = "Process";
+            ColName.Binding = new Binding("Name");
+
+            DataGridTextColumn ColName1 = new DataGridTextColumn();
+            ColName1.Header = "RunTime";
+            ColName1.Binding = new Binding("RunTime");
+
         }
     }
 }
