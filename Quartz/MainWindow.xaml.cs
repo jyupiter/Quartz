@@ -15,7 +15,11 @@ using System.Windows.Shapes;
 using System.Threading;
 using Lucene.Net.Messages;
 using Microsoft.Win32;
+using NvAPIWrapper.Native.DRS.Structures;
 using Quartz.AV;
+using Twilio;
+using Twilio.Exceptions;
+using Twilio.Rest.Api.V2010.Account;
 
 namespace Quartz
 {
@@ -25,10 +29,13 @@ namespace Quartz
     public partial class MainWindow : Window
     {
         public static String datetime = "";
+        public static string bruteforcelogtime = "";
+        public static Boolean bruteforce = false;
         public MainWindow()
         {
             InitializeComponent();
-            marcustimer();// delete if not used in final product
+            //marcustimer();// delete if not used in final product
+            //calltwilio();
             marcusLoginLogoutDetector();//entry point for marcus function
             foreach(Button b in MainMenu.Children.OfType<Button>())
             {
@@ -193,7 +200,10 @@ namespace Quartz
         // detect if user locks / unlocks their screen, done so by pressing windows+L
         public void marcusLoginLogoutDetector()
         {
+            EventLog logListener = new EventLog("Security");
+            logListener.EntryWritten -= logListener_EntryWritten;//unregister prev subscribers
             Microsoft.Win32.SystemEvents.SessionSwitch += new Microsoft.Win32.SessionSwitchEventHandler(SystemEvents_SessionSwitch);
+            
 
             void SystemEvents_SessionSwitch(object sender, Microsoft.Win32.SessionSwitchEventArgs e)
             {
@@ -201,17 +211,24 @@ namespace Quartz
                 {
                     //User locks screen
                     datetime = (DateTime.Now.ToString("dd:MM:yyyy hh:mm:ss tt")).ToString();
-
-                    EventLog logListener = new EventLog("Security");
-                    logListener.EntryWritten += logListener_EntryWritten;
+                    logListener.EntryWritten -= logListener_EntryWritten;//unregister prev subscribers
+                    logListener.EntryWritten += logListener_EntryWritten;//register 
                     logListener.EnableRaisingEvents = true;
 
+                    
                 }
                 else if (e.Reason == SessionSwitchReason.SessionUnlock)
                 {
                     //User logs back in
+                    if (bruteforce)
+                    {
+                        MessageBox.Show("computer was bruteforced");
+                        Console.WriteLine("computer was locked at" + datetime);
+                        Console.WriteLine("brute force occured at :" + bruteforcelogtime);
 
-                    
+                    }
+
+                    bruteforce = false;
                 }
             }
 
@@ -230,10 +247,13 @@ namespace Quartz
 
                 if (events.Contains(e.Entry.InstanceId))
                     Console.WriteLine("Wrong password detected " + e.Entry.TimeWritten);
+                    bruteforce = true;
+  
 
-                    string eventlogtime = e.Entry.TimeWritten.ToString();
+                    string eventlogtime = e.Entry.TimeGenerated.ToString();
                     DateTime d1 = DateTime.Parse(eventlogtime);
                     Console.WriteLine("Event log timestamp d1 is now "+ d1);
+                    bruteforcelogtime = (d1).ToString();
                     
 
                     DateTime d2 = DateTime.ParseExact(datetime, "dd:MM:yyyy hh:mm:ss tt", CultureInfo.InvariantCulture);
@@ -243,16 +263,47 @@ namespace Quartz
                     //event log should always be written after pc lock. d1>d2
                     int result = DateTime.Compare(d1,d2); //d1 should be after current time 
                     Console.WriteLine("post comparison. int result = " + result);
-                    if (result >= 0)//d1 later than d2
+                    if (result >= 0 && bruteforce)//d1 later than d2
                     {
-                        MessageBox.Show("Wrong password detected " + e.Entry.TimeWritten);
+                        Console.WriteLine("Wrong password detected " + e.Entry.TimeWritten);
+                        
                     }
 
-                // do the datetime conversion here 
+                   
 
-                System.Media.SystemSounds.Question.Play();
+                
                 //System.IO.File.AppendAllLines(@"d:\log.txt", new string[] { string.Format("{0}:{1}",  e.Entry.InstanceId, e.Entry.Message) });
+
             }
+
+            
+        }
+
+        public void calltwilio()
+        {
+            // Find your Account Sid and Token at twilio.com/console
+            // DANGER! This is insecure. See http://twil.io/secure
+            const string accountSid = "AC4eba0a962c64efbeedd19d4aeb101be1";
+            const string authToken = "aa59862f86ebeb7ed9485d2bc4783fdf";
+
+            TwilioClient.Init(accountSid, authToken);
+
+            try
+            {
+                var message = MessageResource.Create(
+                    body: "This is the ship that made the Kessel Run in fourteen parsecs?",
+                    from: new Twilio.Types.PhoneNumber("+12055576024"),//DO NOT CHANGE
+                    to: new Twilio.Types.PhoneNumber("+6596445769")// will need to un-static this thing to a variable with user's HP
+                );
+
+                Console.WriteLine(message.Sid);
+            }
+            catch (ApiException e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine($"Twilio Error {e.Code} - {e.MoreInfo}");
+            }
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
