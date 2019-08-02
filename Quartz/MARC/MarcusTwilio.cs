@@ -17,7 +17,7 @@ namespace Quartz.MARC
          *  Send an SMS to users 
          *
          */
-        public void calltwilio(string phoneNo)
+        public void calltwilio(string phoneNo , string timeStamp)
         {
             // Find your Account Sid and Token at twilio.com/console
             // DANGER! This is insecure. See http://twil.io/secure
@@ -29,7 +29,7 @@ namespace Quartz.MARC
             try
             {
                 var message = MessageResource.Create(
-                    body: "This is the ship that made the Kessel Run in fourteen parsecs?",
+                    body: timeStamp,
                     from: new Twilio.Types.PhoneNumber("+12055576024"),//DO NOT CHANGE
                     to: new Twilio.Types.PhoneNumber(phoneNo)// will need to un-static this thing to a variable with user's HP
                 );

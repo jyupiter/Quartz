@@ -28,10 +28,11 @@ namespace Quartz
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static String datetime = "";
-        public static string bruteforcelogtime = "";
-        public static Boolean bruteforce = false;
-        public static Boolean techr = true;
+        // do not change these variables 
+        public static String Datetime = "";//current timestamp
+        public static string Bruteforcelogtime = "";//timestamp of failed login attempt
+        public static int LoginAttemptCount = 0;
+        public static string SMSlogintimestamps = "";//all timestamps of failed logins 
         public MainWindow()
         {
             InitializeComponent();
@@ -211,7 +212,7 @@ namespace Quartz
                 {
                     //User locks screen
                     
-                    datetime = (DateTime.Now.ToString("dd:MM:yyyy hh:mm:ss tt")).ToString();
+                    Datetime = (DateTime.Now.ToString("dd:MM:yyyy hh:mm:ss tt")).ToString();
                     logListener.EntryWritten -= logListener_EntryWritten;//unregister prev subscribers
                     logListener.EntryWritten += logListener_EntryWritten;//register 
                     logListener.EnableRaisingEvents = true;
@@ -222,6 +223,7 @@ namespace Quartz
                 {
                     Microsoft.Win32.SystemEvents.SessionSwitch -= new Microsoft.Win32.SessionSwitchEventHandler(SystemEvents_SessionSwitch);
                     Console.WriteLine("Screen unlocked!");
+                    
 
                 }
             }//sessionswitch
@@ -243,10 +245,10 @@ namespace Quartz
                     //get the timestamp the log was generated (after d2!)
                     DateTime d1 = DateTime.Parse(eventlogtime);
                     Console.WriteLine("D1 (Event Log Timestamp) " + d1);
-                    bruteforcelogtime = (d1).ToString();
+                    Bruteforcelogtime = (d1).ToString();
 
                     //get the timestamp of computer locked (before d1!)
-                    DateTime d2 = DateTime.ParseExact(datetime, "dd:MM:yyyy hh:mm:ss tt", CultureInfo.InvariantCulture);
+                    DateTime d2 = DateTime.ParseExact(Datetime, "dd:MM:yyyy hh:mm:ss tt", CultureInfo.InvariantCulture);
                     Console.WriteLine( "D2 (Computer Locked) :" + d2);
 
 
@@ -259,26 +261,36 @@ namespace Quartz
                     {
                         Console.WriteLine("Login with wrong password was attempted at " + e.Entry.TimeWritten);
                         Console.Write("\n");
-                        MessageBox.Show("bad login detected");
+                        LoginAttemptCount += 1;
+                        SMSlogintimestamps = SMSlogintimestamps + "\n" +Bruteforcelogtime;
+                        SendSMS();
                     }
                 }
                 else
                 {
                     Console.WriteLine("there were no brute force attempts ( no 4625) ");
                 }
-                
 
+                
                    
 
                 
                 //System.IO.File.AppendAllLines(@"d:\log.txt", new string[] { string.Format("{0}:{1}",  e.Entry.InstanceId, e.Entry.Message) });
 
-            }
+            }//loglistener
 
             
         }//LoginLogoutDetector
 
-
+        public static void SendSMS()
+        {
+            if (LoginAttemptCount == 3)//3 should change to dynamic variable for final presentation
+            {
+                MarcusTwilio mt = new MarcusTwilio();
+                mt.calltwilio("+6596445769", "\n Failed Login Attempts detected at " + SMSlogintimestamps);//Change to dynamic variable in final presentation
+                SMSlogintimestamps = "";
+            }
+        }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             ContentWrapper.NavigationService.Navigate(new CheckUpdater());
