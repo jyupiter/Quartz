@@ -277,6 +277,7 @@
     <Compile Include="MARC\MarcusHome.xaml.cs">
       <DependentUpon>MarcusHome.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MARC\MarcusTwilio.cs" />
     <Compile Include="Templates\_Template.xaml.cs">
       <DependentUpon>_Template.xaml</DependentUpon>
     </Compile>

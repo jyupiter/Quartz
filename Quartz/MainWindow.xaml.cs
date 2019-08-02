@@ -31,12 +31,13 @@ namespace Quartz
         public static String datetime = "";
         public static string bruteforcelogtime = "";
         public static Boolean bruteforce = false;
+        public static Boolean techr = true;
         public MainWindow()
         {
             InitializeComponent();
             //marcustimer();// delete if not used in final product
             //calltwilio();
-            marcusLoginLogoutDetector();//entry point for marcus function
+            LoginLogoutDetector();//entry point for M's function
             foreach(Button b in MainMenu.Children.OfType<Button>())
             {
                 b.Click += FocusHandler;
@@ -198,10 +199,9 @@ namespace Quartz
         }
 
         // detect if user locks / unlocks their screen, done so by pressing windows+L
-        public void marcusLoginLogoutDetector()
+        public static void LoginLogoutDetector()
         {
             EventLog logListener = new EventLog("Security");
-            logListener.EntryWritten -= logListener_EntryWritten;//unregister prev subscribers
             Microsoft.Win32.SystemEvents.SessionSwitch += new Microsoft.Win32.SessionSwitchEventHandler(SystemEvents_SessionSwitch);
             
 
@@ -210,6 +210,7 @@ namespace Quartz
                 if (e.Reason == SessionSwitchReason.SessionLock)
                 {
                     //User locks screen
+                    
                     datetime = (DateTime.Now.ToString("dd:MM:yyyy hh:mm:ss tt")).ToString();
                     logListener.EntryWritten -= logListener_EntryWritten;//unregister prev subscribers
                     logListener.EntryWritten += logListener_EntryWritten;//register 
@@ -219,55 +220,53 @@ namespace Quartz
                 }
                 else if (e.Reason == SessionSwitchReason.SessionUnlock)
                 {
-                    //User logs back in
-                    if (bruteforce)
-                    {
-                        MessageBox.Show("computer was bruteforced");
-                        Console.WriteLine("computer was locked at" + datetime);
-                        Console.WriteLine("brute force occured at :" + bruteforcelogtime);
+                    Microsoft.Win32.SystemEvents.SessionSwitch -= new Microsoft.Win32.SessionSwitchEventHandler(SystemEvents_SessionSwitch);
+                    Console.WriteLine("Screen unlocked!");
 
-                    }
-
-                    bruteforce = false;
                 }
-            }
+            }//sessionswitch
 
             void logListener_EntryWritten(object sender, EntryWrittenEventArgs e)
             {
-               
 
                 //var eventLog = new EventLog("Security", System.Environment.MachineName);
                 //eventLog.Clear();
-                //MessageBox.Show("all security event logs cleared");
-                //4624: An account was successfully logged on.
-                //4625: An account failed to log on.
-                //4648: A logon was attempted using explicit credentials.
-                //4675: SIDs were filtered.
-                var events = new long[] { 4648 }; //4624 4625 4675
-
+                var events = new long[] { 4625 }; //4625
+                
                 if (events.Contains(e.Entry.InstanceId))
-                    Console.WriteLine("Wrong password detected " + e.Entry.TimeWritten);
-                    bruteforce = true;
-  
-
+                {
+                    Console.WriteLine("4625 detected. triggered IF block");          
+                   
+                    Console.WriteLine("\n");
                     string eventlogtime = e.Entry.TimeGenerated.ToString();
-                    DateTime d1 = DateTime.Parse(eventlogtime);
-                    Console.WriteLine("Event log timestamp d1 is now "+ d1);
-                    bruteforcelogtime = (d1).ToString();
-                    
 
+                    //get the timestamp the log was generated (after d2!)
+                    DateTime d1 = DateTime.Parse(eventlogtime);
+                    Console.WriteLine("D1 (Event Log Timestamp) " + d1);
+                    bruteforcelogtime = (d1).ToString();
+
+                    //get the timestamp of computer locked (before d1!)
                     DateTime d2 = DateTime.ParseExact(datetime, "dd:MM:yyyy hh:mm:ss tt", CultureInfo.InvariantCulture);
-                    Console.WriteLine("Time computer was locked d2 is now " + d2);
-                    //d2 = time when pc locked
-                    //d1 = time event log was written
+                    Console.WriteLine( "D2 (Computer Locked) :" + d2);
+
+
+                    //d1 = event written
+                    //d2 = computer locked 
                     //event log should always be written after pc lock. d1>d2
-                    int result = DateTime.Compare(d1,d2); //d1 should be after current time 
-                    Console.WriteLine("post comparison. int result = " + result);
-                    if (result >= 0 && bruteforce)//d1 later than d2
+                    int result = DateTime.Compare(d1, d2);
+                    Console.WriteLine("Comparing d1,d2 = " + result);
+                    if (result >= 0)//d1 later than d2
                     {
-                        Console.WriteLine("Wrong password detected " + e.Entry.TimeWritten);
-                        
+                        Console.WriteLine("Login with wrong password was attempted at " + e.Entry.TimeWritten);
+                        Console.Write("\n");
+                        MessageBox.Show("bad login detected");
                     }
+                }
+                else
+                {
+                    Console.WriteLine("there were no brute force attempts ( no 4625) ");
+                }
+                
 
                    
 
@@ -277,34 +276,8 @@ namespace Quartz
             }
 
             
-        }
+        }//LoginLogoutDetector
 
-        public void calltwilio()
-        {
-            // Find your Account Sid and Token at twilio.com/console
-            // DANGER! This is insecure. See http://twil.io/secure
-            const string accountSid = "AC4eba0a962c64efbeedd19d4aeb101be1";
-            const string authToken = "aa59862f86ebeb7ed9485d2bc4783fdf";
-
-            TwilioClient.Init(accountSid, authToken);
-
-            try
-            {
-                var message = MessageResource.Create(
-                    body: "This is the ship that made the Kessel Run in fourteen parsecs?",
-                    from: new Twilio.Types.PhoneNumber("+12055576024"),//DO NOT CHANGE
-                    to: new Twilio.Types.PhoneNumber("+6596445769")// will need to un-static this thing to a variable with user's HP
-                );
-
-                Console.WriteLine(message.Sid);
-            }
-            catch (ApiException e)
-            {
-                Console.WriteLine(e.Message);
-                Console.WriteLine($"Twilio Error {e.Code} - {e.MoreInfo}");
-            }
-
-        }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
