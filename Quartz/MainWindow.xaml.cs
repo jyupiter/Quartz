@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
@@ -33,12 +34,18 @@ namespace Quartz
         public static string Bruteforcelogtime = "";//timestamp of failed login attempt
         public static int LoginAttemptCount = 0;
         public static string SMSlogintimestamps = "";//all timestamps of failed logins 
+        public static string ConfigPhoneNo = "";
+        public static string ConfigTimes = "";
+        public static string ConfigEnabled = "";
+
         public MainWindow()
         {
             InitializeComponent();
             //marcustimer();// delete if not used in final product
             //calltwilio();
             LoginLogoutDetector();//entry point for M's function
+            CreateConfigFile();// Marcus's config file
+            ReadConfigFile();//Marcus's config file 
             foreach(Button b in MainMenu.Children.OfType<Button>())
             {
                 b.Click += FocusHandler;
@@ -296,6 +303,79 @@ namespace Quartz
             ContentWrapper.NavigationService.Navigate(new CheckUpdater());
         }
 
+        //always called to check if file exists, create file if file doesn't exist
+        public static void CreateConfigFile()
+        {
+            //get desktop path 
+            string filePath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            filePath += @"\MarcConfig.txt";
+            
+            //if config file doesn't exist, create one 
+            if (!File.Exists(filePath))
+            {
+                File.Create(filePath).Dispose();
+                File.AppendAllLines(filePath, new[] { "hp:00000000" , "times:3" , "enabled:y" });
+            }
+            else
+            {
+                Console.WriteLine("Config file exists");
+            }
+            
+        }//CreateConfigFile
 
+        //always called to read the current config.
+        public static void ReadConfigFile()
+        {
+            //read from config file 
+            //get desktop path 
+            string filePath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            filePath += @"\MarcConfig.txt";
+
+            const Int32 BufferSize = 1024;
+            using (var fileStream = File.OpenRead(filePath))
+            using (var streamReader = new StreamReader(fileStream, Encoding.UTF8, true, BufferSize))
+            {
+                String line;
+                int counter=0;
+                while ((line = streamReader.ReadLine()) != null)
+                {
+                    string result = line.Substring(line.IndexOf(":") + 1);//Remove all before
+                    if (counter == 0)
+                    {
+                        ConfigPhoneNo = result;
+                        Console.WriteLine("Phone number detected : "+ ConfigPhoneNo); 
+                    }
+
+                    if (counter == 1)
+                    {
+                        ConfigTimes = result;
+                        Console.WriteLine("Attempt counter detected: " + ConfigTimes);
+                    }
+
+                    if (counter == 2)
+                    {
+                        ConfigEnabled = result;
+                        Console.WriteLine("enable/disabled option detected: " + ConfigEnabled);
+                    }
+                    counter += 1;
+                }
+              
+            }
+            
+        }//readconfigfile
+
+        //only call if user changes their secLogin settings
+        public static void WriteToConfigFile(string phoneNo , string attempts, string option)
+        {
+            //get desktop path 
+            string filePath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            filePath += @"\MarcConfig.txt";
+
+            //TRAIN OF THOUGHTS ENDED HERE BEFORE SLEEPING
+            //open file line by line
+            //edit each line after : 
+            //done 
+            
+        }//WriteToConfigFile
     }
 }
