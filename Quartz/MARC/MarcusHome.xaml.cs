@@ -25,13 +25,12 @@ namespace Quartz.MARC
         public MarcusHome()
         {
             InitializeComponent();
-            GetLoginHistoryLogs();
         }
 
-        //Get the logs and login history of the user 
-        public void GetLoginHistoryLogs()
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
-               
+            //sms checkbox
         }
 
 
