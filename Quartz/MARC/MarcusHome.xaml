@@ -9,35 +9,38 @@
       Title="MarcusHome">
 
     <Grid>
-        <Label Content="SecLogin Enabled" HorizontalAlignment="Left" Margin="310,50,0,0" VerticalAlignment="Top" Height="35" Width="155" />
-        <Label Content="Phone Number" HorizontalAlignment="Left" Margin="310,90,0,0" VerticalAlignment="Top" Height="35" Width="155" />
-        <Label Content="Max failed login attempts allowed" HorizontalAlignment="Left" Margin="310,130,0,0" VerticalAlignment="Top" Height="35" Width="250" />
-        <Label Content="Webcam take picture of intruder" HorizontalAlignment="Left" Margin="310,170,0,0" VerticalAlignment="Top" Height="35" Width="185" />
-        <Label Content="Preferred Notification Methods" HorizontalAlignment="Left" Margin="255,224,0,0" VerticalAlignment="Top" Height="35" Width="195" />
-        <CheckBox Content="" HorizontalAlignment="Left" Margin="310,276,0,0" VerticalAlignment="Top" Checked="CheckBox_Checked">
-            
-                <CheckBox.LayoutTransform>
-                    <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
-                </CheckBox.LayoutTransform>
-            
+        <Label Content="SecLogin Enabled" HorizontalAlignment="Left" Margin="305,84,0,0" VerticalAlignment="Top" Height="35" Width="155" />
+        <Label Content="Phone Number" HorizontalAlignment="Left" Margin="305,124,0,0" VerticalAlignment="Top" Height="35" Width="155" />
+        <Label Content="Max failed login attempts allowed" HorizontalAlignment="Left" Margin="305,164,0,0" VerticalAlignment="Top" Height="35" Width="250" />
+        <Label Content="Webcam take picture of intruder" HorizontalAlignment="Left" Margin="305,204,0,0" VerticalAlignment="Top" Height="35" Width="185" />
+        <Label Content="Preferred Notification Methods" HorizontalAlignment="Left" Margin="250,258,0,0" VerticalAlignment="Top" Height="35" Width="195" />
+        <CheckBox Content="" HorizontalAlignment="Left" Margin="305,310,0,0" VerticalAlignment="Top" Checked="CheckBox_Checked">
+
+            <CheckBox.LayoutTransform>
+                <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+            </CheckBox.LayoutTransform>
+
         </CheckBox>
 
-        <CheckBox Content="" HorizontalAlignment="Left" Margin="310,314,0,0" VerticalAlignment="Top">
+        <CheckBox Content="" HorizontalAlignment="Left" Margin="305,348,0,0" VerticalAlignment="Top">
             <CheckBox.LayoutTransform>
                 <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
             </CheckBox.LayoutTransform>
         </CheckBox>
-        <Button Content="Save All Changes" HorizontalAlignment="Left" Margin="300,375,0,0" VerticalAlignment="Top" Width="150" Height="40"/>
-        <Image HorizontalAlignment="Left" Height="35" Margin="255,50,0,0" VerticalAlignment="Top" Width="35" Source="../Resources/enabled-512.png" RenderTransformOrigin="1.143,0.429"/>
-        <Image HorizontalAlignment="Left" Height="35" Margin="255,90,0,0" VerticalAlignment="Top" Width="35" Source="../Resources/phoneno-512.png" RenderTransformOrigin="1.143,0.429"/>
-        <Image HorizontalAlignment="Left" Height="35" Margin="255,130,0,0" VerticalAlignment="Top" Width="35" Source="../Resources/attempts-512.png" RenderTransformOrigin="1.143,0.429"/>
-        <Image HorizontalAlignment="Left" Height="35" Margin="255,170,0,0" VerticalAlignment="Top" Width="35" Source="../Resources/takephoto-512.png" RenderTransformOrigin="1.143,0.429"/>
-        <Image HorizontalAlignment="Left" Height="35" Margin="255,264,0,0" VerticalAlignment="Top" Width="35" Source="../Resources/sms-512.png" RenderTransformOrigin="1.143,0.429"/>
-        <Image HorizontalAlignment="Left" Height="35" Margin="255,304,0,0" VerticalAlignment="Top" Width="35" Source="../Resources/email-512.png" RenderTransformOrigin="1.143,0.429"/>
-        <Label Content="My current settings" HorizontalAlignment="Left" Margin="55,59,0,0" VerticalAlignment="Top" Width="170"/>
-        <TextBox HorizontalAlignment="Left" Height="239" Margin="55,90,0,0" TextWrapping="Wrap" Text="Konsole@root#:" VerticalAlignment="Top" Width="170"/>
-        <Label Content="Send me an SMS" HorizontalAlignment="Left" Margin="350,273,0,0" VerticalAlignment="Top"/>
-        <Label Content="Send me an Email&#xD;&#xA;" HorizontalAlignment="Left" Margin="350,313,0,0" VerticalAlignment="Top"/>
+        <Button Content="Save All Changes" HorizontalAlignment="Left" Margin="285,394,0,0" VerticalAlignment="Top" Width="150" Height="40"/>
+        <Image HorizontalAlignment="Left" Height="35" Margin="250,84,0,0" VerticalAlignment="Top" Width="35" Source="../Resources/enabled-512.png" RenderTransformOrigin="1.143,0.429"/>
+        <Image HorizontalAlignment="Left" Height="35" Margin="250,124,0,0" VerticalAlignment="Top" Width="35" Source="../Resources/phoneno-512.png" RenderTransformOrigin="1.143,0.429"/>
+        <Image HorizontalAlignment="Left" Height="35" Margin="250,164,0,0" VerticalAlignment="Top" Width="35" Source="../Resources/attempts-512.png" RenderTransformOrigin="1.143,0.429"/>
+        <Image HorizontalAlignment="Left" Height="35" Margin="250,204,0,0" VerticalAlignment="Top" Width="35" Source="../Resources/takephoto-512.png" RenderTransformOrigin="1.143,0.429"/>
+        <Image HorizontalAlignment="Left" Height="35" Margin="250,298,0,0" VerticalAlignment="Top" Width="35" Source="../Resources/sms-512.png" RenderTransformOrigin="1.143,0.429"/>
+        <Image HorizontalAlignment="Left" Height="35" Margin="250,338,0,0" VerticalAlignment="Top" Width="35" Source="../Resources/email-512.png" RenderTransformOrigin="1.143,0.429"/>
+        <Label Content="My current settings" HorizontalAlignment="Left" Margin="55,63,0,0" VerticalAlignment="Top" Width="170"/>
+        <TextBox IsReadOnly="True" Name="CurrentConfig" HorizontalAlignment="Left" Height="285" Margin="55,91,0,0" TextWrapping="Wrap" Text="Konsole@root#:" VerticalAlignment="Top" Width="170" TextChanged="TextBox_TextChanged"/>
+        <Label Content="Send me an SMS" HorizontalAlignment="Left" Margin="335,307,0,0" VerticalAlignment="Top"/>
+        <Label Content="Send me an Email&#xD;&#xA;" HorizontalAlignment="Left" Margin="335,347,0,0" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="665,185,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+        <Label Content="Change/Set Password" HorizontalAlignment="Left" Margin="620,106,0,0" VerticalAlignment="Top" Height="24" Width="135"/>
+        <Label Content="Password is used to protect this configuration pannel from unauthorized modification&#xD;&#xA;" HorizontalAlignment="Left" Margin="640,135,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Page>

@@ -319,7 +319,7 @@ namespace Quartz
             if (!File.Exists(filePath))
             {
                 File.Create(filePath).Dispose();
-                File.AppendAllLines(filePath, new[] { "hp:00000000" , "times:3" , "enabled:y" , "takepic:y" , "sms:y" , "email:y" });
+                File.AppendAllLines(filePath, new[] { "hp:00000000" , "times:3" , "enabled:y" , "takepic:y" , "sms:y" , "email:y" , "password:n"});
             }
             else
             {
