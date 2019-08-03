@@ -14,7 +14,7 @@ using Version = Lucene.Net.Util.Version;
 using Lucene.Net.Index;
 using Lucene.Net.Store;
 using Lucene.Net.Documents;
-using System.Diagnostics;
+using System.Threading;
 
 namespace Quartz.AG
 {
@@ -381,6 +381,7 @@ namespace Quartz.AG
             LiveScanBtn.Content = "Stop scan";
             SetPath();
             Run();
+            //new Thread(Run).Start();
             LiveScanBtn.Click -= StartLiveScan;
             LiveScanBtn.Click += StopLiveScan;
         }

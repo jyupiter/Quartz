@@ -196,3 +196,21 @@ Steam
 SteamService
 ServiceHub.ThreadedWaitDialog
 FubTracking
+Wacom_TouchUser
+NVIDIA Web Helper
+nvcontainer
+browser_broker
+OriginWebHelperService
+sqlbrowser
+Wacom_Tablet
+nvcontainer
+vpnclient_x64
+MicrosoftEdge
+AppMonitorPlugIn
+MicrosoftEdgeCP
+MicrosoftEdgeSH
+NVIDIA Share
+IntelliTrace
+nvsphelper64
+NvTelemetryContainer
+nvcontainer
