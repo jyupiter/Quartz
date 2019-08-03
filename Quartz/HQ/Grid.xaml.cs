@@ -19,6 +19,7 @@ using System.Windows.Threading;
 using System.Collections.ObjectModel;
 using System.Windows.Data;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace Quartz.HQ
 {
@@ -27,29 +28,29 @@ namespace Quartz.HQ
 	/// </summary>
 	public partial class Grid : Page, INotifyPropertyChanged
 	{
-		private static List<Entry> Sauce = new List<Entry>();
+		private List<Entry> Sauce = new List<Entry>();
 
-		public static double AxisMax;
-		public static double AxisMin;
+		public double AxisMax;
+		public double AxisMin;
 		public event PropertyChangedEventHandler PropertyChanged;
-		public static SeriesCollection SeriesCollection { get; set; }
-		public static string[] Labels { get; set; }
+		public SeriesCollection SeriesCollection { get; set; }
+		public string[] Labels { get; set; }
 		public Func<double, string> YFormatter { get; set; }
-		public static float cpu;
-		public static float mem;
-		public static float disk;
-		public static float net;
-		public static float gpu;
-		public static int waitTime; //ms
-		public static double ticks;
-		public static ArrayList allProcesses;
-		public static string[] whiteList;
-		private static double cpuWarnLvl = 0.1;
-		private static double gpuWarnLvl = 0.1;
-		private static double diskWarnLvl = 0.1;
-		private static double netWarnLvl = 0.1;
-		private static double ramWarnLvl = 1048576;
-		public static ObservableCollection<ProcessInfo> pcsdata;
+		public float cpu;
+		public float mem;
+		public float disk;
+		public float net;
+		public float gpu;
+		public int waitTime; //ms
+		public double ticks;
+		public ArrayList allProcesses;
+		public string[] whiteList;
+		private double cpuWarnLvl = 0.1;
+		private double gpuWarnLvl = 0.1;
+		private double diskWarnLvl = 0.1;
+		private double netWarnLvl = 0.1;
+		private double ramWarnLvl = 1048576;
+		public ObservableCollection<ProcessInfo> pcsdata;
 		public Grid()
 		{
 			Debug.WriteLine("Loading grid!");
@@ -62,7 +63,7 @@ namespace Quartz.HQ
 			//5:network
 			ReloadWhiteList();
 			StartMonitering();
-			initGrid();
+			//initGrid();
 			//notifier.ShowSuccess(message);
 			//notifier.ShowWarning(message);
 			//notifier.ShowError(message);
@@ -70,7 +71,9 @@ namespace Quartz.HQ
 
 			//<-----	Datagrid stufff	----->
 		}
-		public static void StartMonitering()
+
+
+		public void StartMonitering()
 		{
 			//PerformanceCounterCategory category = new PerformanceCounterCategory("Network Interface");
 			//String[] instancename = category.GetInstanceNames();
@@ -92,7 +95,7 @@ namespace Quartz.HQ
 			}
 			new Thread(CheckNewProcesses).Start();
 		}
-		public static void CheckNewProcesses()
+		public void CheckNewProcesses()
 		{
 			ArrayList currentProcesses = new ArrayList();
 			while (true)
@@ -111,7 +114,7 @@ namespace Quartz.HQ
 				}
 			}
 		}
-		public static void MoniterProcess(object arg)
+		public void MoniterProcess(object arg)
 		{
 			TimeSpan runTime = new TimeSpan(0);
 			DateTime startTime = DateTime.Now;
@@ -126,8 +129,16 @@ namespace Quartz.HQ
 			int diskCycles = 0;
 			int netCycles = 0;
 			double CPUUsage = 0;
-			Grid grid = new Grid();
 			Entry entry = new Entry();
+			//TreeViewItem item = new TreeViewItem();
+			//item.Name = process;
+			//item.Header = process;
+			//this.Dispatcher.Invoke(() =>
+			//{
+			//	mainTree.Items.Add(item);
+			//});
+			
+			//grid.mainTree
 			while (true)
 			{
 				//Debug.WriteLine("cycles: " + cycles);
@@ -144,72 +155,70 @@ namespace Quartz.HQ
 				{
 					//try
 					//{
-						System.Diagnostics.Process p = pname[0];
+					System.Diagnostics.Process p = pname[0];
 
-						//<----------	CPU Monitering	--------->
-						runTime = p.TotalProcessorTime;
-						if (lastTime == null || lastTime == new DateTime())
-						{
-							lastTime = DateTime.Now;
-							lastTotalProcessorTime = p.TotalProcessorTime;
-						}
-						else
-						{
-							//Debug.WriteLine("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-							curTime = DateTime.Now;
-							curTotalProcessorTime = p.TotalProcessorTime;
+					//<----------	CPU Monitering	--------->
+					runTime = p.TotalProcessorTime;
+					if (lastTime == null || lastTime == new DateTime())
+					{
+						lastTime = DateTime.Now;
+						lastTotalProcessorTime = p.TotalProcessorTime;
+					}
+					else
+					{
+						//Debug.WriteLine("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+						curTime = DateTime.Now;
+						curTotalProcessorTime = p.TotalProcessorTime;
 
-							CPUUsage = (curTotalProcessorTime.TotalMilliseconds - lastTotalProcessorTime.TotalMilliseconds) / curTime.Subtract(lastTime).TotalMilliseconds / Convert.ToDouble(Environment.ProcessorCount);
-							Console.WriteLine("{0} CPU: {1:0.0}%", p.ProcessName, CPUUsage * 100);
-							if (CPUUsage > cpuWarnLvl)
+						CPUUsage = (curTotalProcessorTime.TotalMilliseconds - lastTotalProcessorTime.TotalMilliseconds) / curTime.Subtract(lastTime).TotalMilliseconds / Convert.ToDouble(Environment.ProcessorCount);
+						//Console.WriteLine("{0} CPU: {1:0.0}%", p.ProcessName, CPUUsage * 100);
+						if (CPUUsage > cpuWarnLvl)
+						{
+							if (cpuCycles < 10)
 							{
-								if (cpuCycles < 10)
-								{
-									cpuCycles++;
-								}
-								else
-								{
-									Grid ovw = new Grid();
-									ovw.Toast(p.ProcessName, "Warn");
-									cpuCycles = 0;
-								}
+								cpuCycles++;
 							}
 							else
 							{
+								Toast(p.ProcessName, "Warn");
 								cpuCycles = 0;
 							}
-							lastTime = curTime;
-							lastTotalProcessorTime = curTotalProcessorTime;
-						}
-
-						//<----------	RAM Monitering	--------->
-						double ramUsage = p.PagedSystemMemorySize64;
-						Console.WriteLine(p.ProcessName + " : " + ramUsage);
-						if (ramUsage > ramWarnLvl)
-						{
-							if (ramCycles < 10)
-							{
-								ramCycles++;
-							}
-							else
-							{
-								Grid ovw = new Grid();
-								ovw.Toast(p.ProcessName, "Warn");
-								ramCycles = 0;
-							}
 						}
 						else
 						{
+							cpuCycles = 0;
+						}
+						lastTime = curTime;
+						lastTotalProcessorTime = curTotalProcessorTime;
+					}
+
+					//<----------	RAM Monitering	--------->
+					double ramUsage = p.PagedSystemMemorySize64;
+					//Console.WriteLine(p.ProcessName + " : " + ramUsage);
+					if (ramUsage > ramWarnLvl)
+					{
+						if (ramCycles < 10)
+						{
+							ramCycles++;
+						}
+						else
+						{
+							Toast(p.ProcessName, "Warn");
 							ramCycles = 0;
 						}
-						Sauce.Remove(entry);
-						entry = new Entry(p.ProcessName, CPUUsage, ramUsage, runTime);
-						Sauce.Add(entry);
-						grid.SetDisplay();
+					}
+					else
+					{
+						ramCycles = 0;
+					}
+					Sauce.Remove(entry);
+					entry = new Entry(p.ProcessName, CPUUsage, ramUsage, runTime);
+					Sauce.Add(entry);
+					SetDisplay();
 					//}
 					//catch (Exception e)
 					//{
-							
+
 					//}
 				}
 				System.Threading.Thread.Sleep(waitTime);
@@ -217,7 +226,7 @@ namespace Quartz.HQ
 
 		}
 
-		public static void LogPcsTime(string process, DateTime start, TimeSpan runTime, DateTime end)
+		public void LogPcsTime(string process, DateTime start, TimeSpan runTime, DateTime end)
 		{
 			Debug.WriteLine("Logging: " + process + "|" + start + "|" + runTime + "|" + end);
 			string path = "..\\..\\..\\HQ\\Logs\\ProcessTimes.txt";
@@ -246,12 +255,12 @@ namespace Quartz.HQ
 			//}
 		}
 
-		public static void ReloadWhiteList()
+		public void ReloadWhiteList()
 		{
 			whiteList = File.ReadAllLines("..\\..\\..\\HQ\\Filters\\ProcessW.txt");
 		}
 
-		public static bool NotInWhiteList(string process)
+		public bool NotInWhiteList(string process)
 		{
 
 
@@ -265,7 +274,7 @@ namespace Quartz.HQ
 			return true;
 		}
 
-		public static ArrayList GetProcessNames()
+		public ArrayList GetProcessNames()
 		{
 			ArrayList currentProcesses = new ArrayList(System.Diagnostics.Process.GetProcesses());
 			ArrayList pcsNames = new ArrayList();
@@ -301,24 +310,10 @@ namespace Quartz.HQ
 
 		}
 
-		private struct Entry
-		{
-			public string pcsName { get; set; }
-			public double pcsCpu { get; set; }
-			public double pcsRam { get; set; }
-			public TimeSpan pcsTime { get; set; }
 
-			public Entry(string name, double cpu, double ram, TimeSpan Time)
-			{
-				pcsName = name;
-				pcsCpu = cpu;
-				pcsRam = ram;
-				pcsTime = Time;
-			}
-		}
 		private void SetDisplay()
 		{
-			
+
 			Dispatcher.Invoke(() =>
 			{
 				Debug.WriteLine("Adding Entry!");
@@ -350,4 +345,21 @@ namespace Quartz.HQ
 		});
 	}
 
+	[StructLayout(LayoutKind.Sequential, Pack = 1)]
+	public class Entry
+	{
+		public string pcsName { get; set; }
+		public double pcsCpu { get; set; }
+		public double pcsRam { get; set; }
+		public TimeSpan pcsTime { get; set; }
+
+		public Entry() { }
+		public Entry(string name, double cpu, double ram, TimeSpan Time)
+		{
+			pcsName = name;
+			pcsCpu = cpu;
+			pcsRam = ram;
+			pcsTime = Time;
+		}
+	}
 }
