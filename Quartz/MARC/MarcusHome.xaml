@@ -38,9 +38,10 @@
         <TextBox IsReadOnly="True" Name="CurrentConfig" HorizontalAlignment="Left" Height="285" Margin="55,91,0,0" TextWrapping="Wrap" Text="Konsole@root#:" VerticalAlignment="Top" Width="170" TextChanged="TextBox_TextChanged"/>
         <Label Content="Send me an SMS" HorizontalAlignment="Left" Margin="335,307,0,0" VerticalAlignment="Top"/>
         <Label Content="Send me an Email&#xD;&#xA;" HorizontalAlignment="Left" Margin="335,347,0,0" VerticalAlignment="Top"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="665,185,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="665,185,0,0" TextWrapping="Wrap" Text="fuck vin diesel" VerticalAlignment="Top" Width="120"/>
         <Label Content="Change/Set Password" HorizontalAlignment="Left" Margin="620,106,0,0" VerticalAlignment="Top" Height="24" Width="135"/>
         <Label Content="Password is used to protect this configuration pannel from unauthorized modification&#xD;&#xA;" HorizontalAlignment="Left" Margin="640,135,0,0" VerticalAlignment="Top"/>
 
+        
     </Grid>
 </Page>

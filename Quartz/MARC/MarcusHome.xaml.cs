@@ -35,8 +35,14 @@ namespace Quartz.MARC
         {
             InitializeComponent();
             EditTextBox();
+            CheckForPassword();
         }
 
+        public void CheckForPassword()
+        {
+          
+
+        }
         private void EditTextBox()
         {
             CurrentConfig.Text = "john";
@@ -121,5 +127,12 @@ namespace Quartz.MARC
             }
 
         }//readconfigfile
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+ 
     }
 }

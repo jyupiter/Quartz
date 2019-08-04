@@ -256,6 +256,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="MARC\SetNewPassword.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\C1.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -316,6 +320,9 @@
       <DependentUpon>MarcusHome.xaml</DependentUpon>
     </Compile>
     <Compile Include="MARC\MarcusTwilio.cs" />
+    <Compile Include="MARC\SetNewPassword.xaml.cs">
+      <DependentUpon>SetNewPassword.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Templates\_Template.xaml.cs">
       <DependentUpon>_Template.xaml</DependentUpon>
     </Compile>
