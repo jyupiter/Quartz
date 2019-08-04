@@ -347,7 +347,14 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\attempts-512.png" />
+    <Resource Include="Resources\email-512.png" />
+    <Resource Include="Resources\enabled-512.png" />
+    <Resource Include="Resources\phoneno-512.png" />
+    <Resource Include="Resources\sms-512.png" />
+    <Resource Include="Resources\takephoto-512.png" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\quartz.png" />
   </ItemGroup>

@@ -37,6 +37,11 @@ namespace Quartz
         public static string ConfigPhoneNo = "";
         public static string ConfigTimes = "";
         public static string ConfigEnabled = "";
+        public static string ConfigTakePic = "";//
+        public static string ConfigSMS = "";
+        public static string ConfigEmail = "";
+
+
 
         public MainWindow()
         {
@@ -314,7 +319,7 @@ namespace Quartz
             if (!File.Exists(filePath))
             {
                 File.Create(filePath).Dispose();
-                File.AppendAllLines(filePath, new[] { "hp:00000000" , "times:3" , "enabled:y" });
+                File.AppendAllLines(filePath, new[] { "hp:00000000" , "times:3" , "enabled:y" , "takepic:y" , "sms:y" , "email:y" , "password:n"});
             }
             else
             {
@@ -356,6 +361,24 @@ namespace Quartz
                     {
                         ConfigEnabled = result;
                         Console.WriteLine("enable/disabled option detected: " + ConfigEnabled);
+                    }
+
+                    if (counter == 3)
+                    {
+                        ConfigTakePic = result;
+                        Console.WriteLine("Webcam take photo option detected: " + ConfigTakePic);
+                    }
+
+                    if (counter == 4)
+                    {
+                        ConfigSMS = result;
+                        Console.WriteLine("SMS warning option detected: " + ConfigSMS);
+                    }
+
+                    if (counter == 5)
+                    {
+                        ConfigEmail = result;
+                        Console.WriteLine("Email option detected: " + ConfigEmail);
                     }
                     counter += 1;
                 }
