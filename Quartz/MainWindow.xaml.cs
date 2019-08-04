@@ -182,7 +182,7 @@ namespace Quartz
 
         private void RedirectToMonitering(object sender, RoutedEventArgs e)
         {
-			ContentWrapper.NavigationService.Navigate(new Overview());
+            ContentWrapper.NavigationService.Navigate(new Overview());
         }
         
         private void RedirectToHome(object sender, RoutedEventArgs e)
@@ -193,8 +193,9 @@ namespace Quartz
         /*Marcus page*/
         private void RedirectMarcusHome(object sender, RoutedEventArgs e)
         {
+            ReadConfigFile();//Marcus's config file 
             //check if user set a password for SecLogin
-            if (ConfigPass.Equals("nnnnn"))
+            if (ConfigPass.Equals("n"))
             {
                 //pw not set 
                 ContentWrapper.NavigationService.Navigate(new MarcusHome());
@@ -213,23 +214,6 @@ namespace Quartz
                     MessageBox.Show("Wrong password!");//password not match
                 }
             }
-
-        }
-
-        //temp func, delete if not used in final product
-        public void marcustimer()
-        {
-            System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
-            dispatcherTimer.Tick += dispatcherTimer_Tick;
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 30);
-            dispatcherTimer.Start();
-
-             void dispatcherTimer_Tick(object sender, EventArgs e)
-             {
-                // code goes here
-                
-
-             }
 
         }
 
@@ -323,8 +307,10 @@ namespace Quartz
                 MarcusTwilio mt = new MarcusTwilio();
                 mt.calltwilio("+6596445769", "\n Failed Login Attempts detected at " + SMSlogintimestamps);//Change to dynamic variable in final presentation
                 SMSlogintimestamps = "";
+                LoginAttemptCount = 0;
             }
         }
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             ContentWrapper.NavigationService.Navigate(new CheckUpdater());
@@ -341,7 +327,7 @@ namespace Quartz
             if (!File.Exists(filePath))
             {
                 File.Create(filePath).Dispose();
-                File.AppendAllLines(filePath, new[] { "hp:00000000" , "times:3" , "enabled:y" , "takepic:y" , "sms:y" , "email:y" , "password:n"});
+                File.AppendAllLines(filePath, new[] { "hp:00000000" , "times:3" , "enabled:Yes" , "takepic:Yes" , "sms:Yes" , "email:Yes" , "password:n"});
             }
             else
             {
@@ -440,8 +426,8 @@ namespace Quartz
             string title = "Enter Password";//title as heading
             string boxcontent;//title
             string defaulttext = "Default text";//default textbox content
-            string errormessage = "Error message";//error messagebox content
-            string errortitle = "Error message title";//error messagebox heading title
+            string errormessage = "Password can't be empty";//error messagebox content
+            string errortitle = "Error";//error messagebox heading title
             string okbuttontext = "Enter";//Ok button content
             Brush BoxBackgroundColor = Brushes.Azure;// Window Background
             Brush InputBackgroundColor = Brushes.Ivory;// Textbox Background
