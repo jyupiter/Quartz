@@ -27,5 +27,10 @@ namespace Quartz.AG
         {
             FilesWrapper.NavigationService.Navigate(new FileProtector());
         }
+
+        private void RedirectToFileSummary(object sender, RoutedEventArgs e)
+        {
+            FilesWrapper.NavigationService.Navigate(new FileSummary());
+        }
     }
 }

@@ -23,7 +23,7 @@
                 <Button Style="{StaticResource BSideButtonStyle}" Template="{StaticResource BSideButtonTemplate}" Click="RedirectToFileComparer" Content="Search Logs" HorizontalAlignment="Left"/>
                 <Button Style="{StaticResource BSideButtonStyle}" Template="{StaticResource BSideButtonTemplate}" Click="RedirectToFileProtector" Content="Protect Files" HorizontalAlignment="Left"/>
                 <Rectangle Width="1" Fill="#FFCCCCCC" Margin="10,0"></Rectangle>
-                <Button Style="{StaticResource BSideButtonStyle}" Template="{StaticResource BSideButtonTemplate}" ToolTip="Aggregation of results" Content="Summary" HorizontalAlignment="Left"/>
+                <Button Style="{StaticResource BSideButtonStyle}" Template="{StaticResource BSideButtonTemplate}" Click="RedirectToFileSummary" ToolTip="Aggregation of results" Content="Summary" HorizontalAlignment="Left"/>
             </StackPanel>
         </Border>
         <Frame Name="FilesWrapper" NavigationUIVisibility="Hidden" DockPanel.Dock="Top" Source="/Quartz;component/AG/FileWatcher.xaml"/>
