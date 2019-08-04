@@ -151,7 +151,7 @@ namespace Quartz.HQ
 			{
 				//Debug.WriteLine("cycles: " + cycles);
 				System.Diagnostics.Process[] pname = System.Diagnostics.Process.GetProcessesByName(process);
-				if (pname.Length == 0)
+				if (pname.Length == 0 || !NotInWhiteList(process))
 				{
 					//
 					LogPcsTime(process, startTime, runTime, DateTime.Now);
@@ -188,7 +188,7 @@ namespace Quartz.HQ
 							}
 							else
 							{
-								Toast(p.ProcessName, "Warn");
+								Toast("High CPU usage by " + p.ProcessName, "Error");
 								cpuCycles = 0;
 							}
 						}
@@ -211,7 +211,7 @@ namespace Quartz.HQ
 						}
 						else
 						{
-							Toast(p.ProcessName, "Warn");
+							Toast("High memory usage by " + p.ProcessName, "Warn");
 							ramCycles = 0;
 						}
 					}
@@ -284,9 +284,36 @@ namespace Quartz.HQ
 			//}
 		}
 
+		public void SaveWhitelist(object sender, RoutedEventArgs e)
+		{
+			using (System.IO.StreamWriter file =
+			new System.IO.StreamWriter("..\\..\\..\\HQ\\Filters\\ProcessW.txt"))
+			{
+					// If the line doesn't contain the word 'Second', write the line to the file.
+				file.WriteLine(whitelistBox.Text);
+			}
+			ReloadWhiteList();
+		}
+
 		public void ReloadWhiteList()
 		{
 			whiteList = File.ReadAllLines("..\\..\\..\\HQ\\Filters\\ProcessW.txt");
+			Array.Sort(whiteList);
+			DisplayWhiteList();
+		}
+
+		public void DisplayWhiteList()
+		{
+			string output = "";
+			for(int i =1; i< whiteList.Length; i++)
+			{
+				output += whiteList[i] + "\n";
+			}
+			//foreach(string line in whiteList)
+			//{
+			//	output += line + "\n";
+			//}
+			whitelistBox.Text = output;
 		}
 
 		public bool NotInWhiteList(string process)
@@ -359,7 +386,19 @@ namespace Quartz.HQ
 		{
 			Application.Current.Dispatcher.Invoke((Action)delegate
 			{
-				notifier.ShowWarning(message);
+				switch (type)
+				{
+					case "Warn":
+						notifier.ShowWarning(message);
+						break;
+					case "Error":
+						notifier.ShowError(message);
+						break;
+					case "Info":
+						notifier.ShowInformation(message);
+						break;
+				}
+				
 			});
 
 		}

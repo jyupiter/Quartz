@@ -24,18 +24,23 @@ namespace Quartz.HQ
 	/// <summary>
 	/// Interaction logic for Graphs.xaml
 	/// </summary>
-	public partial class Graphs : Page
+	public partial class Graphs : Page, INotifyPropertyChanged
 	{
-		public double AxisMax;
-		public double AxisMin;
+		private double _axisMax;
+		private double _axisMin;
 		public SeriesCollection SeriesCollection { get; set; }
 		public string[] Labels { get; set; }
 		public Func<double, string> YFormatter { get; set; }
-		public float cpu;
-		public float mem;
-		public float disk;
-		public float net;
-		public float gpu;
+		private double cpu;
+		private double mem;
+		private double disk;
+		private double net;
+		private double gpu;
+		private double cpuThreshold = 0.1;
+		private double memThreshold = 0.8;
+		private double diskThreshold = 0.8;
+		private double netThreshold = 0.8;
+		private double gpuThreshold = 0.8;
 		public int waitTime; //ms
 		public ChartValues<MeasureModel> GpuValues { get; set; }
 		public ChartValues<MeasureModel> CpuValues { get; set; }
@@ -45,6 +50,32 @@ namespace Quartz.HQ
 		public Func<double, string> DateTimeFormatter { get; set; }
 		public double AxisStep { get; set; }
 		public double AxisUnit { get; set; }
+
+		public double AxisMax
+		{
+			get { return _axisMax; }
+			set
+			{
+				_axisMax = value;
+				OnPropertyChanged("AxisMax");
+			}
+		}
+		public double AxisMin
+		{
+			get { return _axisMin; }
+			set
+			{
+				_axisMin = value;
+				OnPropertyChanged("AxisMin");
+			}
+		}
+		public event PropertyChangedEventHandler PropertyChanged;
+		protected virtual void OnPropertyChanged(string propertyName = null)
+		{
+			if (PropertyChanged != null)
+				PropertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+
 		public Graphs()
 		{
 			Debug.WriteLine("Loading Graphs");
@@ -65,7 +96,7 @@ namespace Quartz.HQ
 			NetValues = new ChartValues<MeasureModel>();
 			//Debug.WriteLine(value);
 			//lets set how to display the X Labels
-			//DateTimeFormatter = value => new DateTime((long)value).ToString("hh:mm:ss");
+			DateTimeFormatter = value => new DateTime((long)value).ToString("hh:mm:ss");
 			//AxisStep forces the distance between each separator in the X axis
 			AxisStep = TimeSpan.FromSeconds(1).Ticks;
 			//AxisUnit forces lets the axis know that we are plotting seconds
@@ -160,6 +191,7 @@ namespace Quartz.HQ
 		public void GpuThread()
 		{
 			Debug.WriteLine("Starting Gpu");
+			int gpuCycles = 0;
 			var GPUs = PhysicalGPU.GetPhysicalGPUs();
 			while (true)
 			{
@@ -169,11 +201,30 @@ namespace Quartz.HQ
 					gpu = GPUs[0].UsageInformation.GPU.Percentage;
 					UpdateGraphs(0, gpu);
 					//Debug.WriteLine("updating gpu: " + gpu);
+					if (gpu > gpuThreshold)
+					{
+						if (gpuCycles < 20)
+						{
+							gpuCycles++;
+						}
+						else
+						{
+							Toast("High GPU usage detected!", "Info");
+							gpuCycles = 0;
+						}
+					}
+					else
+					{
+						gpuCycles = 0;
+					}
 				}
 				catch (Exception e)
 				{
+					Debug.WriteLine(e);
 					Debug.WriteLine("<---!	GPU inactive !--->");
 				}
+
+				
 			}
 
 		}
@@ -181,6 +232,7 @@ namespace Quartz.HQ
 		private void CpuThread()
 		{
 			Debug.WriteLine("Starting Cpu");
+			int cpuCycles = 0;
 			while (true)
 			{
 				PerformanceCounter cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
@@ -188,26 +240,60 @@ namespace Quartz.HQ
 				System.Threading.Thread.Sleep(waitTime);
 				cpu = cpuCounter.NextValue();
 				UpdateGraphs(1, cpu);
+				if (cpu > cpuThreshold)
+				{
+					if (cpuCycles < 20)
+					{
+						cpuCycles++;
+					}
+					else
+					{
+						Toast("High CPU usage detected!", "Info");
+						cpuCycles = 0;
+					}
+				}
+				else
+				{
+					cpuCycles = 0;
+				}
 			}
 		}
 
 		private void MemThread()
 		{
 			Debug.WriteLine("Starting Mem");
+			int memCycles = 0;
 			while (true)
 			{
+				
 				PerformanceCounter ramCounter = new PerformanceCounter("Memory", "% Committed Bytes In Use");
 				ramCounter.NextValue();
 				System.Threading.Thread.Sleep(waitTime);
 				mem = ramCounter.NextValue();
 				//Debug.Write(mem + "-");
 				UpdateGraphs(2, mem);
-				//Console.WriteLine("Memory Used: " + mem);
+				if (mem > memThreshold)
+				{
+					if (memCycles < 20)
+					{
+						memCycles++;
+					}
+					else
+					{
+						Toast("High Memory usage detected!", "Info");
+						memCycles = 0;
+					}
+				}
+				else
+				{
+					memCycles = 0;
+				}
 			}
 		}
 
 		private void DiskThread()
 		{
+			int diskCycles = 0;
 			Debug.WriteLine("Starting Disk");
 			while (true)
 			{
@@ -216,6 +302,22 @@ namespace Quartz.HQ
 				System.Threading.Thread.Sleep(waitTime);
 				disk = diskCounter.NextValue();
 				UpdateGraphs(3, disk);
+				if (disk > diskThreshold)
+				{
+					if (diskCycles < 20)
+					{
+						diskCycles++;
+					}
+					else
+					{
+						Toast("High Disk usage detected!", "Info");
+						
+					}
+				}
+				else
+				{
+					diskCycles = 0;
+				}
 				//Console.WriteLine("Disk usage: " + disk);
 			}
 		}
@@ -230,16 +332,20 @@ namespace Quartz.HQ
 
 			PerformanceCounter dataReceivedCounter;
 
+
 			float sendSum = 0;
 			float receiveSum = 0;
 
 			PerformanceCounterCategory category = new PerformanceCounterCategory("Network Interface");
 			String[] instanceName = category.GetInstanceNames();
+
+			bandwidthCounter = new PerformanceCounter("Network Interface", "Current Bandwidth", instanceName[0]);
+			dataSentCounter = new PerformanceCounter("Network Interface", "Bytes Sent/sec", instanceName[0]);
+			dataReceivedCounter = new PerformanceCounter("Network Interface", "Bytes Received/sec", instanceName[0]);
+
 			while (true)
 			{
-				bandwidthCounter = new PerformanceCounter("Network Interface", "Current Bandwidth", instanceName[0]);
-				dataSentCounter = new PerformanceCounter("Network Interface", "Bytes Sent/sec", instanceName[0]);
-				dataReceivedCounter = new PerformanceCounter("Network Interface", "Bytes Received/sec", instanceName[0]);
+
 				bandwidth = bandwidthCounter.NextValue();
 				sendSum = dataSentCounter.NextValue();
 				receiveSum = dataReceivedCounter.NextValue();
@@ -247,8 +353,15 @@ namespace Quartz.HQ
 				bandwidth = bandwidthCounter.NextValue();
 				sendSum = dataSentCounter.NextValue();
 				receiveSum = dataReceivedCounter.NextValue();
-				net = (8 * (sendSum + receiveSum) / bandwidth);
+				Random rng = new Random();
+				net = rng.NextDouble();//(8 * (sendSum + receiveSum) / bandwidth);
+				//Debug.WriteLine("instanceName " + instanceName[0]);
+
+				//Debug.WriteLine("sendSum " + sendSum);
+				//Debug.WriteLine("receiveSum " + receiveSum);
+				//Debug.WriteLine("bandwidth " + bandwidth);
 				UpdateGraphs(4, net);
+				
 			}
 		}
 		private void SetAxisLimits(DateTime now)
@@ -256,31 +369,6 @@ namespace Quartz.HQ
 			AxisMax = now.Ticks + TimeSpan.FromSeconds(1).Ticks; // lets force the axis to be 1 second ahead
 			AxisMin = now.Ticks - TimeSpan.FromSeconds(8).Ticks; // and 8 seconds behind
 		}
-
-		private void Toast(string message, string type)
-		{
-			Application.Current.Dispatcher.Invoke((Action)delegate
-			{
-				notifier.ShowWarning(message);
-			});
-
-		}
-
-		Notifier notifier = new Notifier(cfg =>
-		{
-			cfg.PositionProvider = new WindowPositionProvider(
-				parentWindow: Application.Current.MainWindow,
-				corner: Corner.TopRight,
-				offsetX: 10,
-				offsetY: 10);
-
-			cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
-				notificationLifetime: TimeSpan.FromSeconds(3),
-				maximumNotificationCount: MaximumNotificationCount.FromCount(5));
-
-			cfg.Dispatcher = Application.Current.Dispatcher;
-		});
-
 		private void Cpu(object sender, RoutedEventArgs e)
 		{
 			ToggleVisibility();
@@ -316,6 +404,42 @@ namespace Quartz.HQ
 			this.DiskGraph.Visibility = Visibility.Collapsed;
 			this.NetGraph.Visibility = Visibility.Collapsed;
 		}
+
+		private void Toast(string message, string type)
+		{
+			Application.Current.Dispatcher.Invoke((Action)delegate
+			{
+				switch (type)
+				{
+					case "Warn":
+						notifier.ShowWarning(message);
+						break;
+					case "Error":
+						notifier.ShowError(message);
+						break;
+					case "Info":
+						notifier.ShowInformation(message);
+						break;
+				}
+
+			});
+
+		}
+
+		Notifier notifier = new Notifier(cfg =>
+		{
+			cfg.PositionProvider = new WindowPositionProvider(
+				parentWindow: Application.Current.MainWindow,
+				corner: Corner.TopRight,
+				offsetX: 10,
+				offsetY: 10);
+
+			cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
+				notificationLifetime: TimeSpan.FromSeconds(3),
+				maximumNotificationCount: MaximumNotificationCount.FromCount(5));
+
+			cfg.Dispatcher = Application.Current.Dispatcher;
+		});
 
 	}
 

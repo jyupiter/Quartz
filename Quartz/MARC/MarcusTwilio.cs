@@ -31,7 +31,7 @@ namespace Quartz.MARC
                 var message = MessageResource.Create(
                     body: timeStamp,
                     from: new Twilio.Types.PhoneNumber("+12055576024"),//DO NOT CHANGE
-                    to: new Twilio.Types.PhoneNumber(phoneNo)// will need to un-static this thing to a variable with user's HP
+                    to: new Twilio.Types.PhoneNumber("+65"+phoneNo)// will need to un-static this thing to a variable with user's HP
                 );
 
                 Console.WriteLine(message.Sid);
