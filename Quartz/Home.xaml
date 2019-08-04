@@ -9,13 +9,15 @@
       Title="Home">
     <DockPanel LastChildFill="True">
         <StackPanel DockPanel.Dock="Left" Width="250px" Margin="50,100" HorizontalAlignment="Left" Orientation="Horizontal">
-            <StackPanel Orientation="Vertical" Width="229px">
-                <TextBlock Text="A Title Here" TextWrapping="Wrap" FontFamily="Helvetica Neue" FontSize="30" FontWeight="Bold" TextAlignment="Right"></TextBlock>
-                <TextBlock Text="A series of words which when fully read will impart no new knowledge to the reader but still exacts the price of a couple of seconds that could have been put to better use." TextAlignment="Right" FontSize="15" Margin="0,10" TextWrapping="Wrap"></TextBlock>
+            <StackPanel Orientation="Vertical" Width="250px">
+                <TextBlock Text="Welcome!" TextWrapping="Wrap" FontFamily="Helvetica Neue" FontSize="30" FontWeight="Bold"></TextBlock>
+                <Rectangle Width="50" Height="5" Fill="#FFFE6F5E" Margin="-200,15,0,0"></Rectangle>
+                <TextBlock Text="Not all security gaps can be bridged with traditional antimalware. As attacks increase in sophistication, users must become even more involved with security." FontSize="15" Margin="0,25,0,0" TextWrapping="Wrap"></TextBlock>
+                <TextBlock Text="Keep your device safe with Quartz. Never miss anything with improved tracking and tools." FontSize="15" Margin="0,10,0,0" TextWrapping="Wrap"></TextBlock>
             </StackPanel>
         </StackPanel>
         <Grid DockPanel.Dock="Left">
-            <Image Source="https://cdn1.eyeem.com/thumb/1041eb361773c1b2ed61862d34b03b32b333d438-1452607889656/w/800" Opacity="0.7"></Image>
+            <Image Source="https://uploads-ssl.webflow.com/5b9559af7794ec069e767cf3/5bf28822486e7f6006d7a952_illustrasjon_entrepeneurial_ambitious_transparang2-min.png" Opacity="0.7"></Image>
         </Grid>
     </DockPanel>
 </Page>

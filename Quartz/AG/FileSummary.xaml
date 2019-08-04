@@ -24,13 +24,9 @@
             <StackPanel>
                 <Label Content="Description" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
                 <TextBlock Text="Summary of all logged filesystem events." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
-
-                <StackPanel Margin="5,10,5,0">
-                    <CheckBox Content="Create" Margin="0,0,0,5"></CheckBox>
-                    <CheckBox Content="Rename" Margin="0,0,0,5"></CheckBox>
-                    <CheckBox Content="Change" Margin="0,0,0,5"></CheckBox>
-                    <CheckBox Content="Delete" Margin="0,0,0,5"></CheckBox>
-                </StackPanel>
+                <Label Content="Files" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
+                <TextBlock Text="Select a log file to graph its contents." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
+                <ComboBox Name="SelectedFileComboBox" Margin="5,0,5,10" SelectionChanged="SelectedFileComboBox_SelectionChanged"></ComboBox>
             </StackPanel>
         </StackPanel>
         <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20"/>
