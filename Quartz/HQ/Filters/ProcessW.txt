@@ -1,5 +1,5 @@
 ACCStd
-avpui
+ForgedAlliance
 AdminService
 AGMService
 AGSService
@@ -10,6 +10,7 @@ AppMonitorPlugIn
 ATH
 audiodg
 avp
+avpui
 BackgroundAgent
 backgroundTaskHost
 browser_broker
