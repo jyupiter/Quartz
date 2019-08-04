@@ -14,24 +14,28 @@ namespace Quartz.AG
     /// </summary>
     public partial class FileSummary : Page
     {
+        public FileSummary()
+        {
+            InitializeComponent();
+            Graph();
+        }
+
         public int[] changed = new int[24];
         public int[] renamed = new int[24];
         public int[] deleted = new int[24];
         public int[] created = new int[24];
+        string fileToUse = "12-07-2019_12-41-15.qtz";
 
-        public FileSummary()
+        private void Graph()
         {
-            string fileToUse = "12-07-2019_12-41-15.qtz";
-            InitializeComponent();
-            
-            countEvents(parseLogs(fileToUse));
+            CountEvents(ParseLogs(fileToUse));
 
             SeriesCollection = new SeriesCollection
             {
                 new StackedColumnSeries
                 {
                     Values = new ChartValues<int>(changed),
-                    StackMode = StackMode.Values, // this is not necessary, values is the default stack mode
+                    StackMode = StackMode.Values,
                     DataLabels = true
                 },
             };
@@ -56,29 +60,29 @@ namespace Quartz.AG
             //adding values also updates and animates
             //SeriesCollection[2].Values.Add(4d);
 
-            Labels = new[] { "Changed", "Renamed", "Deleted","Created"};
+            Labels = new[] { "Changed", "Renamed", "Deleted", "Created" };
             //Formatter = value => value + " Mill";
 
             DataContext = this;
         }
 
-        public List<Log> parseLogs(string file)
+        public List<Log> ParseLogs(string file)
         {
             string path = _Folder.BaseFolder;
             List<Log> logs = new List<Log>();
             Log log;
             var logDir = Path.Combine(path, "Quartz/Logs/");
-            string[] logFile = System.IO.File.ReadAllLines(logDir + file);
+            string[] logFile = File.ReadAllLines(logDir + file);
             foreach(string line in logFile)
             {
                 string[] entry = line.Split('|');
-                log = new Log(Int32.Parse(entry[0]), entry[1], entry[2], entry[3], entry[4]);
+                log = new Log(int.Parse(entry[0]), entry[1], entry[2], entry[3], entry[4]);
                 logs.Add(log);
             }
             return logs;
     }
 
-    public void countEvents(List<Log> logs)
+    public void CountEvents(List<Log> logs)
         {
             changed = new int[24];
             renamed = new int[24];
@@ -110,9 +114,7 @@ namespace Quartz.AG
                         break;
                     }
                     Debug.WriteLine(log.dateTime.Hour);
-
                 }
-
             }
             Debug.WriteLine(changed);
         }
