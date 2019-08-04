@@ -188,7 +188,7 @@ namespace Quartz.HQ
 							}
 							else
 							{
-								Toast(p.ProcessName, "Warn");
+								Toast("High CPU usage by " + p.ProcessName, "Error");
 								cpuCycles = 0;
 							}
 						}
@@ -211,7 +211,7 @@ namespace Quartz.HQ
 						}
 						else
 						{
-							Toast(p.ProcessName, "Warn");
+							Toast("High memory usage by " + p.ProcessName, "Warn");
 							ramCycles = 0;
 						}
 					}
@@ -386,7 +386,19 @@ namespace Quartz.HQ
 		{
 			Application.Current.Dispatcher.Invoke((Action)delegate
 			{
-				notifier.ShowWarning(message);
+				switch (type)
+				{
+					case "Warn":
+						notifier.ShowWarning(message);
+						break;
+					case "Error":
+						notifier.ShowError(message);
+						break;
+					case "Info":
+						notifier.ShowInformation(message);
+						break;
+				}
+				
 			});
 
 		}

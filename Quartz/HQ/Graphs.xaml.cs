@@ -31,11 +31,16 @@ namespace Quartz.HQ
 		public SeriesCollection SeriesCollection { get; set; }
 		public string[] Labels { get; set; }
 		public Func<double, string> YFormatter { get; set; }
-		public double cpu;
-		public double mem;
-		public double disk;
-		public double net;
-		public double gpu;
+		private double cpu;
+		private double mem;
+		private double disk;
+		private double net;
+		private double gpu;
+		private double cpuThreshold = 0.1;
+		private double memThreshold = 0.8;
+		private double diskThreshold = 0.8;
+		private double netThreshold = 0.8;
+		private double gpuThreshold = 0.8;
 		public int waitTime; //ms
 		public ChartValues<MeasureModel> GpuValues { get; set; }
 		public ChartValues<MeasureModel> CpuValues { get; set; }
@@ -186,6 +191,7 @@ namespace Quartz.HQ
 		public void GpuThread()
 		{
 			Debug.WriteLine("Starting Gpu");
+			int gpuCycles = 0;
 			var GPUs = PhysicalGPU.GetPhysicalGPUs();
 			while (true)
 			{
@@ -195,11 +201,30 @@ namespace Quartz.HQ
 					gpu = GPUs[0].UsageInformation.GPU.Percentage;
 					UpdateGraphs(0, gpu);
 					//Debug.WriteLine("updating gpu: " + gpu);
+					if (gpu > gpuThreshold)
+					{
+						if (gpuCycles < 20)
+						{
+							gpuCycles++;
+						}
+						else
+						{
+							Toast("High GPU usage detected!", "Info");
+							gpuCycles = 0;
+						}
+					}
+					else
+					{
+						gpuCycles = 0;
+					}
 				}
 				catch (Exception e)
 				{
+					Debug.WriteLine(e);
 					Debug.WriteLine("<---!	GPU inactive !--->");
 				}
+
+				
 			}
 
 		}
@@ -207,6 +232,7 @@ namespace Quartz.HQ
 		private void CpuThread()
 		{
 			Debug.WriteLine("Starting Cpu");
+			int cpuCycles = 0;
 			while (true)
 			{
 				PerformanceCounter cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
@@ -214,26 +240,60 @@ namespace Quartz.HQ
 				System.Threading.Thread.Sleep(waitTime);
 				cpu = cpuCounter.NextValue();
 				UpdateGraphs(1, cpu);
+				if (cpu > cpuThreshold)
+				{
+					if (cpuCycles < 20)
+					{
+						cpuCycles++;
+					}
+					else
+					{
+						Toast("High CPU usage detected!", "Info");
+						cpuCycles = 0;
+					}
+				}
+				else
+				{
+					cpuCycles = 0;
+				}
 			}
 		}
 
 		private void MemThread()
 		{
 			Debug.WriteLine("Starting Mem");
+			int memCycles = 0;
 			while (true)
 			{
+				
 				PerformanceCounter ramCounter = new PerformanceCounter("Memory", "% Committed Bytes In Use");
 				ramCounter.NextValue();
 				System.Threading.Thread.Sleep(waitTime);
 				mem = ramCounter.NextValue();
 				//Debug.Write(mem + "-");
 				UpdateGraphs(2, mem);
-				//Console.WriteLine("Memory Used: " + mem);
+				if (mem > memThreshold)
+				{
+					if (memCycles < 20)
+					{
+						memCycles++;
+					}
+					else
+					{
+						Toast("High Memory usage detected!", "Info");
+						memCycles = 0;
+					}
+				}
+				else
+				{
+					memCycles = 0;
+				}
 			}
 		}
 
 		private void DiskThread()
 		{
+			int diskCycles = 0;
 			Debug.WriteLine("Starting Disk");
 			while (true)
 			{
@@ -242,6 +302,22 @@ namespace Quartz.HQ
 				System.Threading.Thread.Sleep(waitTime);
 				disk = diskCounter.NextValue();
 				UpdateGraphs(3, disk);
+				if (disk > diskThreshold)
+				{
+					if (diskCycles < 20)
+					{
+						diskCycles++;
+					}
+					else
+					{
+						Toast("High Disk usage detected!", "Info");
+						
+					}
+				}
+				else
+				{
+					diskCycles = 0;
+				}
 				//Console.WriteLine("Disk usage: " + disk);
 			}
 		}
@@ -293,31 +369,6 @@ namespace Quartz.HQ
 			AxisMax = now.Ticks + TimeSpan.FromSeconds(1).Ticks; // lets force the axis to be 1 second ahead
 			AxisMin = now.Ticks - TimeSpan.FromSeconds(8).Ticks; // and 8 seconds behind
 		}
-
-		private void Toast(string message, string type)
-		{
-			Application.Current.Dispatcher.Invoke((Action)delegate
-			{
-				notifier.ShowWarning(message);
-			});
-
-		}
-
-		Notifier notifier = new Notifier(cfg =>
-		{
-			cfg.PositionProvider = new WindowPositionProvider(
-				parentWindow: Application.Current.MainWindow,
-				corner: Corner.TopRight,
-				offsetX: 10,
-				offsetY: 10);
-
-			cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
-				notificationLifetime: TimeSpan.FromSeconds(3),
-				maximumNotificationCount: MaximumNotificationCount.FromCount(5));
-
-			cfg.Dispatcher = Application.Current.Dispatcher;
-		});
-
 		private void Cpu(object sender, RoutedEventArgs e)
 		{
 			ToggleVisibility();
@@ -353,6 +404,42 @@ namespace Quartz.HQ
 			this.DiskGraph.Visibility = Visibility.Collapsed;
 			this.NetGraph.Visibility = Visibility.Collapsed;
 		}
+
+		private void Toast(string message, string type)
+		{
+			Application.Current.Dispatcher.Invoke((Action)delegate
+			{
+				switch (type)
+				{
+					case "Warn":
+						notifier.ShowWarning(message);
+						break;
+					case "Error":
+						notifier.ShowError(message);
+						break;
+					case "Info":
+						notifier.ShowInformation(message);
+						break;
+				}
+
+			});
+
+		}
+
+		Notifier notifier = new Notifier(cfg =>
+		{
+			cfg.PositionProvider = new WindowPositionProvider(
+				parentWindow: Application.Current.MainWindow,
+				corner: Corner.TopRight,
+				offsetX: 10,
+				offsetY: 10);
+
+			cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
+				notificationLifetime: TimeSpan.FromSeconds(3),
+				maximumNotificationCount: MaximumNotificationCount.FromCount(5));
+
+			cfg.Dispatcher = Application.Current.Dispatcher;
+		});
 
 	}
 
