@@ -332,10 +332,7 @@ namespace Quartz.AG
                     EnableLogs.IsChecked = bool.Parse(l[4]);
                 });
             }
-            catch(Exception)
-            {
-                //
-            }
+            catch(Exception) { }
         }
 
         #endregion
