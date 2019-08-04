@@ -178,10 +178,10 @@ namespace Quartz
             ContentWrapper.NavigationService.Navigate(new Files());
         }
 
-            private void RedirectToMonitering(object sender, RoutedEventArgs e)
-            {
-                  ContentWrapper.NavigationService.Navigate(new Overview());
-            }
+        private void RedirectToMonitering(object sender, RoutedEventArgs e)
+        {
+			ContentWrapper.NavigationService.Navigate(new Overview());
+        }
         
         private void RedirectToHome(object sender, RoutedEventArgs e)
         {

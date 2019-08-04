@@ -273,7 +273,7 @@ namespace Quartz.HQ
 					}
 					return;
 				}
-				catch (Exception e)
+				catch (Exception)
 				{
 					Debug.WriteLine("File in use! Try " + i);
 					Thread.Sleep(waitTime / 2);
@@ -342,13 +342,18 @@ namespace Quartz.HQ
 
 		private void UpdateDisplay()
 		{
-
-			Dispatcher.Invoke(() =>
+			try
 			{
-				Debug.WriteLine("Adding Entry!");
-				processGrid.ItemsSource = Sauce;
-				processGrid.Items.Refresh();
-			});
+				Dispatcher.Invoke(() =>
+				{
+					Debug.WriteLine("Adding Entry!");
+					processGrid.ItemsSource = Sauce;
+					processGrid.Items.Refresh();
+				});
+			} catch(Exception)
+			{
+
+			}
 		}
 		private void Toast(string message, string type)
 		{
