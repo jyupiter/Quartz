@@ -14,7 +14,6 @@
                 <ResourceDictionary Source="/Dictionaries/DataGridDictionary.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
-
     </Page.Resources>
     <DockPanel LastChildFill="True">
         <Label DockPanel.Dock="Top" Content="Protect Files" Margin="20,10" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="15"/>

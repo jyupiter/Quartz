@@ -315,7 +315,6 @@ namespace Quartz.HQ
 			this.RamGraph.Visibility = Visibility.Collapsed;
 			this.DiskGraph.Visibility = Visibility.Collapsed;
 			this.NetGraph.Visibility = Visibility.Collapsed;
-
 		}
 
 	}

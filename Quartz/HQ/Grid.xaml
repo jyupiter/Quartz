@@ -6,7 +6,8 @@
       xmlns:local="clr-namespace:Quartz.HQ"
       xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      Background="#FFFBFBFB"
+      d:DesignHeight="565" d:DesignWidth="980"
       Title="Overview">
     <Page.Resources>
         <ResourceDictionary>
@@ -17,6 +18,18 @@
         </ResourceDictionary>
     </Page.Resources>
     <DockPanel LastChildFill="True">
+        <Label DockPanel.Dock="Top" Content="Tracked Processes" Margin="20,10" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="15"/>
+        <Rectangle DockPanel.Dock="Top" Height="1" Fill="#FFCCCCCC" Margin="20,0"/>
+        <StackPanel DockPanel.Dock="Left" Width="199" Margin="20,20,0,20" HorizontalAlignment="Left">
+            <StackPanel>
+                <Label Content="Description" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
+                <TextBlock Text="Processes currently being tracked." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
+                <Label Content="Whitelist" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
+                <TextBlock Text="Exempt processes from tracking." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
+                <TextBox Name="whitelistBox" Margin="5,0,5,10"></TextBox>
+            </StackPanel>
+        </StackPanel>
+        <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20"/>
         <DataGrid Name="processGrid" DockPanel.Dock="Right" Margin="0,20,20,20" BorderBrush="LightGray" />
     </DockPanel>
 </Page>

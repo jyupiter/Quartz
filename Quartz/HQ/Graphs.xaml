@@ -6,8 +6,8 @@
       xmlns:local="clr-namespace:Quartz.HQ"
       xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Background="#FFFFFF"
+      d:DesignHeight="565" d:DesignWidth="980"
+      Background="#FFFBFBFB"
       Title="Graphs">
     <Page.Resources>
         <ResourceDictionary>
@@ -17,146 +17,150 @@
         </ResourceDictionary>
     </Page.Resources>
 
-    <DockPanel>
-        <Border BorderBrush="#FFCCCCCC" BorderThickness="0,0,0,1" DockPanel.Dock="Top">
-            <StackPanel Background="#FFF2F2F2" Height="25" Orientation="Horizontal">
-                <Button Style="{StaticResource BSideButtonStyle}" Template="{StaticResource BSideButtonTemplate}" Click="Gpu" Content="View GPU Usage Graph" HorizontalAlignment="Left" Margin="20,0,0,0"/>
-                <Button Style="{StaticResource BSideButtonStyle}" Template="{StaticResource BSideButtonTemplate}" Click="Cpu" Content="View CPU Usage Graph" HorizontalAlignment="Left"/>
-                <Button Style="{StaticResource BSideButtonStyle}" Template="{StaticResource BSideButtonTemplate}" Click="Ram" Content="View RAM Usage Graph" HorizontalAlignment="Left" Margin="20,0,0,0"/>
-                <Button Style="{StaticResource BSideButtonStyle}" Template="{StaticResource BSideButtonTemplate}" Click="Disk" Content="View Disk Usage Graph" HorizontalAlignment="Left"/>
-                <Button Style="{StaticResource BSideButtonStyle}" Template="{StaticResource BSideButtonTemplate}" Click="Network" Content="View Network Usage Graph" HorizontalAlignment="Left"/>
-                <Rectangle Width="1" Fill="#FFCCCCCC" Margin="10,0"></Rectangle>
+    <DockPanel LastChildFill="True">
+        <Label DockPanel.Dock="Top" Content="Process Graphs" Margin="20,10" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="15"/>
+        <Rectangle DockPanel.Dock="Top" Height="1" Fill="#FFCCCCCC" Margin="20,0"/>
+        <StackPanel DockPanel.Dock="Left" Width="199" Margin="20,20,0,20" HorizontalAlignment="Left">
+            <StackPanel>
+                <Label Content="Description" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
+                <TextBlock Text="Resource usage." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
+
+                <StackPanel Margin="5,10,5,0">
+                    <RadioButton GroupName="ToggleGraphs" Margin="0,0,0,5" Content="CPU" IsChecked="True" Click="Cpu"></RadioButton>
+                    <RadioButton GroupName="ToggleGraphs" Margin="0,0,0,5" Content="GPU" Click="Gpu"></RadioButton>
+                    <RadioButton GroupName="ToggleGraphs" Margin="0,0,0,5" Content="RAM" Click="Ram"></RadioButton>
+                    <RadioButton GroupName="ToggleGraphs" Margin="0,0,0,5" Content="Disk" Click="Disk"></RadioButton>
+                    <RadioButton GroupName="ToggleGraphs" Margin="0,0,0,5" Content="Network" Click="Network"></RadioButton>
+                </StackPanel>
             </StackPanel>
-        </Border>
-        <TextBlock Name="graphName">Select a graph to display</TextBlock>
-        <!--Here we disable tooltips and hovering to get a better performance-->
-        <lvc:CartesianChart Name="GpuGraph" Visibility="Visible" BorderBrush="#FFCCCCCC" BorderThickness="1" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}">
-            <lvc:CartesianChart.Series>
-                <lvc:LineSeries Values="{Binding GpuValues}" 
-                                PointGeometry="{x:Null}" 
-                                LineSmoothness="1"
-                                StrokeThickness="2" 
-                                Stroke="Navy"
-                                Fill="Transparent"/>
-            </lvc:CartesianChart.Series>
-            <lvc:CartesianChart.AxisX>
-                <lvc:Axis  
-                          MaxValue="{Binding AxisMax}" 
-                          MinValue="{Binding AxisMin}"
-                          Unit="{Binding AxisUnit}">
-                    <lvc:Axis.Separator>
-                        <lvc:Separator Step="{Binding AxisStep}" />
-                    </lvc:Axis.Separator>
-                </lvc:Axis>
-            </lvc:CartesianChart.AxisX>
-            <lvc:CartesianChart.AxisY>
-                <lvc:Axis MaxValue="100" 
-                          MinValue="0">
-                </lvc:Axis>
-            </lvc:CartesianChart.AxisY>
-        </lvc:CartesianChart>
-        <lvc:CartesianChart Visibility="Collapsed" Name="CpuGraph" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}" Margin="0,67,0,-0.4">
-            <lvc:CartesianChart.Series>
-                <lvc:LineSeries Values="{Binding CpuValues}" 
+        </StackPanel>
+        <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20"/>
+        <Grid Name="GraphWrapper" DockPanel.Dock="Right" Margin="0,0,20,20">
+            <lvc:CartesianChart Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualWidth}" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualHeight}" Visibility="Visible" Name="CpuGraph" BorderBrush="#FFCCCCCC" BorderThickness="1" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}">
+                <lvc:CartesianChart.Series>
+                    <lvc:LineSeries Values="{Binding CpuValues}" 
                                 PointGeometry="{x:Null}" 
                                 LineSmoothness="1"
                                 StrokeThickness="2" 
                                 Stroke="Violet"
                                 Fill="Transparent"/>
-            </lvc:CartesianChart.Series>
-            <lvc:CartesianChart.AxisX>
-                <lvc:Axis  
+                </lvc:CartesianChart.Series>
+                <lvc:CartesianChart.AxisX>
+                    <lvc:Axis  
                           MaxValue="{Binding AxisMax}" 
                           MinValue="{Binding AxisMin}"
                           Unit="{Binding AxisUnit}">
-                    <lvc:Axis.Separator>
-                        <lvc:Separator Step="{Binding AxisStep}" />
-                    </lvc:Axis.Separator>
-                </lvc:Axis>
-            </lvc:CartesianChart.AxisX>
-            <lvc:CartesianChart.AxisY>
-                <lvc:Axis MaxValue="100" 
+                        <lvc:Axis.Separator>
+                            <lvc:Separator Step="{Binding AxisStep}" />
+                        </lvc:Axis.Separator>
+                    </lvc:Axis>
+                </lvc:CartesianChart.AxisX>
+                <lvc:CartesianChart.AxisY>
+                    <lvc:Axis MaxValue="100" 
                           MinValue="0">
-                </lvc:Axis>
-            </lvc:CartesianChart.AxisY>
-        </lvc:CartesianChart>
-        <lvc:CartesianChart Grid.Row="3" Visibility="Collapsed" Name="RamGraph" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}" Margin="0,292,0,-0.4">
-            <lvc:CartesianChart.Series>
-                <lvc:LineSeries Values="{Binding MemValues}" 
+                    </lvc:Axis>
+                </lvc:CartesianChart.AxisY>
+            </lvc:CartesianChart>
+            <lvc:CartesianChart Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualWidth}" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualHeight}" Name="GpuGraph" Visibility="Collapsed" BorderBrush="#FFCCCCCC" BorderThickness="1" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}">
+                <lvc:CartesianChart.Series>
+                    <lvc:LineSeries Values="{Binding GpuValues}" 
+                                PointGeometry="{x:Null}" 
+                                LineSmoothness="1"
+                                StrokeThickness="2" 
+                                Stroke="Navy"
+                                Fill="Transparent"/>
+                </lvc:CartesianChart.Series>
+                <lvc:CartesianChart.AxisX>
+                    <lvc:Axis  
+                          MaxValue="{Binding AxisMax}" 
+                          MinValue="{Binding AxisMin}"
+                          Unit="{Binding AxisUnit}">
+                        <lvc:Axis.Separator>
+                            <lvc:Separator Step="{Binding AxisStep}" />
+                        </lvc:Axis.Separator>
+                    </lvc:Axis>
+                </lvc:CartesianChart.AxisX>
+                <lvc:CartesianChart.AxisY>
+                    <lvc:Axis MaxValue="100" 
+                          MinValue="0">
+                    </lvc:Axis>
+                </lvc:CartesianChart.AxisY>
+            </lvc:CartesianChart>
+            <lvc:CartesianChart Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualWidth}" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualHeight}" Visibility="Collapsed" Name="RamGraph" BorderBrush="#FFCCCCCC" BorderThickness="1" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}">
+                <lvc:CartesianChart.Series>
+                    <lvc:LineSeries Values="{Binding MemValues}" 
                                 PointGeometry="{x:Null}" 
                                 LineSmoothness="1"
                                 StrokeThickness="2" 
                                 Stroke="Green"
                                 Fill="Transparent"/>
-            </lvc:CartesianChart.Series>
-            <lvc:CartesianChart.AxisX>
-                <lvc:Axis  
+                </lvc:CartesianChart.Series>
+                <lvc:CartesianChart.AxisX>
+                    <lvc:Axis  
                           MaxValue="{Binding AxisMax}" 
                           MinValue="{Binding AxisMin}"
                           Unit="{Binding AxisUnit}">
-                    <lvc:Axis.Separator>
-                        <lvc:Separator Step="{Binding AxisStep}" />
-                    </lvc:Axis.Separator>
-                </lvc:Axis>
-            </lvc:CartesianChart.AxisX>
-            <lvc:CartesianChart.AxisY>
-                <lvc:Axis MaxValue="100" 
+                        <lvc:Axis.Separator>
+                            <lvc:Separator Step="{Binding AxisStep}" />
+                        </lvc:Axis.Separator>
+                    </lvc:Axis>
+                </lvc:CartesianChart.AxisX>
+                <lvc:CartesianChart.AxisY>
+                    <lvc:Axis MaxValue="100" 
                           MinValue="0">
-                </lvc:Axis>
-            </lvc:CartesianChart.AxisY>
-        </lvc:CartesianChart>
-        <lvc:CartesianChart Grid.Row="4" Name="DiskGraph" Visibility="Collapsed" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}" Margin="0,292,0,-0.4">
-            <lvc:CartesianChart.Series>
-                <lvc:LineSeries Values="{Binding DiskValues}" 
+                    </lvc:Axis>
+                </lvc:CartesianChart.AxisY>
+            </lvc:CartesianChart>
+            <lvc:CartesianChart Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualWidth}" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualHeight}" Name="DiskGraph" Visibility="Collapsed" BorderBrush="#FFCCCCCC" BorderThickness="1" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}">
+                <lvc:CartesianChart.Series>
+                    <lvc:LineSeries Values="{Binding DiskValues}" 
                                 PointGeometry="{x:Null}" 
                                 LineSmoothness="1"
                                 StrokeThickness="2" 
                                 Stroke="Crimson"
                                 Fill="Transparent"/>
-            </lvc:CartesianChart.Series>
-            <lvc:CartesianChart.AxisX>
-                <lvc:Axis  
+                </lvc:CartesianChart.Series>
+                <lvc:CartesianChart.AxisX>
+                    <lvc:Axis  
                           MaxValue="{Binding AxisMax}" 
                           MinValue="{Binding AxisMin}"
                           Unit="{Binding AxisUnit}">
-                    <lvc:Axis.Separator>
-                        <lvc:Separator Step="{Binding AxisStep}" />
-                    </lvc:Axis.Separator>
-                </lvc:Axis>
-            </lvc:CartesianChart.AxisX>
-            <lvc:CartesianChart.AxisY>
-                <lvc:Axis MaxValue="100" 
+                        <lvc:Axis.Separator>
+                            <lvc:Separator Step="{Binding AxisStep}" />
+                        </lvc:Axis.Separator>
+                    </lvc:Axis>
+                </lvc:CartesianChart.AxisX>
+                <lvc:CartesianChart.AxisY>
+                    <lvc:Axis MaxValue="100" 
                           MinValue="0">
-                </lvc:Axis>
-            </lvc:CartesianChart.AxisY>
-        </lvc:CartesianChart>
-
-        <lvc:CartesianChart Grid.Row="5" Name="NetGraph" Visibility="Collapsed" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}" Margin="0,292,0,-0.4">
-            <lvc:CartesianChart.Series>
-                <lvc:LineSeries Values="{Binding NetValues}" 
+                    </lvc:Axis>
+                </lvc:CartesianChart.AxisY>
+            </lvc:CartesianChart>
+            <lvc:CartesianChart Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualWidth}" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualHeight}" Name="NetGraph" BorderBrush="#FFCCCCCC" BorderThickness="1" Visibility="Collapsed" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}">
+                <lvc:CartesianChart.Series>
+                    <lvc:LineSeries Values="{Binding NetValues}" 
                                 PointGeometry="{x:Null}" 
                                 LineSmoothness="1"
                                 StrokeThickness="2" 
                                 Stroke="Orange"
                                 Fill="Transparent"/>
-            </lvc:CartesianChart.Series>
-            <lvc:CartesianChart.AxisX>
-                <lvc:Axis  
+                </lvc:CartesianChart.Series>
+                <lvc:CartesianChart.AxisX>
+                    <lvc:Axis  
                           MaxValue="{Binding AxisMax}" 
                           MinValue="{Binding AxisMin}"
                           Unit="{Binding AxisUnit}">
-                    <lvc:Axis.Separator>
-                        <lvc:Separator Step="{Binding AxisStep}" />
-                    </lvc:Axis.Separator>
-                </lvc:Axis>
-            </lvc:CartesianChart.AxisX>
-            <lvc:CartesianChart.AxisY>
-                <lvc:Axis MaxValue="100" 
+                        <lvc:Axis.Separator>
+                            <lvc:Separator Step="{Binding AxisStep}" />
+                        </lvc:Axis.Separator>
+                    </lvc:Axis>
+                </lvc:CartesianChart.AxisX>
+                <lvc:CartesianChart.AxisY>
+                    <lvc:Axis MaxValue="100" 
                           MinValue="0">
-                </lvc:Axis>
-            </lvc:CartesianChart.AxisY>
-        </lvc:CartesianChart>
-        <Frame Name="GraphPage" NavigationUIVisibility="Hidden" DockPanel.Dock="Top" Margin="0,450,0,0"/>
+                    </lvc:Axis>
+                </lvc:CartesianChart.AxisY>
+            </lvc:CartesianChart>
+        </Grid>
     </DockPanel>
-
 </Page>
