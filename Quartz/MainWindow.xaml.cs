@@ -42,6 +42,8 @@ namespace Quartz
         public static string ConfigSMS = "";
         public static string ConfigEmail = "";
         public static string ConfigPass = "";
+        int passcount = 0;
+
 
 
 
@@ -212,6 +214,35 @@ namespace Quartz
                 else
                 {
                     MessageBox.Show("Wrong password!");//password not match
+                    passcount += 1;
+                    if (passcount == 2)
+                    {
+                        string sMessageBoxText = "Do you want to reset your password??";
+                        string sCaption = "Multiple failed password attempts";
+
+                        MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
+                        MessageBoxImage icnMessageBox = MessageBoxImage.Warning;
+
+                        MessageBoxResult rsltMessageBox = MessageBox.Show(sMessageBoxText, sCaption, btnMessageBox, icnMessageBox);
+
+                        switch (rsltMessageBox)
+                        {
+                            case MessageBoxResult.Yes:
+                                /* ... */
+                                MarcusTwilio msg = new MarcusTwilio();
+                                msg.calltwilio(ConfigPhoneNo, "A reset for your password was requested." +ConfigPass);
+                                MessageBox.Show("A reset has been sent to your SMS / Email");
+                                passcount = 0;
+                                break;
+
+                            case MessageBoxResult.No:
+                                /* ... */
+                                break;
+
+                        }
+
+                        passcount = 0;
+                    }
                 }
             }
 

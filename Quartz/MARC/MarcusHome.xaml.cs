@@ -42,25 +42,86 @@ namespace Quartz.MARC
 
         private void GetMyCurrentConfig()
         {
+            //TextBox current config
             string IsPasswordSet = "Config password has been set";
             if (ConfigPassword.Equals("n"))
             {
-                IsPasswordSet = "No Password Set!";
+                IsPasswordSet = "Password : NOT set!";
             }
 
             CurrentConfig.Text = "Phone Number: "+ConfigPhoneNo + "\n" + "Attempts allowed: "+ConfigTimes + "\n" + "Login Guard enabled: "+ConfigEnabled + "\n" + "Intruder Photo: "+ConfigTakePic + "\n" + "Warning SMS: "+ConfigSMS + "\n" + "Send Email: "+ConfigEmail + "\n" + IsPasswordSet;
         }
 
-        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        private void EnabledCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            //sms checkbox
+            MessageBox.Show("enabled tick");
+        }
+
+        private void EnabledCheckBox_UnChecked(object sender, RoutedEventArgs e)
+        {
+            //sms checkbox
+            MessageBox.Show("enabled untick");
+        }
+
+        private void PhoneNoCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            //sms checkbox
+            MessageBox.Show("hp tick");
+        }
+
+        private void PhoneNoCheckBox_UnChecked(object sender, RoutedEventArgs e)
+        {
+            //sms checkbox
+            MessageBox.Show("hp untick");
+        }
+
+        private void AttemptsCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            //sms checkbox
+            MessageBox.Show("attempts tick");
+        }
+
+        private void AttemptsCheckBox_UnChecked(object sender, RoutedEventArgs e)
+        {
+            //sms checkbox
+            MessageBox.Show("attempts untick");
+        }
+
+        private void SMSCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             //sms checkbox
             MessageBox.Show("sms tick");
         }
 
-        private void CheckBox_UnChecked(object sender, RoutedEventArgs e)
+        private void SMSCheckBox_UnChecked(object sender, RoutedEventArgs e)
         {
             //sms checkbox
             MessageBox.Show("sms untick");
+        }
+
+        private void WebcamCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            //sms checkbox
+            MessageBox.Show("webcam tick");
+        }
+
+        private void WebcamCheckBox_UnChecked(object sender, RoutedEventArgs e)
+        {
+            //sms checkbox
+            MessageBox.Show("webcam untick");
+        }
+
+        private void EmailCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            //sms checkbox
+            MessageBox.Show("Email tick");
+        }
+
+        private void EmailCheckBox_UnChecked(object sender, RoutedEventArgs e)
+        {
+            //sms checkbox
+            MessageBox.Show("Email untick");
         }
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -149,10 +210,40 @@ namespace Quartz.MARC
             MessageBox.Show("Password set!");
         }
 
-        //change pw
+        //remove password
+        private void RemovePassword(object sender, RoutedEventArgs e)
+        {
+            ReadConfigFile();
+            string passwordPromptBox = new InputBox("\nEnter Current Password").ShowDialog();
+            if (passwordPromptBox.Equals(ConfigPassword))
+            {
+                    string sMessageBoxText = "Do you want to remove your password? (we don't recommend this!)";
+                    string sCaption = "Password removal";
 
-        //remove pw
+                    MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
+                    MessageBoxImage icnMessageBox = MessageBoxImage.Warning;
 
+                    MessageBoxResult rsltMessageBox = MessageBox.Show(sMessageBoxText, sCaption, btnMessageBox, icnMessageBox);
+
+                    switch (rsltMessageBox)
+                    {
+                        case MessageBoxResult.Yes:
+                            /* ... */
+                            WriteConfigPassword("n");
+                            MessageBox.Show("Password has been REMOVED");
+                            break;
+
+                        case MessageBoxResult.No:
+                            /* ... */
+                            MessageBox.Show("No changes made");
+                            break;
+
+                    
+
+                    
+                }
+            }
+        }
         //forgot pw 
 
         public static void WriteConfigPassword(string newpassword)//just re-creates the entire file
@@ -172,7 +263,7 @@ namespace Quartz.MARC
                 Console.WriteLine("Config file exists");
             }
 
-        }//CreateConfigFile
+        }//WriteConfigPassword
 
 
 
@@ -327,5 +418,7 @@ namespace Quartz.MARC
                 return input.Password;
             }
         }
+
+        
     }
 }
