@@ -136,6 +136,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="AG\FileSummary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="AG\SearchLogs.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -175,6 +179,9 @@
     </Page>
     <Compile Include="AG\FileProtector.xaml.cs">
       <DependentUpon>FileProtector.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AG\FileSummary.xaml.cs">
+      <DependentUpon>FileSummary.xaml</DependentUpon>
     </Compile>
     <Compile Include="AG\SearchLogs.xaml.cs">
       <DependentUpon>SearchLogs.xaml</DependentUpon>

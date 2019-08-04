@@ -34,13 +34,13 @@
             </StackPanel>
         </StackPanel>
         <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20"/>
-        <lvc:CartesianChart Series="{Binding SeriesCollection}" LegendLocation="Right" Margin="0,20,20,20" BorderBrush="#FFCCCCCC" BorderThickness="1" >
-            <lvc:CartesianChart.AxisY>
-                <lvc:Axis Title="Events" LabelFormatter="{Binding YFormatter}"></lvc:Axis>
-            </lvc:CartesianChart.AxisY>
+        <lvc:CartesianChart Grid.Row="2" Series="{Binding SeriesCollection}"  LegendLocation="Right">
             <lvc:CartesianChart.AxisX>
-                <lvc:Axis Title="Time" Labels="{Binding Labels}"></lvc:Axis>
+                <lvc:Axis Title="Year" LabelFormatter="{Binding XFormatter}"></lvc:Axis>
             </lvc:CartesianChart.AxisX>
+            <lvc:CartesianChart.AxisY>
+                <lvc:Axis Title="Population" LabelFormatter="{Binding YFormatter}"></lvc:Axis>
+            </lvc:CartesianChart.AxisY>
         </lvc:CartesianChart>
     </DockPanel>
 </Page>
