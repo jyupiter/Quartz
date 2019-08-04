@@ -26,10 +26,11 @@
                 <TextBlock Text="Processes currently being tracked." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
                 <Label Content="Whitelist" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
                 <TextBlock Text="Exempt processes from tracking." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
-                <TextBox Name="whitelistBox" Margin="5,0,5,10"></TextBox>
+                <TextBox Name="whitelistBox" Margin="5,0,5.2,10" Height="325" AcceptsReturn="True"></TextBox>
+                <Button Height="20" Name="updateWL" Margin="0,0,0.2,0" Click="SaveWhitelist">Update White list</Button>
             </StackPanel>
         </StackPanel>
-        <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20"/>
-        <DataGrid Name="processGrid" DockPanel.Dock="Right" Margin="0,20,20,20" BorderBrush="LightGray" />
+        <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20" />
+        <DataGrid Name="processGrid" IsReadOnly="True" DockPanel.Dock="Right" Margin="0,20,20,20" BorderBrush="LightGray" />
     </DockPanel>
 </Page>

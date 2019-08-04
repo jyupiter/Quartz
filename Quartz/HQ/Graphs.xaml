@@ -36,17 +36,17 @@
         </StackPanel>
         <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20"/>
         <Grid Name="GraphWrapper" DockPanel.Dock="Right" Margin="0,0,20,20">
-            <lvc:CartesianChart Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualWidth}" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualHeight}" Visibility="Visible" Name="CpuGraph" BorderBrush="#FFCCCCCC" BorderThickness="1" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}">
+            <lvc:CartesianChart Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualWidth}" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualHeight}" Visibility="Visible" Name="CpuGraph" BorderBrush="#FFCCCCCC" BorderThickness="1" AnimationsSpeed="0:0:1" Hoverable="False" DataTooltip="{x:Null}">
                 <lvc:CartesianChart.Series>
                     <lvc:LineSeries Values="{Binding CpuValues}" 
                                 PointGeometry="{x:Null}" 
-                                LineSmoothness="1"
+                                LineSmoothness="0"
                                 StrokeThickness="2" 
                                 Stroke="Violet"
                                 Fill="Transparent"/>
                 </lvc:CartesianChart.Series>
                 <lvc:CartesianChart.AxisX>
-                    <lvc:Axis  
+                    <lvc:Axis  LabelFormatter="{Binding DateTimeFormatter}" 
                           MaxValue="{Binding AxisMax}" 
                           MinValue="{Binding AxisMin}"
                           Unit="{Binding AxisUnit}">
@@ -61,17 +61,17 @@
                     </lvc:Axis>
                 </lvc:CartesianChart.AxisY>
             </lvc:CartesianChart>
-            <lvc:CartesianChart Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualWidth}" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualHeight}" Name="GpuGraph" Visibility="Collapsed" BorderBrush="#FFCCCCCC" BorderThickness="1" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}">
+            <lvc:CartesianChart Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualWidth}" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualHeight}" Name="GpuGraph" Visibility="Collapsed" BorderBrush="#FFCCCCCC" BorderThickness="1" AnimationsSpeed="0:0:1" Hoverable="False" DataTooltip="{x:Null}">
                 <lvc:CartesianChart.Series>
                     <lvc:LineSeries Values="{Binding GpuValues}" 
                                 PointGeometry="{x:Null}" 
-                                LineSmoothness="1"
+                                LineSmoothness="0"
                                 StrokeThickness="2" 
                                 Stroke="Navy"
                                 Fill="Transparent"/>
                 </lvc:CartesianChart.Series>
                 <lvc:CartesianChart.AxisX>
-                    <lvc:Axis  
+                    <lvc:Axis  LabelFormatter="{Binding DateTimeFormatter}" 
                           MaxValue="{Binding AxisMax}" 
                           MinValue="{Binding AxisMin}"
                           Unit="{Binding AxisUnit}">
@@ -86,17 +86,17 @@
                     </lvc:Axis>
                 </lvc:CartesianChart.AxisY>
             </lvc:CartesianChart>
-            <lvc:CartesianChart Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualWidth}" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualHeight}" Visibility="Collapsed" Name="RamGraph" BorderBrush="#FFCCCCCC" BorderThickness="1" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}">
+            <lvc:CartesianChart Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualWidth}" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualHeight}" Visibility="Collapsed" Name="RamGraph" BorderBrush="#FFCCCCCC" BorderThickness="1" AnimationsSpeed="0:0:1" Hoverable="False" DataTooltip="{x:Null}">
                 <lvc:CartesianChart.Series>
                     <lvc:LineSeries Values="{Binding MemValues}" 
                                 PointGeometry="{x:Null}" 
-                                LineSmoothness="1"
+                                LineSmoothness="0"
                                 StrokeThickness="2" 
                                 Stroke="Green"
                                 Fill="Transparent"/>
                 </lvc:CartesianChart.Series>
                 <lvc:CartesianChart.AxisX>
-                    <lvc:Axis  
+                    <lvc:Axis  LabelFormatter="{Binding DateTimeFormatter}" 
                           MaxValue="{Binding AxisMax}" 
                           MinValue="{Binding AxisMin}"
                           Unit="{Binding AxisUnit}">
@@ -111,17 +111,17 @@
                     </lvc:Axis>
                 </lvc:CartesianChart.AxisY>
             </lvc:CartesianChart>
-            <lvc:CartesianChart Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualWidth}" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualHeight}" Name="DiskGraph" Visibility="Collapsed" BorderBrush="#FFCCCCCC" BorderThickness="1" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}">
+            <lvc:CartesianChart Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualWidth}" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualHeight}" Name="DiskGraph" Visibility="Collapsed" BorderBrush="#FFCCCCCC" BorderThickness="1" AnimationsSpeed="0:0:1" Hoverable="False" DataTooltip="{x:Null}">
                 <lvc:CartesianChart.Series>
                     <lvc:LineSeries Values="{Binding DiskValues}" 
                                 PointGeometry="{x:Null}" 
-                                LineSmoothness="1"
+                                LineSmoothness="0"
                                 StrokeThickness="2" 
                                 Stroke="Crimson"
                                 Fill="Transparent"/>
                 </lvc:CartesianChart.Series>
                 <lvc:CartesianChart.AxisX>
-                    <lvc:Axis  
+                    <lvc:Axis  LabelFormatter="{Binding DateTimeFormatter}" 
                           MaxValue="{Binding AxisMax}" 
                           MinValue="{Binding AxisMin}"
                           Unit="{Binding AxisUnit}">
@@ -136,20 +136,21 @@
                     </lvc:Axis>
                 </lvc:CartesianChart.AxisY>
             </lvc:CartesianChart>
-            <lvc:CartesianChart Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualWidth}" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualHeight}" Name="NetGraph" BorderBrush="#FFCCCCCC" BorderThickness="1" Visibility="Collapsed" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}">
+            <lvc:CartesianChart Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualWidth}" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualHeight}" Name="NetGraph" BorderBrush="#FFCCCCCC" BorderThickness="1" Visibility="Collapsed" AnimationsSpeed="0:0:1" Hoverable="False" DataTooltip="{x:Null}">
                 <lvc:CartesianChart.Series>
                     <lvc:LineSeries Values="{Binding NetValues}" 
                                 PointGeometry="{x:Null}" 
-                                LineSmoothness="1"
+                                LineSmoothness="0"
                                 StrokeThickness="2" 
                                 Stroke="Orange"
                                 Fill="Transparent"/>
                 </lvc:CartesianChart.Series>
                 <lvc:CartesianChart.AxisX>
-                    <lvc:Axis  
+                    <lvc:Axis  LabelFormatter="{Binding DateTimeFormatter}" 
                           MaxValue="{Binding AxisMax}" 
                           MinValue="{Binding AxisMin}"
                           Unit="{Binding AxisUnit}">
+                        
                         <lvc:Axis.Separator>
                             <lvc:Separator Step="{Binding AxisStep}" />
                         </lvc:Axis.Separator>

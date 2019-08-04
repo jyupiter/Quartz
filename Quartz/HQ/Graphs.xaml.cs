@@ -24,18 +24,18 @@ namespace Quartz.HQ
 	/// <summary>
 	/// Interaction logic for Graphs.xaml
 	/// </summary>
-	public partial class Graphs : Page
+	public partial class Graphs : Page, INotifyPropertyChanged
 	{
-		public double AxisMax;
-		public double AxisMin;
+		private double _axisMax;
+		private double _axisMin;
 		public SeriesCollection SeriesCollection { get; set; }
 		public string[] Labels { get; set; }
 		public Func<double, string> YFormatter { get; set; }
-		public float cpu;
-		public float mem;
-		public float disk;
-		public float net;
-		public float gpu;
+		public double cpu;
+		public double mem;
+		public double disk;
+		public double net;
+		public double gpu;
 		public int waitTime; //ms
 		public ChartValues<MeasureModel> GpuValues { get; set; }
 		public ChartValues<MeasureModel> CpuValues { get; set; }
@@ -45,6 +45,32 @@ namespace Quartz.HQ
 		public Func<double, string> DateTimeFormatter { get; set; }
 		public double AxisStep { get; set; }
 		public double AxisUnit { get; set; }
+
+		public double AxisMax
+		{
+			get { return _axisMax; }
+			set
+			{
+				_axisMax = value;
+				OnPropertyChanged("AxisMax");
+			}
+		}
+		public double AxisMin
+		{
+			get { return _axisMin; }
+			set
+			{
+				_axisMin = value;
+				OnPropertyChanged("AxisMin");
+			}
+		}
+		public event PropertyChangedEventHandler PropertyChanged;
+		protected virtual void OnPropertyChanged(string propertyName = null)
+		{
+			if (PropertyChanged != null)
+				PropertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+
 		public Graphs()
 		{
 			Debug.WriteLine("Loading Graphs");
@@ -65,7 +91,7 @@ namespace Quartz.HQ
 			NetValues = new ChartValues<MeasureModel>();
 			//Debug.WriteLine(value);
 			//lets set how to display the X Labels
-			//DateTimeFormatter = value => new DateTime((long)value).ToString("hh:mm:ss");
+			DateTimeFormatter = value => new DateTime((long)value).ToString("hh:mm:ss");
 			//AxisStep forces the distance between each separator in the X axis
 			AxisStep = TimeSpan.FromSeconds(1).Ticks;
 			//AxisUnit forces lets the axis know that we are plotting seconds
@@ -230,16 +256,20 @@ namespace Quartz.HQ
 
 			PerformanceCounter dataReceivedCounter;
 
+
 			float sendSum = 0;
 			float receiveSum = 0;
 
 			PerformanceCounterCategory category = new PerformanceCounterCategory("Network Interface");
 			String[] instanceName = category.GetInstanceNames();
+
+			bandwidthCounter = new PerformanceCounter("Network Interface", "Current Bandwidth", instanceName[0]);
+			dataSentCounter = new PerformanceCounter("Network Interface", "Bytes Sent/sec", instanceName[0]);
+			dataReceivedCounter = new PerformanceCounter("Network Interface", "Bytes Received/sec", instanceName[0]);
+
 			while (true)
 			{
-				bandwidthCounter = new PerformanceCounter("Network Interface", "Current Bandwidth", instanceName[0]);
-				dataSentCounter = new PerformanceCounter("Network Interface", "Bytes Sent/sec", instanceName[0]);
-				dataReceivedCounter = new PerformanceCounter("Network Interface", "Bytes Received/sec", instanceName[0]);
+
 				bandwidth = bandwidthCounter.NextValue();
 				sendSum = dataSentCounter.NextValue();
 				receiveSum = dataReceivedCounter.NextValue();
@@ -247,8 +277,15 @@ namespace Quartz.HQ
 				bandwidth = bandwidthCounter.NextValue();
 				sendSum = dataSentCounter.NextValue();
 				receiveSum = dataReceivedCounter.NextValue();
-				net = (8 * (sendSum + receiveSum) / bandwidth);
+				Random rng = new Random();
+				net = rng.NextDouble();//(8 * (sendSum + receiveSum) / bandwidth);
+				//Debug.WriteLine("instanceName " + instanceName[0]);
+
+				//Debug.WriteLine("sendSum " + sendSum);
+				//Debug.WriteLine("receiveSum " + receiveSum);
+				//Debug.WriteLine("bandwidth " + bandwidth);
 				UpdateGraphs(4, net);
+				
 			}
 		}
 		private void SetAxisLimits(DateTime now)
