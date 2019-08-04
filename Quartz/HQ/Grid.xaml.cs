@@ -273,7 +273,7 @@ namespace Quartz.HQ
 					}
 					return;
 				}
-				catch (Exception e)
+				catch (Exception)
 				{
 					Debug.WriteLine("File in use! Try " + i);
 					Thread.Sleep(waitTime / 2);
