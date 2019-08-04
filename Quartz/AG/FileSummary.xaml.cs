@@ -17,6 +17,7 @@ namespace Quartz.AG
         public FileSummary()
         {
             InitializeComponent();
+            DisplayFiles();
             Graph();
         }
 
@@ -24,7 +25,36 @@ namespace Quartz.AG
         public int[] renamed = new int[24];
         public int[] deleted = new int[24];
         public int[] created = new int[24];
-        string fileToUse = "12-07-2019_12-41-15.qtz";
+        string path = _Folder.BaseFolder;
+        string fileToUse = null;
+
+        public SeriesCollection SeriesCollection { get; set; }
+        public string[] Labels { get; set; }
+        public Func<double, string> Formatter { get; set; }
+
+        private void DisplayFiles()
+        {
+            string[] fp = Directory.GetFiles(Path.Combine(path, "Quartz/Logs/"));
+            foreach(string s in fp)
+            {
+                ComboBoxItem c = new ComboBoxItem
+                {
+                    Content = s,
+                    ToolTip = s
+                };
+                SelectedFileComboBox.Items.Add(c);
+            }
+            SelectedFileComboBox.SelectedIndex = 0;
+        }
+
+        private void SelectedFileComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox c = (ComboBox)sender;
+            ComboBoxItem s = (ComboBoxItem)c.SelectedItem;
+            fileToUse = (string)s.Content;
+            SeriesCollection.Clear(); // coughs up blood
+            Graph();
+        }
 
         private void Graph()
         {
@@ -39,58 +69,57 @@ namespace Quartz.AG
                     DataLabels = true
                 },
             };
-
-            //adding series updates and animates the chart
             SeriesCollection.Add(new StackedColumnSeries
             {
                 Values = new ChartValues<int>(renamed),
-                StackMode = StackMode.Values
+                StackMode = StackMode.Values,
+                DataLabels = true
             });
             SeriesCollection.Add(new StackedColumnSeries
             {
                 Values = new ChartValues<int>(deleted),
-                StackMode = StackMode.Values
+                StackMode = StackMode.Values,
+                DataLabels = true
             });
             SeriesCollection.Add(new StackedColumnSeries
             {
                 Values = new ChartValues<int>(created),
-                StackMode = StackMode.Values
+                StackMode = StackMode.Values,
+                DataLabels = true
             });
-
-            //adding values also updates and animates
-            //SeriesCollection[2].Values.Add(4d);
-
+            SeriesCollection x = SeriesCollection;
             Labels = new[] { "Changed", "Renamed", "Deleted", "Created" };
-            //Formatter = value => value + " Mill";
-
             DataContext = this;
         }
 
         public List<Log> ParseLogs(string file)
         {
-            string path = _Folder.BaseFolder;
-            List<Log> logs = new List<Log>();
+            if(file == null)
+                return null;
+            List<Log> l = new List<Log>();
             Log log;
-            var logDir = Path.Combine(path, "Quartz/Logs/");
-            string[] logFile = File.ReadAllLines(logDir + file);
-            foreach(string line in logFile)
+            var target = Path.Combine(path, "Quartz/Quartz/Logs/", file);
+            string[] f = File.ReadAllLines(target);
+            foreach(string s in f)
             {
-                string[] entry = line.Split('|');
+                string[] entry = s.Split('|');
                 log = new Log(int.Parse(entry[0]), entry[1], entry[2], entry[3], entry[4]);
-                logs.Add(log);
+                l.Add(log);
             }
-            return logs;
+            return l;
     }
 
-    public void CountEvents(List<Log> logs)
+    public void CountEvents(List<Log> l)
         {
+            if(l == null)
+                return;
             changed = new int[24];
             renamed = new int[24];
             deleted = new int[24];
             created = new int[24];
             int hour;
-            DateTime date = logs[0].dateTime.Date;
-            foreach(Log log in logs)
+            DateTime date = l[0].dateTime.Date;
+            foreach(Log log in l)
             {
                 if(log.dateTime.Date == date)
                 {
@@ -113,16 +142,9 @@ namespace Quartz.AG
                         deleted[hour]++;
                         break;
                     }
-                    Debug.WriteLine(log.dateTime.Hour);
                 }
             }
-            Debug.WriteLine(changed);
         }
-
-        public SeriesCollection SeriesCollection { get; set; }
-        public string[] Labels { get; set; }
-        public Func<double, string> Formatter { get; set; }
-
     }
 
 }
