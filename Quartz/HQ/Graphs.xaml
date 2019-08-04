@@ -7,12 +7,29 @@
       xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="Overview">
+      Title="Graphs">
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Dictionaries/ButtonDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
 
     <Grid>
-
+        <Border BorderBrush="#FFCCCCCC" BorderThickness="0,0,0,1" DockPanel.Dock="Top" Margin="0,0,0,-0.4">
+            <StackPanel Background="#FFF2F2F2" Height="25" Orientation="Horizontal" Margin="0,0,0,423.8">
+                <Button Style="{StaticResource BSideButtonStyle}" Template="{StaticResource BSideButtonTemplate}" Click="Gpu" Content="View GPU Usage Graph" HorizontalAlignment="Left" Margin="20,0,0,0"/>
+                <Button Style="{StaticResource BSideButtonStyle}" Template="{StaticResource BSideButtonTemplate}" Click="Cpu" Content="View CPU Usage Graph" HorizontalAlignment="Left"/>
+                <Button Style="{StaticResource BSideButtonStyle}" Template="{StaticResource BSideButtonTemplate}" Click="Ram" Content="View RAM Usage Graph" HorizontalAlignment="Left" Margin="20,0,0,0"/>
+                <Button Style="{StaticResource BSideButtonStyle}" Template="{StaticResource BSideButtonTemplate}" Click="Disk" Content="View Disk Usage Graph" HorizontalAlignment="Left"/>
+                <Button Style="{StaticResource BSideButtonStyle}" Template="{StaticResource BSideButtonTemplate}" Click="Network" Content="View Network Usage Graph" HorizontalAlignment="Left"/>
+                <Rectangle Width="1" Fill="#FFCCCCCC" Margin="10,0"></Rectangle>
+            </StackPanel>
+        </Border>
+        <!--<TextBlock Name="graphName" Margin="0,28,0,382.6">Select a graph to display</TextBlock>-->
         <!--Here we disable tooltips and hovering to get a better performance-->
-        <lvc:CartesianChart Grid.Row="1" Visibility="Collapsed" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}" Margin="0,292,0,-0.4">
+        <lvc:CartesianChart Grid.Row="1" Name="GpuGraph" Visibility="Collapsed" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}" Margin="0,292,0,-0.4">
             <lvc:CartesianChart.Series>
                 <lvc:LineSeries Values="{Binding GpuValues}" 
                                 PointGeometry="{x:Null}" 
@@ -37,7 +54,7 @@
                 </lvc:Axis>
             </lvc:CartesianChart.AxisY>
         </lvc:CartesianChart>
-        <lvc:CartesianChart  AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}" Margin="0,67,0,-0.4">
+        <lvc:CartesianChart Visibility="Collapsed" Name="CpuGraph" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}" Margin="0,67,0,-0.4">
             <lvc:CartesianChart.Series>
                 <lvc:LineSeries Values="{Binding CpuValues}" 
                                 PointGeometry="{x:Null}" 
@@ -62,7 +79,7 @@
                 </lvc:Axis>
             </lvc:CartesianChart.AxisY>
         </lvc:CartesianChart>
-        <lvc:CartesianChart Grid.Row="3" Visibility="Collapsed" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}" Margin="0,292,0,-0.4">
+        <lvc:CartesianChart Grid.Row="3" Visibility="Collapsed" Name="RamGraph" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}" Margin="0,292,0,-0.4">
             <lvc:CartesianChart.Series>
                 <lvc:LineSeries Values="{Binding MemValues}" 
                                 PointGeometry="{x:Null}" 
@@ -87,7 +104,7 @@
                 </lvc:Axis>
             </lvc:CartesianChart.AxisY>
         </lvc:CartesianChart>
-        <lvc:CartesianChart Grid.Row="4" Visibility="Collapsed" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}" Margin="0,292,0,-0.4">
+        <lvc:CartesianChart Grid.Row="4" Name="DiskGraph" Visibility="Collapsed" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}" Margin="0,292,0,-0.4">
             <lvc:CartesianChart.Series>
                 <lvc:LineSeries Values="{Binding DiskValues}" 
                                 PointGeometry="{x:Null}" 
@@ -113,7 +130,7 @@
             </lvc:CartesianChart.AxisY>
         </lvc:CartesianChart>
 
-        <lvc:CartesianChart Grid.Row="5" Visibility="Collapsed" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}" Margin="0,292,0,-0.4">
+        <lvc:CartesianChart Grid.Row="5" Name="NetGraph" Visibility="Collapsed" AnimationsSpeed="0:0:0.5" Hoverable="False" DataTooltip="{x:Null}" Margin="0,292,0,-0.4">
             <lvc:CartesianChart.Series>
                 <lvc:LineSeries Values="{Binding NetValues}" 
                                 PointGeometry="{x:Null}" 
@@ -138,5 +155,7 @@
                 </lvc:Axis>
             </lvc:CartesianChart.AxisY>
         </lvc:CartesianChart>
+        <Frame Name="GraphPage" NavigationUIVisibility="Hidden" DockPanel.Dock="Top" Margin="0,450,0,-0.4"/>
     </Grid>
+
 </Page>

@@ -17,6 +17,7 @@ using System.Windows;
 using ToastNotifications.Messages;
 using System.Windows.Threading;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace Quartz.HQ
 {
@@ -25,27 +26,28 @@ namespace Quartz.HQ
 	/// </summary>
 	public partial class Graphs : Page
 	{
-		public static double AxisMax;
-		public static double AxisMin;
-		public static SeriesCollection SeriesCollection { get; set; }
-		public static string[] Labels { get; set; }
+		public double AxisMax;
+		public double AxisMin;
+		public SeriesCollection SeriesCollection { get; set; }
+		public string[] Labels { get; set; }
 		public Func<double, string> YFormatter { get; set; }
-		public static float cpu;
-		public static float mem;
-		public static float disk;
-		public static float net;
-		public static float gpu;
-		public static int waitTime; //ms
-		public static ChartValues<MeasureModel> GpuValues { get; set; }
-		public static ChartValues<MeasureModel> CpuValues { get; set; }
-		public static ChartValues<MeasureModel> MemValues { get; set; }
-		public static ChartValues<MeasureModel> DiskValues { get; set; }
-		public static ChartValues<MeasureModel> NetValues { get; set; }
+		public float cpu;
+		public float mem;
+		public float disk;
+		public float net;
+		public float gpu;
+		public int waitTime; //ms
+		public ChartValues<MeasureModel> GpuValues { get; set; }
+		public ChartValues<MeasureModel> CpuValues { get; set; }
+		public ChartValues<MeasureModel> MemValues { get; set; }
+		public ChartValues<MeasureModel> DiskValues { get; set; }
+		public ChartValues<MeasureModel> NetValues { get; set; }
 		public Func<double, string> DateTimeFormatter { get; set; }
-		public static double AxisStep { get; set; }
-		public static double AxisUnit { get; set; }
+		public double AxisStep { get; set; }
+		public double AxisUnit { get; set; }
 		public Graphs()
 		{
+			Debug.WriteLine("Loading Graphs");
 			InitializeComponent();
 			waitTime = 1000;
 
@@ -83,9 +85,8 @@ namespace Quartz.HQ
 			//notifier.ShowWarning(message);
 			//notifier.ShowError(message);
 			DataContext = this;
-
 		}
-		public static void UpdateGraphs(int index, double value)
+		public void UpdateGraphs(int index, double value)
 		{
 			//Debug.WriteLine("UpdateGraphs: " + index + " | " + value);
 			switch (index)
@@ -140,7 +141,7 @@ namespace Quartz.HQ
 			//lets only use the last 150 values
 		}
 
-		public static void StartMonitering()
+		public void StartMonitering()
 		{
 			//PerformanceCounterCategory category = new PerformanceCounterCategory("Network Interface");
 			//String[] instancename = category.GetInstanceNames();
@@ -156,8 +157,9 @@ namespace Quartz.HQ
 			new Thread(DiskThread).Start();
 			new Thread(NetThread).Start();
 		}
-		public static void GpuThread()
+		public void GpuThread()
 		{
+			Debug.WriteLine("Starting Gpu");
 			var GPUs = PhysicalGPU.GetPhysicalGPUs();
 			while (true)
 			{
@@ -176,8 +178,9 @@ namespace Quartz.HQ
 
 		}
 
-		private static void CpuThread()
+		private void CpuThread()
 		{
+			Debug.WriteLine("Starting Cpu");
 			while (true)
 			{
 				PerformanceCounter cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
@@ -188,8 +191,9 @@ namespace Quartz.HQ
 			}
 		}
 
-		private static void MemThread()
+		private void MemThread()
 		{
+			Debug.WriteLine("Starting Mem");
 			while (true)
 			{
 				PerformanceCounter ramCounter = new PerformanceCounter("Memory", "% Committed Bytes In Use");
@@ -202,8 +206,9 @@ namespace Quartz.HQ
 			}
 		}
 
-		private static void DiskThread()
+		private void DiskThread()
 		{
+			Debug.WriteLine("Starting Disk");
 			while (true)
 			{
 				PerformanceCounter diskCounter = new PerformanceCounter("PhysicalDisk", "% Disk Time", "_Total");
@@ -215,8 +220,9 @@ namespace Quartz.HQ
 			}
 		}
 
-		private static void NetThread()
+		private void NetThread()
 		{
+			Debug.WriteLine("Starting Net");
 			PerformanceCounter bandwidthCounter;
 			float bandwidth;
 
@@ -245,7 +251,7 @@ namespace Quartz.HQ
 				UpdateGraphs(4, net);
 			}
 		}
-		private static void SetAxisLimits(DateTime now)
+		private void SetAxisLimits(DateTime now)
 		{
 			AxisMax = now.Ticks + TimeSpan.FromSeconds(1).Ticks; // lets force the axis to be 1 second ahead
 			AxisMin = now.Ticks - TimeSpan.FromSeconds(8).Ticks; // and 8 seconds behind
@@ -274,6 +280,44 @@ namespace Quartz.HQ
 
 			cfg.Dispatcher = Application.Current.Dispatcher;
 		});
+
+		private void Cpu(object sender, RoutedEventArgs e)
+		{
+			ToggleVisibility();
+			this.CpuGraph.Visibility = Visibility.Visible;
+		}
+		private void Gpu(object sender, RoutedEventArgs e)
+		{
+			ToggleVisibility();
+			this.GpuGraph.Visibility = Visibility.Visible;
+		}
+		private void Ram(object sender, RoutedEventArgs e)
+		{
+			ToggleVisibility();
+			this.RamGraph.Visibility = Visibility.Visible;
+		}
+		private void Disk(object sender, RoutedEventArgs e)
+		{
+			ToggleVisibility();
+			this.DiskGraph.Visibility = Visibility.Visible;
+		}
+		private void Network(object sender, RoutedEventArgs e)
+		{
+			ToggleVisibility();
+			this.NetGraph.Visibility = Visibility.Visible;
+		}
+
+		private void ToggleVisibility()
+		{
+			Debug.WriteLine("Visibility cleared!");
+			this.CpuGraph.Visibility = Visibility.Collapsed;
+			this.GpuGraph.Visibility = Visibility.Collapsed;
+			this.RamGraph.Visibility = Visibility.Collapsed;
+			this.DiskGraph.Visibility = Visibility.Collapsed;
+			this.NetGraph.Visibility = Visibility.Collapsed;
+
+		}
+
 	}
 
 }
