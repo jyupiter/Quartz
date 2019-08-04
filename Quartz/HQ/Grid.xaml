@@ -17,6 +17,6 @@
         </ResourceDictionary>
     </Page.Resources>
     <DockPanel LastChildFill="True">
-        <DataGrid  AutoGenerateColumns="true"  Name="processGrid" DockPanel.Dock="Right" Margin="0,20,20,20" BorderBrush="LightGray" />
+        <DataGrid Name="processGrid" DockPanel.Dock="Right" Margin="0,20,20,20" BorderBrush="LightGray" />
     </DockPanel>
 </Page>

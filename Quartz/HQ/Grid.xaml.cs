@@ -63,7 +63,7 @@ namespace Quartz.HQ
 			//5:network
 			ReloadWhiteList();
 			StartMonitering();
-			//initGrid();
+			initGrid();
 			//notifier.ShowSuccess(message);
 			//notifier.ShowWarning(message);
 			//notifier.ShowError(message);
@@ -83,7 +83,7 @@ namespace Quartz.HQ
 			//	Console.WriteLine(name);
 			//}
 			//NVIDIA.Initialize();
-			//new Thread(GpuThread).Start();
+			new Thread(gridUpdate).Start();
 			allProcesses = GetProcessNames();
 			foreach (string process in allProcesses)
 			{
@@ -94,6 +94,16 @@ namespace Quartz.HQ
 
 			}
 			new Thread(CheckNewProcesses).Start();
+		}
+
+		public void gridUpdate()
+		{
+			while (true)
+			{
+				UpdateDisplay();
+				System.Threading.Thread.Sleep(waitTime * 2);
+			}
+			
 		}
 		public void CheckNewProcesses()
 		{
@@ -123,13 +133,11 @@ namespace Quartz.HQ
 			DateTime curTime;
 			TimeSpan curTotalProcessorTime = new TimeSpan();
 			string process = (string)arg;
-			int gpuCycles = 0;
 			int cpuCycles = 0;
 			int ramCycles = 0;
-			int diskCycles = 0;
-			int netCycles = 0;
 			double CPUUsage = 0;
-			Entry entry = new Entry();
+			Entry entry = new Entry(process, 0.0,0.0, new TimeSpan());
+			Sauce.Add(entry);
 			//TreeViewItem item = new TreeViewItem();
 			//item.Name = process;
 			//item.Header = process;
@@ -137,7 +145,7 @@ namespace Quartz.HQ
 			//{
 			//	mainTree.Items.Add(item);
 			//});
-			
+
 			//grid.mainTree
 			while (true)
 			{
@@ -148,7 +156,7 @@ namespace Quartz.HQ
 					//
 					LogPcsTime(process, startTime, runTime, DateTime.Now);
 					allProcesses.Remove(process);
-					Sauce.Remove(entry);
+					RemoveEntry(process);
 					return;
 				}
 				else
@@ -211,10 +219,8 @@ namespace Quartz.HQ
 					{
 						ramCycles = 0;
 					}
-					Sauce.Remove(entry);
-					entry = new Entry(p.ProcessName, CPUUsage, ramUsage, runTime);
-					Sauce.Add(entry);
-					SetDisplay();
+					SetEntry(p.ProcessName, CPUUsage*100,ramUsage,curTotalProcessorTime);
+					
 					//}
 					//catch (Exception e)
 					//{
@@ -224,6 +230,29 @@ namespace Quartz.HQ
 				System.Threading.Thread.Sleep(waitTime);
 			}
 
+		}
+
+		public void SetEntry(string name, double cpu, double ram, TimeSpan time)
+		{
+			for (var i = 0; i < Sauce.Count; i++)
+			{
+				if (name == Sauce[i].pcsName)
+				{
+					Sauce[i].pcsCpu = cpu;
+					Sauce[i].pcsRam = ram;
+					Sauce[i].pcsTime = time;
+				}
+			}
+		}
+		public void RemoveEntry(string name)
+		{
+			for(var i = 0; i < Sauce.Count; i++)
+			{
+				if(name == Sauce[i].pcsName)
+				{
+					Sauce.RemoveAt(i);
+				}
+			}
 		}
 
 		public void LogPcsTime(string process, DateTime start, TimeSpan runTime, DateTime end)
@@ -311,13 +340,14 @@ namespace Quartz.HQ
 		}
 
 
-		private void SetDisplay()
+		private void UpdateDisplay()
 		{
 
 			Dispatcher.Invoke(() =>
 			{
 				Debug.WriteLine("Adding Entry!");
 				processGrid.ItemsSource = Sauce;
+				processGrid.Items.Refresh();
 			});
 		}
 		private void Toast(string message, string type)
