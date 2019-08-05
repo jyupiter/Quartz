@@ -221,6 +221,7 @@
       <DependentUpon>VersionChecker.xaml</DependentUpon>
     </Compile>
     <Compile Include="Class1.cs" />
+    <Compile Include="Classes\_Graphs.cs" />
     <Compile Include="Classes\Log.cs" />
     <Compile Include="Classes\ProcessInfo.cs" />
     <Compile Include="Classes\ProcTime.cs" />
