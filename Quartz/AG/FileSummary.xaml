@@ -32,10 +32,10 @@
         <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20"/>
         <lvc:CartesianChart Grid.Row="2" Series="{Binding SeriesCollection}"  LegendLocation="Right">
             <lvc:CartesianChart.AxisX>
-                <lvc:Axis Title="Hour" LabelFormatter="{Binding XFormatter}"></lvc:Axis>
+                <lvc:Axis Title="Hour"></lvc:Axis>
             </lvc:CartesianChart.AxisX>
             <lvc:CartesianChart.AxisY>
-                <lvc:Axis Title="Instances" LabelFormatter="{Binding YFormatter}"></lvc:Axis>
+                <lvc:Axis Title="Instances"></lvc:Axis>
             </lvc:CartesianChart.AxisY>
         </lvc:CartesianChart>
     </DockPanel>
