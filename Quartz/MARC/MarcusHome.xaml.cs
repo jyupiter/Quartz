@@ -68,12 +68,12 @@ namespace Quartz.MARC
             {
                // MessageBox.Show("it is ticked, saved");
                 //write to config now 
-                WriteEnableDisbleSecureLogin("Yes");
+                WriteEnableDisableSecureLogin("Yes");
             }
             else if ((bool) (!SecureLoginTick.IsChecked))
             {
                 MessageBox.Show("not ticky enabled");
-                WriteEnableDisbleSecureLogin("No");
+                WriteEnableDisableSecureLogin("No");
             }
             ReadConfigFile();//IMPORTANT. Update new config file settings to ConfigXXXX variables
             
@@ -85,20 +85,20 @@ namespace Quartz.MARC
             {
                 //set writeconfigattempts to 1 
                 MessageBox.Show("1 attempt");
+                WriteAttempts("1");
             }
             else if (attempts.Equals("2 Attempts"))
             {
 
                 MessageBox.Show("2 attempt");
+                WriteAttempts("2");
 
             }
             else if (attempts.Equals("3 Attempts (default)"))
             {
                 MessageBox.Show("3 attempt");
+                WriteAttempts("3");
             }
-
-            //write attempts method, to do 
-
             ReadConfigFile();//call after every update
 
 
@@ -269,23 +269,64 @@ namespace Quartz.MARC
         //set new password
         private void SetPassword(object sender, RoutedEventArgs e)
         {
-            string passwordPromptBox = new InputBox("\nSet a new password").ShowDialog();
-             
-            //need a function to write to 6 
-
-            WriteConfigPassword(passwordPromptBox);
-            MessageBox.Show("Password set!");
             ReadConfigFile();
-            GetMyCurrentConfig();
+            if (ConfigPassword.Equals("n"))
+            {
+                string passwordPromptBox = new InputBox("\nSet a new password").ShowDialog();
+
+                //need a function to write to 6 
+
+                WriteConfigPassword(passwordPromptBox);
+                MessageBox.Show("Password set!");
+                ReadConfigFile();
+                GetMyCurrentConfig();
+
+            }
+            else
+            {
+                //prompt for previous password
+                //if match, allow
+                //else dont
+                string passwordPromptBox = new InputBox("\nEnter EXISTING password").ShowDialog();
+                if (passwordPromptBox.Equals(ConfigPassword))
+                {
+                    //if match, ask for new password
+                    string updatedPasswordPrompt = new InputBox("\nEnter NEW password").ShowDialog();
+                    if (updatedPasswordPrompt.Equals(""))
+                    {
+                        MessageBox.Show("Password NOT updated");
+                    }
+                    else
+                    {
+                        WriteConfigPassword(updatedPasswordPrompt);
+                        MessageBox.Show("Password Updated!");
+                        ReadConfigFile();
+                        GetMyCurrentConfig();
+                    }
+                    
+                }
+                else
+                {
+                    MessageBox.Show("Wrong password");
+                }
+
+            }
+
         }
 
         //remove password
         private void RemovePassword(object sender, RoutedEventArgs e)
         {
             ReadConfigFile();
-            string passwordPromptBox = new InputBox("\nEnter Current Password").ShowDialog();
-            if (passwordPromptBox.Equals(ConfigPassword))
+            if (ConfigPassword.Equals("n"))
             {
+                MessageBox.Show("You haven't set a password, nothing to remove leh.");
+            }
+            else
+            {
+                string passwordPromptBox = new InputBox("\nEnter Current Password").ShowDialog();
+                if (passwordPromptBox.Equals(ConfigPassword))
+                {
                     string sMessageBoxText = "Do you want to remove your password? (we don't recommend this!)";
                     string sCaption = "Password removal";
 
@@ -307,11 +348,13 @@ namespace Quartz.MARC
                             MessageBox.Show("No changes made");
                             break;
 
-                    
 
-                    
+
+
+                    }
                 }
             }
+            
             ReadConfigFile();
             GetMyCurrentConfig();
         }
@@ -336,7 +379,7 @@ namespace Quartz.MARC
 
         }//WriteConfigPassword
 
-        public static void WriteEnableDisbleSecureLogin(string enabled)
+        public static void WriteEnableDisableSecureLogin(string enabled)
         {
             //get desktop path 
             string filePath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
@@ -347,6 +390,24 @@ namespace Quartz.MARC
             {
                 File.Create(filePath).Dispose();
                 File.AppendAllLines(filePath, new[] { "hp:" + ConfigPhoneNo, "times:" + ConfigTimes, "enabled:" + enabled, "takepic:" + ConfigTakePic, "sms:" + ConfigSMS, "email:" + ConfigEmail, "password:" + ConfigPassword });
+            }
+            else
+            {
+                Console.WriteLine("Config file exists");
+            }
+        }
+
+        public static void WriteAttempts(string attempts)
+        {
+            //get desktop path 
+            string filePath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            filePath += @"\MarcConfig.txt";
+
+            //if config file doesn't exist, create one 
+            if (File.Exists(filePath))
+            {
+                File.Create(filePath).Dispose();
+                File.AppendAllLines(filePath, new[] { "hp:" + ConfigPhoneNo, "times:" + attempts, "enabled:" + ConfigEnabled, "takepic:" + ConfigTakePic, "sms:" + ConfigSMS, "email:" + ConfigEmail, "password:" + ConfigPassword });
             }
             else
             {
@@ -366,8 +427,8 @@ namespace Quartz.MARC
             string title = "Enter Password";//title as heading
             string boxcontent;//title
             string defaulttext = "Default text";//not used but leave it alone
-            string errormessage = "Error message";//error messagebox content
-            string errortitle = "Error message title";//error messagebox heading title
+            string errormessage = "Very funny, password can't be left empty!";//error messagebox content
+            string errortitle = "Error Message";//error messagebox heading title
             string okbuttontext = "Enter";//Ok button content
             Brush BoxBackgroundColor = Brushes.Azure;// Window Background
             Brush InputBackgroundColor = Brushes.Ivory;// Textbox Background
