@@ -15,6 +15,7 @@ using Lucene.Net.Index;
 using Lucene.Net.Store;
 using Lucene.Net.Documents;
 using System.Threading;
+using static Quartz.Classes.Watch;
 
 namespace Quartz.AG
 {
@@ -29,6 +30,11 @@ namespace Quartz.AG
             IDG();
             InitializePreferences();
             LoadFromPreferences();
+            targetDirectory = TargetDirectory.Text;
+            filterExtensions = FilterExtensions.Text;
+            enableFiltering = (bool)EnableFiltering.IsChecked;
+            filterInclude = (bool)FilterInclude.IsChecked;
+            enableLogs = (bool)EnableLogs.IsChecked;
         }
 
         #region SetUp
@@ -57,15 +63,6 @@ namespace Quartz.AG
             desc.Binding = new Binding("D");
         }
 
-        private struct Record
-        {
-            public int I { get; set; }
-            public string E { get; set; }
-            public string A { get; set; }
-            public string T { get; set; }
-            public string D { get; set; }
-        }
-
         // Environment
 
         private void SetPath()
@@ -85,187 +82,32 @@ namespace Quartz.AG
 
         // User-facing
 
-        private void Display(int _I, string _E, string _A, string _T, string _D)
+        private void Display()
         {
+            List<Record> lr = Watch.lr;
+            backLogSize = lr.Count;
+            Watch.lr.RemoveRange(0, backLogSize);
             Dispatcher.Invoke(() =>
             {
-                ScanResultDataGrid.Items.Add(new Record
+                foreach(Record r in lr)
                 {
-                    I = _I,
-                    E = _E,
-                    A = _A,
-                    T = _T,
-                    D = _D
-                });
+                    ScanResultDataGrid.Items.Add(r);
+                }
             });
         }
 
         #endregion
 
         #region FileSystemWatcher
-
-        private static int id = 0;
-        private FileSystemWatcher watcher;
         private string path = _Folder.BaseFolder;
-        private string F = "";
         private string P = "";
-        
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
-        private void Run()
-        {
-            string path = "C:\\";
-            if(TargetDirectory.Text != null && TargetDirectory.Text.Length > 2)
-                path = TargetDirectory.Text;
 
-            watcher = new FileSystemWatcher
-            {
-                Path = path,
-
-                // Watch for changes
-                NotifyFilter = NotifyFilters.LastAccess
-                             | NotifyFilters.LastWrite
-                             | NotifyFilters.FileName
-                             | NotifyFilters.DirectoryName,
-
-                Filter = "*.*",
-
-                IncludeSubdirectories = true
-            };
-
-            // Add event handlers
-            watcher.Changed += new FileSystemEventHandler(OnChanged);
-            watcher.Created += new FileSystemEventHandler(OnChanged);
-            watcher.Deleted += new FileSystemEventHandler(OnChanged);
-            watcher.Renamed += new RenamedEventHandler(OnRenamed);
-
-            // Begin watching
-            watcher.EnableRaisingEvents = true;
-        }
-
-        // Event handlers
-
-        private void OnChanged(object source, FileSystemEventArgs x)
-        {
-            if(x.FullPath.Contains(".qtz"))
-                return;
-
-            int _I = id;
-            string _E = "" + x.ChangeType;
-            string _A = DateTime.Today.ToString("dd-MM-yyyy");
-            string _T = DateTime.Now.ToString("HH:mm:ss tt");
-            string _D = x.FullPath + " was " + x.ChangeType;
-
-            Dispatcher.Invoke(() => {
-                string pattern = @"^(?:[\w]\:|\\)(\\[a-z_\-\s0-9\.]+)+\.(" + FilterExtensions.Text + ")$";
-
-                if((bool)EnableFiltering.IsChecked)
-                {
-                    if((bool)FilterInclude.IsChecked)
-                    {
-                        if(Regex.IsMatch(x.FullPath, pattern, RegexOptions.IgnoreCase))
-                        {
-                            Display(_I, _E, _A, _T, _D);
-                            id++;
-                            if((bool)EnableLogs.IsChecked)
-                                WriteToLogs(_I, _E, _A, _T, _D);
-                        }
-                    }
-                    else
-                    {
-                        if(!Regex.IsMatch(x.FullPath, pattern, RegexOptions.IgnoreCase))
-                        {
-                            Display(_I, _E, _A, _T, _D);
-                            id++;
-                            if((bool)EnableLogs.IsChecked)
-                                WriteToLogs(_I, _E, _A, _T, _D);
-                        }
-                    }
-                }
-                else
-                {
-                    Display(_I, _E, _A, _T, _D);
-                    id++;
-                    if((bool)EnableLogs.IsChecked)
-                        WriteToLogs(_I, _E, _A, _T, _D);
-                }
-            });
-        }
-
-        private void OnRenamed(object source, RenamedEventArgs x)
-        {
-            if(x.FullPath.Contains(".qtz"))
-                return;
-
-            int _I = id;
-            string _E = "Renamed";
-            string _A = DateTime.Today.ToString("dd-MM-yyyy");
-            string _T = DateTime.Now.ToString("HH:mm:ss tt");
-            string _D = x.OldFullPath + " was Renamed to " + x.FullPath;
-
-            string ext = Path.GetExtension(x.FullPath);
-            Dispatcher.Invoke(() => {
-                if((bool)EnableFiltering.IsChecked)
-                {
-                    if((bool)FilterInclude.IsChecked)
-                    {
-                        if(Regex.IsMatch(ext, FilterExtensions.Text, RegexOptions.IgnoreCase))
-                        {
-                            Display(_I, _E, _A, _T, _D);
-                            id++;
-                            if((bool)EnableLogs.IsChecked)
-                                WriteToLogs(_I, _E, _A, _T, _D);
-                        }
-                    }
-                    else
-                    {
-                        if(!Regex.IsMatch(ext, FilterExtensions.Text, RegexOptions.IgnoreCase))
-                        {
-                            Display(_I, _E, _A, _T, _D);
-                            id++;
-                            if((bool)EnableLogs.IsChecked)
-                                WriteToLogs(_I, _E, _A, _T, _D);
-                        }
-                    }
-                }
-                else
-                {
-                    Display(_I, _E, _A, _T, _D);
-                    id++;
-                    if((bool)EnableLogs.IsChecked)
-                        WriteToLogs(_I, _E, _A, _T, _D);
-                }
-            });
-        }
-
-        private async void WriteToLogs(int _I, string _E, string _A, string _T, string _D)
-        {
-            if(!File.Exists(F))
-            {
-                using(var str = new StreamWriter(F))
-                {
-                    await str.WriteLineAsync(
-                        _I + "|" + _E.ToUpper() + "|" + _A + "|" + _T + "|" + _D
-                    );
-                    str.Flush();
-                }
-            }
-            else
-            {
-                using(var str = new StreamWriter(F, true))
-                {
-                    await str.WriteLineAsync(
-                        _I + "|" + _E.ToUpper() + "|" + _A + "|" + _T + "|" + _D
-                    );
-                    str.Flush();
-                }
-            }
-        }
-
-        private void Terminate()
-        {
-            watcher.Dispose();
-            id = 0;
-        }
+        public static string F = "";
+        public static string targetDirectory = "";
+        public static string filterExtensions = "";
+        public static bool enableFiltering = false;
+        public static bool filterInclude = false;
+        public static bool enableLogs = false;
 
         private void FolderDialog(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
@@ -366,7 +208,6 @@ namespace Quartz.AG
 
                     writer.AddDocument(document);
                 }
-
                 writer.Optimize();
             }
         }
@@ -377,8 +218,7 @@ namespace Quartz.AG
         {
             LiveScanBtn.Content = "Stop scan";
             SetPath();
-            Run();
-            //new Thread(Run).Start();
+            Watch.Run();
             LiveScanBtn.Click -= StartLiveScan;
             LiveScanBtn.Click += StopLiveScan;
         }
@@ -386,7 +226,7 @@ namespace Quartz.AG
         private void StopLiveScan(object sender, RoutedEventArgs e)
         {
             LiveScanBtn.Content = "Start scan";
-            Terminate();
+            Watch.Terminate();
             if(ScanResultDataGrid.HasItems)
             {
                 ClearBtn.Visibility = Visibility.Visible;
