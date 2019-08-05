@@ -16,12 +16,12 @@ namespace Quartz.Classes
         private static int id = 0;
         private static FileSystemWatcher watcher;
         private static string path = _Folder.BaseFolder;
-        private static string F = FileWatcher.F;
-        private static string targetDirectory = FileWatcher.targetDirectory;
-        private static string filterExtensions = FileWatcher.filterExtensions;
-        private static bool enableFiltering = FileWatcher.enableFiltering;
-        private static bool filterInclude = FileWatcher.filterInclude;
-        private static bool enableLogs = FileWatcher.enableLogs;
+        public static string F = "";
+        public static string targetDirectory = "";
+        public static string filterExtensions = "";
+        public static bool enableFiltering = false;
+        public static bool filterInclude = false;
+        public static bool enableLogs = false;
         public static int backLogSize = 0;
 
         public static List<Record> lr = new List<Record>();
@@ -78,8 +78,6 @@ namespace Quartz.Classes
             // Begin watching
             watcher.EnableRaisingEvents = true;
         }
-
-        // Event handlers
 
         private static void OnChanged(object source, FileSystemEventArgs x)
         {

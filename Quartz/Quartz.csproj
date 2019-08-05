@@ -228,6 +228,8 @@
     <Compile Include="Classes\Watch.cs" />
     <Compile Include="Classes\_Files.cs" />
     <Compile Include="Classes\_Folder.cs" />
+    <Compile Include="Classes\_Graphs.cs" />
+    <Compile Include="Classes\_Grid.cs" />
     <Compile Include="Home.xaml.cs">
       <DependentUpon>Home.xaml</DependentUpon>
     </Compile>

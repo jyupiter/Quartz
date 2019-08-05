@@ -93,32 +93,29 @@ namespace Quartz.AG
         {
             while(true)
             {
-                List<Record> lr = Watch.lr;
+                List<Record> lr = new List<Record>(Watch.lr);
                 backLogSize = lr.Count;
-                Watch.lr.RemoveRange(0, backLogSize);
-                Dispatcher.Invoke(() =>
+                try
                 {
-                    foreach(Record r in lr)
+                    Watch.lr.RemoveRange(0, backLogSize);
+                    Dispatcher.Invoke(() =>
                     {
-                        ScanResultDataGrid.Items.Add(r);
-                    }
-                });
+                        foreach(Record r in lr)
+                        {
+                            ScanResultDataGrid.Items.Add(r);
+                        }
+                    });
+                } catch(Exception) { }
                 Thread.Sleep(1000);
             }
         }
 
         #endregion
 
-        #region FileSystemWatcher
+        #region Updaters
+
         private string path = _Folder.BaseFolder;
         private string P = "";
-
-        public static string F = "";
-        public static string targetDirectory = "";
-        public static string filterExtensions = "";
-        public static bool enableFiltering = false;
-        public static bool filterInclude = false;
-        public static bool enableLogs = false;
 
         private void FolderDialog(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
@@ -132,6 +129,36 @@ namespace Quartz.AG
                 TextBox x = (TextBox)sender;
                 x.Text = dialog.FileName;
             }
+        }
+
+        private void TargetDirectory_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            targetDirectory = TargetDirectory.Text;
+        }
+
+        private void EnableFiltering_Click(object sender, RoutedEventArgs e)
+        {
+            enableFiltering = (bool)EnableFiltering.IsChecked;
+        }
+
+        private void FilterExtensions_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            filterExtensions = FilterExtensions.Text;
+        }
+
+        private void FilterInclude_Click(object sender, RoutedEventArgs e)
+        {
+            filterInclude = (bool)FilterInclude.IsChecked;
+        }
+
+        private void FilterExclude_Click(object sender, RoutedEventArgs e)
+        {
+            filterInclude = (bool)!FilterInclude.IsChecked;
+        }
+
+        private void EnableLogs_Click(object sender, RoutedEventArgs e)
+        {
+            enableLogs = (bool)EnableLogs.IsChecked;
         }
 
         #endregion

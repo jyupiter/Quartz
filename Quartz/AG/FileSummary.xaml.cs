@@ -75,29 +75,34 @@ namespace Quartz.AG
                 {
                     Values = new ChartValues<int>(changed),
                     StackMode = StackMode.Values,
-                    DataLabels = true
+                    DataLabels = true,
+                    Title = "Changed"
                 },
             };
             SeriesCollection.Add(new StackedColumnSeries
             {
                 Values = new ChartValues<int>(renamed),
                 StackMode = StackMode.Values,
-                DataLabels = true
+                DataLabels = true,
+                Title = "Renamed"
             });
             SeriesCollection.Add(new StackedColumnSeries
             {
                 Values = new ChartValues<int>(deleted),
                 StackMode = StackMode.Values,
-                DataLabels = true
+                DataLabels = true,
+                Title = "Deleted"
             });
             SeriesCollection.Add(new StackedColumnSeries
             {
                 Values = new ChartValues<int>(created),
                 StackMode = StackMode.Values,
-                DataLabels = true
+                DataLabels = true,
+                Title = "Created"
             });
             SeriesCollection x = SeriesCollection;
             Labels = new[] { "Changed", "Renamed", "Deleted", "Created" };
+
             DataContext = this;
         }
 
