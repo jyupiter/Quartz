@@ -1,0 +1,7 @@
+﻿cpu:80
+gpu:80
+ram:80
+disk:80
+net:80
+pcsCpu:80
+pcsRam:1048576
