@@ -33,7 +33,7 @@ namespace Quartz.HQ
 			Debug.WriteLine("Loading grid!");
 			InitializeComponent();
 			DataContext = this;
-			InitGrid();
+			//InitGrid();
 			DisplayWhiteList();
 			updateDisplay();
 			new Thread(UpdateDisplay).Start();
@@ -44,14 +44,14 @@ namespace Quartz.HQ
 			DataGridTextColumn cpu = new DataGridTextColumn();
 			DataGridTextColumn ram = new DataGridTextColumn();
 			DataGridTextColumn runTime = new DataGridTextColumn();
-			name.Header = "Process";
-			cpu.Header = "Cpu Usage (%)";
-			ram.Header = "Ram Usage (MB)";
-			runTime.Header = "Process Runtime";
-			name.Binding = new Binding("pcsName");
-			cpu.Binding = new Binding("pcsCpu");
-			ram.Binding = new Binding("pcsRam");
-			runTime.Binding = new Binding("pcsTime");
+			//name.Header = "Process";
+			//cpu.Header = "Cpu Usage (%)";
+			//ram.Header = "Ram Usage (MB)";
+			//runTime.Header = "Process Runtime";
+			//name.Binding = new Binding("pcsName");
+			//cpu.Binding = new Binding("pcsCpu");
+			//ram.Binding = new Binding("pcsRam");
+			//runTime.Binding = new Binding("pcsTime");
 
 			processGrid.Columns.Add(name);
 			processGrid.Columns.Add(cpu);
