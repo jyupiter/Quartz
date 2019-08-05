@@ -52,11 +52,17 @@ namespace Quartz.AG
             ComboBox c = (ComboBox)sender;
             ComboBoxItem s = (ComboBoxItem)c.SelectedItem;
             fileToUse = (string)s.Content;
+            if(SeriesCollection == null)
+                return;
             changed = new int[24];
             renamed = new int[24];
             deleted = new int[24];
             created = new int[24];
             CountEvents(ParseLogs(fileToUse));
+            SeriesCollection[0].Values = new ChartValues<int>(changed);
+            SeriesCollection[1].Values = new ChartValues<int>(renamed);
+            SeriesCollection[2].Values = new ChartValues<int>(deleted);
+            SeriesCollection[3].Values = new ChartValues<int>(created);
         }
 
         private void Graph()
