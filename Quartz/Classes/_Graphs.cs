@@ -30,11 +30,11 @@ namespace Quartz.Classes
 		private static double disk;
 		private static double net;
 		private static double gpu;
-		private static double cpuThreshold = 0.1;
-		private static double memThreshold = 0.8;
-		private static double diskThreshold = 0.8;
-		private static double netThreshold = 0.8;
-		private static double gpuThreshold = 0.8;
+		private static double cpuThreshold = 80;
+		private static double memThreshold = 80;
+		private static double diskThreshold = 80;
+		private static double netThreshold = 80;
+		private static double gpuThreshold = 80;
 		public static void initGraphs()
 		{
 			if (!isTracking) { 
