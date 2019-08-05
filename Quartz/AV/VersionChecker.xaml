@@ -8,6 +8,7 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="VersionChecker">
 
+    
     <DockPanel LastChildFill="True">
         <Label DockPanel.Dock="Top" Content="File Version Checker" Margin="20,10" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="15"/>
         <Rectangle DockPanel.Dock="Top" Height="1" Fill="#FFCCCCCC" Margin="20,0"/>
@@ -16,7 +17,6 @@
                 <Label Content="Update Checker" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
                 <TextBlock Text="Displays all your applications and checks for any pending updates that your applications need! " Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
                 <Button Content="Button Not needed" Height="25" HorizontalAlignment="Left" Margin="5,0,5,25" Padding="5,3"></Button>
-
             </StackPanel>
         </StackPanel>
         <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20"/>
