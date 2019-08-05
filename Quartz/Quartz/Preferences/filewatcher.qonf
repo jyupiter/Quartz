@@ -1,5 +1,5 @@
 TargetDirectory=[C:\Users]
-FilterEnable=[False]
-FilterExtensions=[]
-FilterInclude=[True]
+FilterEnable=[True]
+FilterExtensions=[xml]
+FilterInclude=[False]
 LogsEnable=[True]
