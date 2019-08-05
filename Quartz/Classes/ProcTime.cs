@@ -12,5 +12,9 @@ namespace Quartz.Classes
         public string RunTime { get; set; }
         public string StartTime { get; set; }
 
+        public ProcTime()
+        {
+
+        }
     }
 }
