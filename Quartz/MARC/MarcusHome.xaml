@@ -25,8 +25,8 @@
                 <TextBlock Text="Configure secure login settings." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,25"/>
                 <Label Content="Security" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
                 <TextBlock Text="Activate the function." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,5"/>
-                <CheckBox Margin="5,0,5,5" Checked="EnabledCheckBox_Checked" Unchecked="EnabledCheckBox_UnChecked">Enable Secure Login</CheckBox>
-                <ComboBox Margin="5,0,5,10">
+                <CheckBox Name="SecureLoginTick" IsChecked="True" Margin="5,0,5,5" Checked="EnabledCheckBox_Checked" Unchecked="EnabledCheckBox_UnChecked">Enable Secure Login</CheckBox>
+                <ComboBox Name="AttemptsComboBox" Margin="5,0,5,10">
                     <ComboBoxItem>1 Attempt</ComboBoxItem>
                     <ComboBoxItem >2 Attempts</ComboBoxItem>
                     <ComboBoxItem IsSelected="True">3 Attempts (default)</ComboBoxItem>
@@ -41,7 +41,7 @@
                 <Label Margin="0,15,0,0" Content="Notifications" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
                 <CheckBox Margin="5,0,5,5" Checked="SMSCheckBox_Checked" Unchecked="SMSCheckBox_UnChecked">Send SMS</CheckBox>
                 <CheckBox Margin="5,0,5,25" Checked="EmailCheckBox_Checked" Unchecked="SMSCheckBox_UnChecked">Send Email</CheckBox>
-                <Button Name="LiveScanBtn" Content="Save settings" Height="25" HorizontalAlignment="Left" Padding="5,3" FontFamily="Arial"></Button>
+                <Button Name="LiveScanBtn" Content="Save settings" Height="25" HorizontalAlignment="Left" Padding="5,3" FontFamily="Arial" Click="LiveScanBtn_Click"></Button>
             </StackPanel>
         </StackPanel>
         <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20"/>
@@ -50,8 +50,8 @@
             <TextBlock Text="Keep this control panel secure." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,25"/>
             <Label Content="Password" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
             <TextBlock Text="Set a password for this page." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
-            <Button Name="s" Margin="5,0,0,5" Content="Set Password" Height="25" HorizontalAlignment="Left" Padding="5,3" Click="SetPassword" FontFamily="Arial"></Button>
-            <Button Name="d" Margin="5,0,0,0" Content="Remove Password" Height="25" HorizontalAlignment="Left" Padding="5,3" Click="RemovePassword" FontFamily="Arial"></Button>
+            <Button Name="s" Margin="5,0,0,5" Content="Set/Update Password" Height="25" HorizontalAlignment="Left" Padding="5,3" Click="SetPassword" FontFamily="Arial"></Button>
+            <Button Name="d" Margin="5,0,0,0" Content="Remove Password" Height="25" HorizontalAlignment="Left" Padding="5,3" Click="RemovePassword" FontFamily="Arial" Width="128"></Button>
         </StackPanel>
         <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20"/>
         <Grid Margin="0,20,20,20">

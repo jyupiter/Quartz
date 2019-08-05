@@ -30,7 +30,15 @@ namespace Quartz.MARC
         public static string ConfigSMS = "";
         public static string ConfigEmail = "";
         public static string ConfigPassword = "";
-   
+
+        public static string TempConfigPhoneNo = "";
+        public static string TempConfigTimes = "";
+        public static string TempConfigEnabled = "";
+        public static string TempConfigTakePic = "";
+        public static string TempConfigSMS = "";
+        public static string TempConfigEmail = "";
+        public static string TempConfigPassword = "";
+
 
 
         public MarcusHome()
@@ -52,16 +60,65 @@ namespace Quartz.MARC
             CurrentConfig.Text = "Phone Number: "+ConfigPhoneNo + "\n" + "Attempts allowed: "+ConfigTimes + "\n" + "Login Guard enabled: "+ConfigEnabled + "\n" + "Intruder Photo: "+ConfigTakePic + "\n" + "Warning SMS: "+ConfigSMS + "\n" + "Send Email: "+ConfigEmail + "\n" + IsPasswordSet;
         }
 
+        //SAVE SETTINGS BUTTON!
+        private void LiveScanBtn_Click(object sender, RoutedEventArgs e)
+        {
+            //Enable / Disable SecureLogin 
+            if ((bool) (SecureLoginTick.IsChecked))
+            {
+               // MessageBox.Show("it is ticked, saved");
+                //write to config now 
+                WriteEnableDisableSecureLogin("Yes");
+            }
+            else if ((bool) (!SecureLoginTick.IsChecked))
+            {
+                MessageBox.Show("not ticky enabled");
+                WriteEnableDisableSecureLogin("No");
+            }
+            ReadConfigFile();//IMPORTANT. Update new config file settings to ConfigXXXX variables
+            
+
+
+            //number of attempts
+            string attempts = AttemptsComboBox.Text;
+            if (attempts.Equals("1 Attempt"))
+            {
+                //set writeconfigattempts to 1 
+                MessageBox.Show("1 attempt");
+                WriteAttempts("1");
+            }
+            else if (attempts.Equals("2 Attempts"))
+            {
+
+                MessageBox.Show("2 attempt");
+                WriteAttempts("2");
+
+            }
+            else if (attempts.Equals("3 Attempts (default)"))
+            {
+                MessageBox.Show("3 attempt");
+                WriteAttempts("3");
+            }
+            ReadConfigFile();//call after every update
+
+
+
+            GetMyCurrentConfig();//call at the end of this func
+        }
+
         private void EnabledCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             //sms checkbox
-            MessageBox.Show("enabled tick");
+            //MessageBox.Show("enabled tick");
+
+            
         }
+        
 
         private void EnabledCheckBox_UnChecked(object sender, RoutedEventArgs e)
         {
             //sms checkbox
-            MessageBox.Show("enabled untick");
+            //MessageBox.Show("enabled untick");
         }
 
         private void PhoneNoCheckBox_Checked(object sender, RoutedEventArgs e)
@@ -130,7 +187,7 @@ namespace Quartz.MARC
         }
 
 
-        public static void ReadConfigFile()
+        public void ReadConfigFile()
         {
             //read from config file 
             //get desktop path 
@@ -162,6 +219,16 @@ namespace Quartz.MARC
                     {
                         ConfigEnabled = result;
                         Console.WriteLine("enable/disabled option detected: " + ConfigEnabled);
+                        Dispatcher.Invoke(() =>
+                        {
+                            SecureLoginTick.IsChecked = true;//tick by default
+
+                            if (!ConfigEnabled.Equals("Yes"))// if not yes, untick it
+                            {
+                                SecureLoginTick.IsChecked = false;
+                            }
+                        });
+
                     }
 
                     if (counter == 3)
@@ -202,21 +269,64 @@ namespace Quartz.MARC
         //set new password
         private void SetPassword(object sender, RoutedEventArgs e)
         {
-            string passwordPromptBox = new InputBox("\nSet a new password").ShowDialog();
-             
-            //need a function to write to 6 
+            ReadConfigFile();
+            if (ConfigPassword.Equals("n"))
+            {
+                string passwordPromptBox = new InputBox("\nSet a new password").ShowDialog();
 
-            WriteConfigPassword(passwordPromptBox);
-            MessageBox.Show("Password set!");
+                //need a function to write to 6 
+
+                WriteConfigPassword(passwordPromptBox);
+                MessageBox.Show("Password set!");
+                ReadConfigFile();
+                GetMyCurrentConfig();
+
+            }
+            else
+            {
+                //prompt for previous password
+                //if match, allow
+                //else dont
+                string passwordPromptBox = new InputBox("\nEnter EXISTING password").ShowDialog();
+                if (passwordPromptBox.Equals(ConfigPassword))
+                {
+                    //if match, ask for new password
+                    string updatedPasswordPrompt = new InputBox("\nEnter NEW password").ShowDialog();
+                    if (updatedPasswordPrompt.Equals(""))
+                    {
+                        MessageBox.Show("Password NOT updated");
+                    }
+                    else
+                    {
+                        WriteConfigPassword(updatedPasswordPrompt);
+                        MessageBox.Show("Password Updated!");
+                        ReadConfigFile();
+                        GetMyCurrentConfig();
+                    }
+                    
+                }
+                else
+                {
+                    MessageBox.Show("Wrong password");
+                }
+
+            }
+
         }
 
         //remove password
         private void RemovePassword(object sender, RoutedEventArgs e)
         {
             ReadConfigFile();
-            string passwordPromptBox = new InputBox("\nEnter Current Password").ShowDialog();
-            if (passwordPromptBox.Equals(ConfigPassword))
+            if (ConfigPassword.Equals("n"))
             {
+                MessageBox.Show("You haven't set a password, nothing to remove leh.");
+            }
+            else
+            {
+                string passwordPromptBox = new InputBox("\nEnter Current Password").ShowDialog();
+                if (passwordPromptBox.Equals(ConfigPassword))
+                {
                     string sMessageBoxText = "Do you want to remove your password? (we don't recommend this!)";
                     string sCaption = "Password removal";
 
@@ -238,11 +348,15 @@ namespace Quartz.MARC
                             MessageBox.Show("No changes made");
                             break;
 
-                    
 
-                    
+
+
+                    }
                 }
             }
+            
+            ReadConfigFile();
+            GetMyCurrentConfig();
         }
         //forgot pw 
 
@@ -265,7 +379,41 @@ namespace Quartz.MARC
 
         }//WriteConfigPassword
 
+        public static void WriteEnableDisableSecureLogin(string enabled)
+        {
+            //get desktop path 
+            string filePath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            filePath += @"\MarcConfig.txt";
 
+            //if config file doesn't exist, create one 
+            if (File.Exists(filePath))
+            {
+                File.Create(filePath).Dispose();
+                File.AppendAllLines(filePath, new[] { "hp:" + ConfigPhoneNo, "times:" + ConfigTimes, "enabled:" + enabled, "takepic:" + ConfigTakePic, "sms:" + ConfigSMS, "email:" + ConfigEmail, "password:" + ConfigPassword });
+            }
+            else
+            {
+                Console.WriteLine("Config file exists");
+            }
+        }
+
+        public static void WriteAttempts(string attempts)
+        {
+            //get desktop path 
+            string filePath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            filePath += @"\MarcConfig.txt";
+
+            //if config file doesn't exist, create one 
+            if (File.Exists(filePath))
+            {
+                File.Create(filePath).Dispose();
+                File.AppendAllLines(filePath, new[] { "hp:" + ConfigPhoneNo, "times:" + attempts, "enabled:" + ConfigEnabled, "takepic:" + ConfigTakePic, "sms:" + ConfigSMS, "email:" + ConfigEmail, "password:" + ConfigPassword });
+            }
+            else
+            {
+                Console.WriteLine("Config file exists");
+            }
+        }
 
         //for set new password 
         public class InputBox
@@ -279,8 +427,8 @@ namespace Quartz.MARC
             string title = "Enter Password";//title as heading
             string boxcontent;//title
             string defaulttext = "Default text";//not used but leave it alone
-            string errormessage = "Error message";//error messagebox content
-            string errortitle = "Error message title";//error messagebox heading title
+            string errormessage = "Very funny, password can't be left empty!";//error messagebox content
+            string errortitle = "Error Message";//error messagebox heading title
             string okbuttontext = "Enter";//Ok button content
             Brush BoxBackgroundColor = Brushes.Azure;// Window Background
             Brush InputBackgroundColor = Brushes.Ivory;// Textbox Background
@@ -419,6 +567,7 @@ namespace Quartz.MARC
             }
         }
 
+        
         
     }
 }

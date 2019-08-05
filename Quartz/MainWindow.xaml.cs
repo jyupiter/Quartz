@@ -270,17 +270,27 @@ namespace Quartz
                 if (e.Reason == SessionSwitchReason.SessionLock)
                 {
                     //User locks screen
+                    if (ConfigEnabled.Equals("Yes"))
+                    {
+                        Datetime = (DateTime.Now.ToString("dd:MM:yyyy hh:mm:ss tt")).ToString();
+                        logListener.EntryWritten -= logListener_EntryWritten;//unregister prev subscribers
+                        logListener.EntryWritten += logListener_EntryWritten;//register 
+                        logListener.EnableRaisingEvents = true;
+                    }
                     
-                    Datetime = (DateTime.Now.ToString("dd:MM:yyyy hh:mm:ss tt")).ToString();
-                    logListener.EntryWritten -= logListener_EntryWritten;//unregister prev subscribers
-                    logListener.EntryWritten += logListener_EntryWritten;//register 
-                    logListener.EnableRaisingEvents = true;
+                    
+                   
 
                     
                 }
                 else if (e.Reason == SessionSwitchReason.SessionUnlock)
                 {
-                    Microsoft.Win32.SystemEvents.SessionSwitch -= new Microsoft.Win32.SessionSwitchEventHandler(SystemEvents_SessionSwitch);
+                    if (ConfigEnabled.Equals("Yes"))
+                    {
+                        Microsoft.Win32.SystemEvents.SessionSwitch -= new Microsoft.Win32.SessionSwitchEventHandler(SystemEvents_SessionSwitch);
+                    }
+
+                    
                     Console.WriteLine("Screen unlocked!");
                     
 
