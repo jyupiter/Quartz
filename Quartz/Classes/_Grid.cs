@@ -270,7 +270,6 @@ namespace Quartz.Classes
 		public static void ReloadWhiteList()
 		{
 			whiteList = File.ReadAllLines("..\\..\\..\\HQ\\Filters\\ProcessW.txt");
-			Array.Sort(whiteList);
 		}
 
 
