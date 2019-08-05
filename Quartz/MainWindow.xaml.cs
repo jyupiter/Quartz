@@ -186,11 +186,18 @@ namespace Quartz
         {
             ContentWrapper.NavigationService.Navigate(new Overview());
         }
-        
+
+        private void RedirectToUpdates(object sender, RoutedEventArgs e)
+        {
+            ContentWrapper.NavigationService.Navigate(new CheckUpdater());
+        }
+
         private void RedirectToHome(object sender, RoutedEventArgs e)
         {
             ContentWrapper.NavigationService.Navigate(new Home());
         }
+
+        #region Marcus
 
         /*Marcus page*/
         private void RedirectMarcusHome(object sender, RoutedEventArgs e)
@@ -340,11 +347,6 @@ namespace Quartz
                 SMSlogintimestamps = "";
                 LoginAttemptCount = 0;
             }
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            ContentWrapper.NavigationService.Navigate(new CheckUpdater());
         }
 
         //always called to check if file exists, create file if file doesn't exist
@@ -597,9 +599,10 @@ namespace Quartz
             }
         }
 
+        #endregion
 
     }
 
-    
+
 }
 
