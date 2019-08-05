@@ -233,12 +233,12 @@ namespace Quartz.Classes
 		{
 			for (var i = 0; i < Sauce.Count; i++)
 			{
-				if (name == Sauce[i].pcsName)
+				if (name == Sauce[i].Process)
 				{
 					//Sauce[i].pcsCpu = cpu * 100;
 					//Sauce[i].pcsRam = ram /1024;
 					//Sauce[i].pcsTime = time;
-					Sauce[i] = new Entry(Sauce[i].pcsName, cpu * 100, ram / 1024,time);
+					Sauce[i] = new Entry(Sauce[i].Process, Math.Round(cpu * 100,2), Math.Round(ram / 1024,2),time);
 				}
 			}
 		}
@@ -246,7 +246,7 @@ namespace Quartz.Classes
 		{
 			for (var i = 0; i < Sauce.Count; i++)
 			{
-				if (name == Sauce[i].pcsName)
+				if (name == Sauce[i].Process)
 				{
 					Sauce.RemoveAt(i);
 				}
@@ -356,17 +356,17 @@ namespace Quartz.Classes
 	//[StructLayout(LayoutKind.Sequential, Pack = 1)]
 	public struct Entry
 	{
-		public string pcsName { get; set; }
-		public double pcsCpu { get; set; }
-		public double pcsRam { get; set; }
-		public TimeSpan pcsTime { get; set; }
+		public string Process { get; set; }
+		public double CPU_Usage { get; set; }
+		public double RAM_Usage { get; set; }
+		public TimeSpan ProcessRuntime { get; set; }
 
 		public Entry(string name, double cpu, double ram, TimeSpan Time)
 		{
-			pcsName = name;
-			pcsCpu = cpu;
-			pcsRam = ram;
-			pcsTime = Time;
+			Process = name;
+			CPU_Usage = cpu;
+			RAM_Usage = ram;
+			ProcessRuntime = Time;
 		}
 	}
 
