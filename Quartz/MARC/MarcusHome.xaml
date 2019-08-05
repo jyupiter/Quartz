@@ -41,7 +41,7 @@
                 <Label Margin="0,15,0,0" Content="Notifications" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
                 <CheckBox Margin="5,0,5,5" Checked="SMSCheckBox_Checked" Unchecked="SMSCheckBox_UnChecked">Send SMS</CheckBox>
                 <CheckBox Margin="5,0,5,25" Checked="EmailCheckBox_Checked" Unchecked="SMSCheckBox_UnChecked">Send Email</CheckBox>
-                <Button Name="LiveScanBtn" Content="Save settings" Height="25" HorizontalAlignment="Left" Padding="5,3" Click="StartLiveScan" FontFamily="Arial"></Button>
+                <Button Name="LiveScanBtn" Content="Save settings" Height="25" HorizontalAlignment="Left" Padding="5,3" FontFamily="Arial"></Button>
             </StackPanel>
         </StackPanel>
         <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20"/>
