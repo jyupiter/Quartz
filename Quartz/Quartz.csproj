@@ -292,7 +292,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="AV\dB.txt" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\quartz.png" />
   </ItemGroup>

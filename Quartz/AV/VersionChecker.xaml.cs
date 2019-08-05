@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,6 +24,7 @@ namespace Quartz.AV
     /// </summary>
     public partial class VersionChecker : Page
     {
+        string path = "..\\..\\..\\AV\\dB.txt";
         public VersionChecker()
         {
             InitializeComponent();
@@ -112,7 +115,56 @@ namespace Quartz.AV
                 string appverss = hello.AppVers;
                 
                 
-            } 
+            }
+            CompareWith(applist);
+
+        }
+
+        private bool CompareWith(List<UpdateStuff> applist)
+        {
+            // Definition of this Function is to call and compare
+            bool FullyUpdated = false;
+            using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+            using (var ssr = new StreamReader(stream))
+            {
+                while (!ssr.EndOfStream)
+                {
+                    var line = ssr.ReadLine();
+                    if (!ssr.EndOfStream)
+                    {
+                        var repspl = line.Split('|');
+                        var name = repspl[0];
+                        var Newversion = repspl[1];
+                            try
+                                {
+                            var matches = applist.Where(p => p.AppName == name).ToList();
+
+                            if (matches != null)
+                            {
+                                if (matches[0].AppVers == Newversion)
+                                {
+                                    FullyUpdated = true;
+                                    Debug.WriteLine("IT IS TRUE.");
+                                } else { FullyUpdated = false;  Debug.WriteLine("IT IS FALSE."); }
+
+                            }
+
+                                    }
+                            catch (Exception e)
+                                {
+                            Debug.Write(e);
+                                    }
+
+
+                    }
+                }
+
+                return FullyUpdated;
+
+            }
+
+
+
         }
     }
 }
