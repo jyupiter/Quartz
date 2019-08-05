@@ -50,8 +50,8 @@
             <TextBlock Text="Keep this control panel secure." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,25"/>
             <Label Content="Password" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
             <TextBlock Text="Set a password for this page." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
-            <Button Name="s" Margin="5,0,0,5" Content="Set Password" Height="25" HorizontalAlignment="Left" Padding="5,3" Click="SetPassword" FontFamily="Arial"></Button>
-            <Button Name="d" Margin="5,0,0,0" Content="Remove Password" Height="25" HorizontalAlignment="Left" Padding="5,3" Click="RemovePassword" FontFamily="Arial"></Button>
+            <Button Name="s" Margin="5,0,0,5" Content="Set/Update Password" Height="25" HorizontalAlignment="Left" Padding="5,3" Click="SetPassword" FontFamily="Arial"></Button>
+            <Button Name="d" Margin="5,0,0,0" Content="Remove Password" Height="25" HorizontalAlignment="Left" Padding="5,3" Click="RemovePassword" FontFamily="Arial" Width="128"></Button>
         </StackPanel>
         <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20"/>
         <Grid Margin="0,20,20,20">
