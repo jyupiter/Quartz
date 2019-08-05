@@ -18,6 +18,8 @@ using ToastNotifications.Messages;
 using System.Windows.Threading;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using System.Windows.Input;
+using System.Text.RegularExpressions;
 
 namespace Quartz.HQ
 {
@@ -441,6 +443,16 @@ namespace Quartz.HQ
 			cfg.Dispatcher = Application.Current.Dispatcher;
 		});
 
+		private void NumericOnly(object sender, TextCompositionEventArgs e)
+		{
+			e.Handled = IsTextNumeric(e.Text);
+		}
+
+		public bool IsTextNumeric(string str)
+		{
+			Regex reg = new Regex("[0-9][0-9][0-9]");
+			return reg.IsMatch(str);
+		}
 	}
 
 }
