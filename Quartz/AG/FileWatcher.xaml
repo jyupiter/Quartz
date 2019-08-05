@@ -26,24 +26,22 @@
                     <StackPanel>
                         <Label Content="Target" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13" Margin="0,15,0,0"/>
                         <TextBlock Text="Tool will only record events happening within the specified directory." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,5"/>
-                        <TextBox Name="TargetDirectory" Margin="5,5,5,10" Text="C:\\" PreviewMouseDown="FolderDialog"></TextBox>
+                        <TextBox Name="TargetDirectory" Margin="5,5,5,10" Text="C:\\" PreviewMouseDown="FolderDialog" TextChanged="TargetDirectory_TextChanged"></TextBox>
 
                         <Label Content="Filter" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13" Margin="0,15,0,0"/>
                         <TextBlock Text="Set file types (eg.: .docx) to include or exclude." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,5"/>
-                        <CheckBox Name="EnableFiltering" Margin="5,0,5,10">Enable filtering</CheckBox>
+                        <CheckBox Name="EnableFiltering" Margin="5,0,5,10" Click="EnableFiltering_Click">Enable filtering</CheckBox>
                         <Expander Margin="0,0,0,25">
                             <StackPanel>
                                 <TextBlock Text="Separate extensions with the pipe symbol ''|'' (eg.: docx|xml|ppt)" Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,20,5,10"/>
-                                <TextBox Name="FilterExtensions" Margin="5,0,5,5" Text=""></TextBox>
-                                <RadioButton GroupName="FilterType" Name="FilterInclude" Margin="5" Content="Include" IsChecked="True"></RadioButton>
-                                <RadioButton GroupName="FilterType" Name="FilterExclude" Margin="5,0,5,20" Content="Exclude"></RadioButton>
+                                <TextBox Name="FilterExtensions" Margin="5,0,5,5" Text="" TextChanged="FilterExtensions_TextChanged"></TextBox>
+                                <RadioButton GroupName="FilterType" Name="FilterInclude" Margin="5" Content="Include" IsChecked="True" Click="FilterInclude_Click"></RadioButton>
+                                <RadioButton GroupName="FilterType" Name="FilterExclude" Margin="5,0,5,20" Content="Exclude" Click="FilterExclude_Click"></RadioButton>
                             </StackPanel>
                         </Expander>
-
                         <Label Content="Logs" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13" />
                         <TextBlock Text="Logs are saved to the program folder." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,5"/>
-                        <CheckBox Name="EnableLogs" Margin="5,0,5,20" IsChecked="True">Enable logs</CheckBox>
-
+                        <CheckBox Name="EnableLogs" Margin="5,0,5,20" IsChecked="True" Click="EnableLogs_Click">Enable logs</CheckBox>
                         <Button Name="SaveBtn" Content="Save settings" Margin="5,0,5,20" Height="25" HorizontalAlignment="Left" Padding="5,3" Click="SaveSettings" FontFamily="Arial"></Button>
                     </StackPanel>
                 </Expander>

@@ -225,8 +225,11 @@
     <Compile Include="Classes\ProcessInfo.cs" />
     <Compile Include="Classes\ProcTime.cs" />
     <Compile Include="Classes\UpdateStuff.cs" />
+    <Compile Include="Classes\Watch.cs" />
     <Compile Include="Classes\_Files.cs" />
     <Compile Include="Classes\_Folder.cs" />
+    <Compile Include="Classes\_Graphs.cs" />
+    <Compile Include="Classes\_Grid.cs" />
     <Compile Include="Home.xaml.cs">
       <DependentUpon>Home.xaml</DependentUpon>
     </Compile>
@@ -368,6 +371,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="HQ\Filters\ProcessW.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="HQ\Config\Thresholds.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="HQ\Config\PCSWarn.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

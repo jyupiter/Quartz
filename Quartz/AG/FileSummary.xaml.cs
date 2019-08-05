@@ -52,11 +52,17 @@ namespace Quartz.AG
             ComboBox c = (ComboBox)sender;
             ComboBoxItem s = (ComboBoxItem)c.SelectedItem;
             fileToUse = (string)s.Content;
+            if(SeriesCollection == null)
+                return;
             changed = new int[24];
             renamed = new int[24];
             deleted = new int[24];
             created = new int[24];
             CountEvents(ParseLogs(fileToUse));
+            SeriesCollection[0].Values = new ChartValues<int>(changed);
+            SeriesCollection[1].Values = new ChartValues<int>(renamed);
+            SeriesCollection[2].Values = new ChartValues<int>(deleted);
+            SeriesCollection[3].Values = new ChartValues<int>(created);
         }
 
         private void Graph()
@@ -69,29 +75,34 @@ namespace Quartz.AG
                 {
                     Values = new ChartValues<int>(changed),
                     StackMode = StackMode.Values,
-                    DataLabels = true
+                    DataLabels = true,
+                    Title = "Changed"
                 },
             };
             SeriesCollection.Add(new StackedColumnSeries
             {
                 Values = new ChartValues<int>(renamed),
                 StackMode = StackMode.Values,
-                DataLabels = true
+                DataLabels = true,
+                Title = "Renamed"
             });
             SeriesCollection.Add(new StackedColumnSeries
             {
                 Values = new ChartValues<int>(deleted),
                 StackMode = StackMode.Values,
-                DataLabels = true
+                DataLabels = true,
+                Title = "Deleted"
             });
             SeriesCollection.Add(new StackedColumnSeries
             {
                 Values = new ChartValues<int>(created),
                 StackMode = StackMode.Values,
-                DataLabels = true
+                DataLabels = true,
+                Title = "Created"
             });
             SeriesCollection x = SeriesCollection;
             Labels = new[] { "Changed", "Renamed", "Deleted", "Created" };
+
             DataContext = this;
         }
 

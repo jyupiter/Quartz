@@ -1,5 +1,4 @@
 ACCStd
-ForgedAlliance
 AdminService
 AGMService
 AGSService
@@ -90,6 +89,7 @@ msiexec
 msiexec
 MsMpEng
 msvsmon
+Music.UI
 NisSrv
 notepad++
 NvBackend

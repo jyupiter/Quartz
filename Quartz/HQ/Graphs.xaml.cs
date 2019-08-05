@@ -18,6 +18,8 @@ using ToastNotifications.Messages;
 using System.Windows.Threading;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using System.Windows.Input;
+using System.Text.RegularExpressions;
 
 namespace Quartz.HQ
 {
@@ -26,22 +28,12 @@ namespace Quartz.HQ
 	/// </summary>
 	public partial class Graphs : Page, INotifyPropertyChanged
 	{
+		public int waitTime; //ms
 		private double _axisMax;
 		private double _axisMin;
 		public SeriesCollection SeriesCollection { get; set; }
 		public string[] Labels { get; set; }
 		public Func<double, string> YFormatter { get; set; }
-		private double cpu;
-		private double mem;
-		private double disk;
-		private double net;
-		private double gpu;
-		private double cpuThreshold = 0.1;
-		private double memThreshold = 0.8;
-		private double diskThreshold = 0.8;
-		private double netThreshold = 0.8;
-		private double gpuThreshold = 0.8;
-		public int waitTime; //ms
 		public ChartValues<MeasureModel> GpuValues { get; set; }
 		public ChartValues<MeasureModel> CpuValues { get; set; }
 		public ChartValues<MeasureModel> MemValues { get; set; }
@@ -80,7 +72,6 @@ namespace Quartz.HQ
 		{
 			Debug.WriteLine("Loading Graphs");
 			InitializeComponent();
-			waitTime = 1000;
 
 			var mapper = Mappers.Xy<MeasureModel>()
 				.X(model => model.DateTime.Ticks)   //use DateTime.Ticks as X
@@ -104,266 +95,34 @@ namespace Quartz.HQ
 			AxisUnit = TimeSpan.TicksPerSecond;
 
 			SetAxisLimits(DateTime.Now);
-
+			updateDisplay();
 			//1:gpu 
 			//2:cpu
 			//3:ram
 			//4:disk
 			//5:network
-			StartMonitering();
-
+			new Thread(loadGraphs).Start();
 			//notifier.ShowSuccess(message);
 			//notifier.ShowWarning(message);
 			//notifier.ShowError(message);
 			DataContext = this;
 		}
-		public void UpdateGraphs(int index, double value)
+
+		private void loadGraphs()
 		{
-			//Debug.WriteLine("UpdateGraphs: " + index + " | " + value);
-			switch (index)
-			{
-
-				case 0:
-					GpuValues.Add(new MeasureModel
-					{
-						DateTime = DateTime.Now,
-						Value = value
-					});
-					if (GpuValues.Count > 10) GpuValues.RemoveAt(0);
-					break;
-				case 1:
-					CpuValues.Add(new MeasureModel
-					{
-						DateTime = DateTime.Now,
-						Value = value
-					});
-					if (CpuValues.Count > 10) CpuValues.RemoveAt(0);
-					break;
-				case 2:
-					MemValues.Add(new MeasureModel
-					{
-						DateTime = DateTime.Now,
-						Value = value
-					});
-					if (MemValues.Count > 10) MemValues.RemoveAt(0);
-					break;
-				case 3:
-					DiskValues.Add(new MeasureModel
-					{
-						DateTime = DateTime.Now,
-						Value = value
-					});
-					if (DiskValues.Count > 10) DiskValues.RemoveAt(0);
-					break;
-				case 4:
-					NetValues.Add(new MeasureModel
-					{
-						DateTime = DateTime.Now,
-						Value = value
-					});
-					if (NetValues.Count > 10) NetValues.RemoveAt(0);
-					break;
-				default:
-					Debug.WriteLine("Invalid Index " + index);
-					break;
-			}
-			SetAxisLimits(DateTime.Now);
-
-			//lets only use the last 150 values
-		}
-
-		public void StartMonitering()
-		{
-			//PerformanceCounterCategory category = new PerformanceCounterCategory("Network Interface");
-			//String[] instancename = category.GetInstanceNames();
-
-			//foreach (string name in instancename)
-			//{
-			//	Console.WriteLine(name);
-			//}
-			//NVIDIA.Initialize();
-			new Thread(GpuThread).Start();
-			new Thread(CpuThread).Start();
-			new Thread(MemThread).Start();
-			new Thread(DiskThread).Start();
-			new Thread(NetThread).Start();
-		}
-		public void GpuThread()
-		{
-			Debug.WriteLine("Starting Gpu");
-			int gpuCycles = 0;
-			var GPUs = PhysicalGPU.GetPhysicalGPUs();
 			while (true)
 			{
-				try
-				{
-					System.Threading.Thread.Sleep(waitTime);
-					gpu = GPUs[0].UsageInformation.GPU.Percentage;
-					UpdateGraphs(0, gpu);
-					//Debug.WriteLine("updating gpu: " + gpu);
-					if (gpu > gpuThreshold)
-					{
-						if (gpuCycles < 20)
-						{
-							gpuCycles++;
-						}
-						else
-						{
-							Toast("High GPU usage detected!", "Info");
-							gpuCycles = 0;
-						}
-					}
-					else
-					{
-						gpuCycles = 0;
-					}
-				}
-				catch (Exception e)
-				{
-					Debug.WriteLine(e);
-					Debug.WriteLine("<---!	GPU inactive !--->");
-				}
-
-				
-			}
-
-		}
-
-		private void CpuThread()
-		{
-			Debug.WriteLine("Starting Cpu");
-			int cpuCycles = 0;
-			while (true)
-			{
-				PerformanceCounter cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-				cpuCounter.NextValue();
+				GpuValues = _Graphs.GpuValues;
+				CpuValues = _Graphs.CpuValues;
+				MemValues = _Graphs.MemValues;
+				DiskValues = _Graphs.DiskValues;
+				NetValues = _Graphs.NetValues;
+				SetAxisLimits(DateTime.Now);
 				System.Threading.Thread.Sleep(waitTime);
-				cpu = cpuCounter.NextValue();
-				UpdateGraphs(1, cpu);
-				if (cpu > cpuThreshold)
-				{
-					if (cpuCycles < 20)
-					{
-						cpuCycles++;
-					}
-					else
-					{
-						Toast("High CPU usage detected!", "Info");
-						cpuCycles = 0;
-					}
-				}
-				else
-				{
-					cpuCycles = 0;
-				}
+
 			}
 		}
 
-		private void MemThread()
-		{
-			Debug.WriteLine("Starting Mem");
-			int memCycles = 0;
-			while (true)
-			{
-				
-				PerformanceCounter ramCounter = new PerformanceCounter("Memory", "% Committed Bytes In Use");
-				ramCounter.NextValue();
-				System.Threading.Thread.Sleep(waitTime);
-				mem = ramCounter.NextValue();
-				//Debug.Write(mem + "-");
-				UpdateGraphs(2, mem);
-				if (mem > memThreshold)
-				{
-					if (memCycles < 20)
-					{
-						memCycles++;
-					}
-					else
-					{
-						Toast("High Memory usage detected!", "Info");
-						memCycles = 0;
-					}
-				}
-				else
-				{
-					memCycles = 0;
-				}
-			}
-		}
-
-		private void DiskThread()
-		{
-			int diskCycles = 0;
-			Debug.WriteLine("Starting Disk");
-			while (true)
-			{
-				PerformanceCounter diskCounter = new PerformanceCounter("PhysicalDisk", "% Disk Time", "_Total");
-				diskCounter.NextValue();
-				System.Threading.Thread.Sleep(waitTime);
-				disk = diskCounter.NextValue();
-				UpdateGraphs(3, disk);
-				if (disk > diskThreshold)
-				{
-					if (diskCycles < 20)
-					{
-						diskCycles++;
-					}
-					else
-					{
-						Toast("High Disk usage detected!", "Info");
-						
-					}
-				}
-				else
-				{
-					diskCycles = 0;
-				}
-				//Console.WriteLine("Disk usage: " + disk);
-			}
-		}
-
-		private void NetThread()
-		{
-			Debug.WriteLine("Starting Net");
-			PerformanceCounter bandwidthCounter;
-			float bandwidth;
-
-			PerformanceCounter dataSentCounter;
-
-			PerformanceCounter dataReceivedCounter;
-
-
-			float sendSum = 0;
-			float receiveSum = 0;
-
-			PerformanceCounterCategory category = new PerformanceCounterCategory("Network Interface");
-			String[] instanceName = category.GetInstanceNames();
-
-			bandwidthCounter = new PerformanceCounter("Network Interface", "Current Bandwidth", instanceName[0]);
-			dataSentCounter = new PerformanceCounter("Network Interface", "Bytes Sent/sec", instanceName[0]);
-			dataReceivedCounter = new PerformanceCounter("Network Interface", "Bytes Received/sec", instanceName[0]);
-
-			while (true)
-			{
-
-				bandwidth = bandwidthCounter.NextValue();
-				sendSum = dataSentCounter.NextValue();
-				receiveSum = dataReceivedCounter.NextValue();
-				System.Threading.Thread.Sleep(waitTime);
-				bandwidth = bandwidthCounter.NextValue();
-				sendSum = dataSentCounter.NextValue();
-				receiveSum = dataReceivedCounter.NextValue();
-				Random rng = new Random();
-				net = rng.NextDouble();//(8 * (sendSum + receiveSum) / bandwidth);
-				//Debug.WriteLine("instanceName " + instanceName[0]);
-
-				//Debug.WriteLine("sendSum " + sendSum);
-				//Debug.WriteLine("receiveSum " + receiveSum);
-				//Debug.WriteLine("bandwidth " + bandwidth);
-				UpdateGraphs(4, net);
-				
-			}
-		}
 		private void SetAxisLimits(DateTime now)
 		{
 			AxisMax = now.Ticks + TimeSpan.FromSeconds(1).Ticks; // lets force the axis to be 1 second ahead
@@ -441,6 +200,42 @@ namespace Quartz.HQ
 			cfg.Dispatcher = Application.Current.Dispatcher;
 		});
 
+		private void NumericOnly(object sender, TextCompositionEventArgs e)
+		{
+			e.Handled = IsTextNumeric(e.Text);
+		}
+
+		public bool IsTextNumeric(string str)
+		{
+			Regex reg = new Regex("[0-9][0-9][0-9]");
+			return reg.IsMatch(str);
+		}
+
+		private void updateLvls(object sender, RoutedEventArgs e)
+		{
+			string[] list = new string[5] { cpuControl.Text , gpuControl.Text , ramControl.Text , diskControl.Text , netControl.Text };
+			using (System.IO.StreamWriter file =
+			new System.IO.StreamWriter("..\\..\\..\\HQ\\Config\\Thresholds.txt"))
+			{
+				foreach (string line in list)
+				{
+					file.WriteLine(line);
+				}
+				
+			}
+			updateDisplay();
+		}
+
+		private void updateDisplay()
+		{
+			_Graphs.ReloadWarnList();
+			string[] list = _Graphs.GetWarnList();
+			cpuControl.Text = list[0];
+			gpuControl.Text = list[1];
+			ramControl.Text = list[2];
+			diskControl.Text = list[3];
+			netControl.Text = list[4];
+		}
 	}
 
 }

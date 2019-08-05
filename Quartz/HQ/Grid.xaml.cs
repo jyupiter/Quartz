@@ -26,338 +26,32 @@ namespace Quartz.HQ
 	/// <summary>
 	/// Interaction logic for Grid.xaml
 	/// </summary>
-	public partial class Grid : Page, INotifyPropertyChanged
+	public partial class Grid : Page
 	{
-		private List<Entry> Sauce = new List<Entry>();
-
-		public double AxisMax;
-		public double AxisMin;
-		public event PropertyChangedEventHandler PropertyChanged;
-		public SeriesCollection SeriesCollection { get; set; }
-		public string[] Labels { get; set; }
-		public Func<double, string> YFormatter { get; set; }
-		public float cpu;
-		public float mem;
-		public float disk;
-		public float net;
-		public float gpu;
-		public int waitTime; //ms
-		public double ticks;
-		public ArrayList allProcesses;
-		public string[] whiteList;
-		private double cpuWarnLvl = 0.1;
-		private double gpuWarnLvl = 0.1;
-		private double diskWarnLvl = 0.1;
-		private double netWarnLvl = 0.1;
-		private double ramWarnLvl = 1048576;
-		public ObservableCollection<ProcessInfo> pcsdata;
 		public Grid()
 		{
 			Debug.WriteLine("Loading grid!");
 			InitializeComponent();
-			waitTime = 1000;
-			//1:gpu 
-			//2:cpu
-			//3:ram
-			//4:disk
-			//5:network
-			ReloadWhiteList();
-			StartMonitering();
-			initGrid();
-			//notifier.ShowSuccess(message);
-			//notifier.ShowWarning(message);
-			//notifier.ShowError(message);
 			DataContext = this;
-
-			//<-----	Datagrid stufff	----->
-		}
-
-
-		public void StartMonitering()
-		{
-			//PerformanceCounterCategory category = new PerformanceCounterCategory("Network Interface");
-			//String[] instancename = category.GetInstanceNames();
-
-			//foreach (string name in instancename)
-			//{
-			//	Console.WriteLine(name);
-			//}
-			//NVIDIA.Initialize();
-			new Thread(gridUpdate).Start();
-			allProcesses = GetProcessNames();
-			foreach (string process in allProcesses)
-			{
-				Debug.WriteLine(process);
-				Thread PMoniter = new Thread(new ParameterizedThreadStart(MoniterProcess));
-				PMoniter.SetApartmentState(ApartmentState.STA);
-				PMoniter.Start(process);
-
-			}
-			new Thread(CheckNewProcesses).Start();
-		}
-
-		public void gridUpdate()
-		{
-			while (true)
-			{
-				UpdateDisplay();
-				System.Threading.Thread.Sleep(waitTime * 2);
-			}
-			
-		}
-		public void CheckNewProcesses()
-		{
-			ArrayList currentProcesses = new ArrayList();
-			while (true)
-			{
-				currentProcesses = GetProcessNames();
-				foreach (string process in currentProcesses)
-				{
-					if (!allProcesses.Contains(process))
-					{
-						allProcesses.Add(process);
-						Debug.WriteLine("New Process detected! " + process);
-						Thread PMoniter = new Thread(new ParameterizedThreadStart(MoniterProcess));
-						PMoniter.SetApartmentState(ApartmentState.STA);
-						PMoniter.Start(process);
-					}
-				}
-			}
-		}
-		public void MoniterProcess(object arg)
-		{
-			TimeSpan runTime = new TimeSpan(0);
-			DateTime startTime = DateTime.Now;
-			DateTime lastTime = new DateTime();
-			TimeSpan lastTotalProcessorTime = new TimeSpan();
-			DateTime curTime;
-			TimeSpan curTotalProcessorTime = new TimeSpan();
-			string process = (string)arg;
-			int cpuCycles = 0;
-			int ramCycles = 0;
-			double CPUUsage = 0;
-			Entry entry = new Entry(process, 0.0,0.0, new TimeSpan());
-			Sauce.Add(entry);
-			//TreeViewItem item = new TreeViewItem();
-			//item.Name = process;
-			//item.Header = process;
-			//this.Dispatcher.Invoke(() =>
-			//{
-			//	mainTree.Items.Add(item);
-			//});
-
-			//grid.mainTree
-			while (true)
-			{
-				//Debug.WriteLine("cycles: " + cycles);
-				System.Diagnostics.Process[] pname = System.Diagnostics.Process.GetProcessesByName(process);
-				if (pname.Length == 0 || !NotInWhiteList(process))
-				{
-					//
-					LogPcsTime(process, startTime, runTime, DateTime.Now);
-					allProcesses.Remove(process);
-					RemoveEntry(process);
-					return;
-				}
-				else
-				{
-					//try
-					//{
-					System.Diagnostics.Process p = pname[0];
-
-					//<----------	CPU Monitering	--------->
-					runTime = p.TotalProcessorTime;
-					if (lastTime == null || lastTime == new DateTime())
-					{
-						lastTime = DateTime.Now;
-						lastTotalProcessorTime = p.TotalProcessorTime;
-					}
-					else
-					{
-						//Debug.WriteLine("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-						curTime = DateTime.Now;
-						curTotalProcessorTime = p.TotalProcessorTime;
-
-						CPUUsage = (curTotalProcessorTime.TotalMilliseconds - lastTotalProcessorTime.TotalMilliseconds) / curTime.Subtract(lastTime).TotalMilliseconds / Convert.ToDouble(Environment.ProcessorCount);
-						//Console.WriteLine("{0} CPU: {1:0.0}%", p.ProcessName, CPUUsage * 100);
-						if (CPUUsage > cpuWarnLvl)
-						{
-							if (cpuCycles < 10)
-							{
-								cpuCycles++;
-							}
-							else
-							{
-								Toast("High CPU usage by " + p.ProcessName, "Error");
-								cpuCycles = 0;
-							}
-						}
-						else
-						{
-							cpuCycles = 0;
-						}
-						lastTime = curTime;
-						lastTotalProcessorTime = curTotalProcessorTime;
-					}
-
-					//<----------	RAM Monitering	--------->
-					double ramUsage = p.PagedSystemMemorySize64;
-					//Console.WriteLine(p.ProcessName + " : " + ramUsage);
-					if (ramUsage > ramWarnLvl)
-					{
-						if (ramCycles < 10)
-						{
-							ramCycles++;
-						}
-						else
-						{
-							Toast("High memory usage by " + p.ProcessName, "Warn");
-							ramCycles = 0;
-						}
-					}
-					else
-					{
-						ramCycles = 0;
-					}
-					SetEntry(p.ProcessName, CPUUsage*100,ramUsage,curTotalProcessorTime);
-					
-					//}
-					//catch (Exception e)
-					//{
-
-					//}
-				}
-				System.Threading.Thread.Sleep(waitTime);
-			}
-
-		}
-
-		public void SetEntry(string name, double cpu, double ram, TimeSpan time)
-		{
-			for (var i = 0; i < Sauce.Count; i++)
-			{
-				if (name == Sauce[i].pcsName)
-				{
-					Sauce[i].pcsCpu = cpu;
-					Sauce[i].pcsRam = ram;
-					Sauce[i].pcsTime = time;
-				}
-			}
-		}
-		public void RemoveEntry(string name)
-		{
-			for(var i = 0; i < Sauce.Count; i++)
-			{
-				if(name == Sauce[i].pcsName)
-				{
-					Sauce.RemoveAt(i);
-				}
-			}
-		}
-
-		public void LogPcsTime(string process, DateTime start, TimeSpan runTime, DateTime end)
-		{
-			Debug.WriteLine("Logging: " + process + "|" + start + "|" + runTime + "|" + end);
-			string path = "..\\..\\..\\HQ\\Logs\\ProcessTimes.txt";
-			// This text is added only once to the file.
-			//if (!File.Exists(path))
-			//{
-			// Create a file to write to.
-			for (var i = 0; i < 10; i++)
-			{
-				try
-				{
-					using (StreamWriter sw = File.AppendText(path))
-					{
-						sw.WriteLine(process + "|" + start + "|" + runTime + "|" + end);
-					}
-					return;
-				}
-				catch (Exception)
-				{
-					Debug.WriteLine("File in use! Try " + i);
-					Thread.Sleep(waitTime / 2);
-				}
-			}
-
-
-			//}
-		}
-
-		public void SaveWhitelist(object sender, RoutedEventArgs e)
-		{
-			using (System.IO.StreamWriter file =
-			new System.IO.StreamWriter("..\\..\\..\\HQ\\Filters\\ProcessW.txt"))
-			{
-					// If the line doesn't contain the word 'Second', write the line to the file.
-				file.WriteLine(whitelistBox.Text);
-			}
-			ReloadWhiteList();
-		}
-
-		public void ReloadWhiteList()
-		{
-			whiteList = File.ReadAllLines("..\\..\\..\\HQ\\Filters\\ProcessW.txt");
-			Array.Sort(whiteList);
+			//InitGrid();
 			DisplayWhiteList();
+			updateDisplay();
+			new Thread(UpdateDisplay).Start();
 		}
-
-		public void DisplayWhiteList()
-		{
-			string output = "";
-			for(int i =1; i< whiteList.Length; i++)
-			{
-				output += whiteList[i] + "\n";
-			}
-			//foreach(string line in whiteList)
-			//{
-			//	output += line + "\n";
-			//}
-			whitelistBox.Text = output;
-		}
-
-		public bool NotInWhiteList(string process)
-		{
-
-
-			foreach (string line in whiteList)
-			{
-				if (line == process)
-				{
-					return false;
-				}
-			}
-			return true;
-		}
-
-		public ArrayList GetProcessNames()
-		{
-			ArrayList currentProcesses = new ArrayList(System.Diagnostics.Process.GetProcesses());
-			ArrayList pcsNames = new ArrayList();
-			foreach (System.Diagnostics.Process process in currentProcesses)
-			{
-				if (NotInWhiteList(process.ProcessName))
-				{
-					pcsNames.Add(process.ProcessName);
-				}
-			}
-			return pcsNames;
-		}
-
-		private void initGrid()
+		private void InitGrid()
 		{
 			DataGridTextColumn name = new DataGridTextColumn();
 			DataGridTextColumn cpu = new DataGridTextColumn();
 			DataGridTextColumn ram = new DataGridTextColumn();
 			DataGridTextColumn runTime = new DataGridTextColumn();
-			name.Header = "Process";
-			cpu.Header = "Cpu Usage";
-			ram.Header = "Ram Usage";
-			runTime.Header = "Process Runtime";
-			name.Binding = new Binding("pcsName");
-			cpu.Binding = new Binding("pcsCpu");
-			ram.Binding = new Binding("pcsRam");
-			runTime.Binding = new Binding("pcsTime");
+			//name.Header = "Process";
+			//cpu.Header = "Cpu Usage (%)";
+			//ram.Header = "Ram Usage (MB)";
+			//runTime.Header = "Process Runtime";
+			//name.Binding = new Binding("pcsName");
+			//cpu.Binding = new Binding("pcsCpu");
+			//ram.Binding = new Binding("pcsRam");
+			//runTime.Binding = new Binding("pcsTime");
 
 			processGrid.Columns.Add(name);
 			processGrid.Columns.Add(cpu);
@@ -366,74 +60,74 @@ namespace Quartz.HQ
 
 		}
 
-
 		private void UpdateDisplay()
 		{
-			try
+			while (true)
 			{
-				Dispatcher.Invoke(() =>
+				try
 				{
-					Debug.WriteLine("Adding Entry!");
-					processGrid.ItemsSource = Sauce;
-					processGrid.Items.Refresh();
-				});
-			} catch(Exception)
+					Dispatcher.Invoke(() =>
+					{
+						Debug.WriteLine("Adding Entry!");
+						processGrid.ItemsSource = _Grid.Sauce;
+						processGrid.Items.Refresh();
+					});
+				}
+				catch (Exception)
+				{
+					
+				}
+				Thread.Sleep(_Grid.waitTime / 2);
+			}
+			
+		}
+
+		public void SaveWhitelist(object sender, RoutedEventArgs e)
+		{
+			using (System.IO.StreamWriter file =
+			new System.IO.StreamWriter("..\\..\\..\\HQ\\Filters\\ProcessW.txt"))
 			{
+				file.WriteLine(whitelistBox.Text);
+			}
+			_Grid.ReloadWhiteList();
+			DisplayWhiteList();
+		}
+
+		public void DisplayWhiteList()
+		{
+			string output = "";
+			for (int i = 0; i < _Grid.whiteList.Length -1; i++)
+			{
+				output += _Grid.whiteList[i] + "\n";
+			}
+			//foreach(string line in whiteList)
+			//{
+			//	output += line + "\n";
+			//}
+			whitelistBox.Text = output;
+		}
+
+		private void updateLvls(object sender, RoutedEventArgs e)
+		{
+			string[] list = new string[2] { PCSCpu.Text,PCSRam.Text };
+			using (System.IO.StreamWriter file =
+			new System.IO.StreamWriter("..\\..\\..\\HQ\\Config\\PCSWarn.txt"))
+			{
+				foreach (string line in list)
+				{
+					file.WriteLine(line);
+				}
 
 			}
-		}
-		private void Toast(string message, string type)
-		{
-			Application.Current.Dispatcher.Invoke((Action)delegate
-			{
-				switch (type)
-				{
-					case "Warn":
-						notifier.ShowWarning(message);
-						break;
-					case "Error":
-						notifier.ShowError(message);
-						break;
-					case "Info":
-						notifier.ShowInformation(message);
-						break;
-				}
-				
-			});
-
+			updateDisplay();
 		}
 
-		Notifier notifier = new Notifier(cfg =>
+		private void updateDisplay()
 		{
-			cfg.PositionProvider = new WindowPositionProvider(
-				parentWindow: Application.Current.MainWindow,
-				corner: Corner.TopRight,
-				offsetX: 10,
-				offsetY: 10);
-
-			cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
-				notificationLifetime: TimeSpan.FromSeconds(3),
-				maximumNotificationCount: MaximumNotificationCount.FromCount(5));
-
-			cfg.Dispatcher = Application.Current.Dispatcher;
-		});
-	}
-
-	[StructLayout(LayoutKind.Sequential, Pack = 1)]
-	public class Entry
-	{
-		public string pcsName { get; set; }
-		public double pcsCpu { get; set; }
-		public double pcsRam { get; set; }
-		public TimeSpan pcsTime { get; set; }
-
-		public Entry() { }
-		public Entry(string name, double cpu, double ram, TimeSpan Time)
-		{
-			pcsName = name;
-			pcsCpu = cpu;
-			pcsRam = ram;
-			pcsTime = Time;
+			_Grid.ReloadWarnList();
+			string[] list = _Grid.GetWarnList();
+			PCSCpu.Text = list[0];
+			PCSRam.Text = list[1];
 		}
 	}
 }

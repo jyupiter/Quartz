@@ -21,6 +21,7 @@ using Quartz.AV;
 using Twilio;
 using Twilio.Exceptions;
 using Twilio.Rest.Api.V2010.Account;
+using Quartz.Classes;
 
 namespace Quartz
 {
@@ -50,11 +51,13 @@ namespace Quartz
         public MainWindow()
         {
             InitializeComponent();
-            //marcustimer();// delete if not used in final product
-            //calltwilio();
+			//marcustimer();// delete if not used in final product
+			//calltwilio();
+			_Graphs.initGraphs();
             LoginLogoutDetector();//entry point for M's function
             CreateConfigFile();// Marcus's config file
             ReadConfigFile();//Marcus's config file 
+			_Grid.InitGrid();
             foreach(Button b in MainMenu.Children.OfType<Button>())
             {
                 b.Click += FocusHandler;
