@@ -210,6 +210,12 @@ namespace Quartz.HQ
 			Regex reg = new Regex("[0-9][0-9][0-9]");
 			return reg.IsMatch(str);
 		}
+
+		private void updateLvls(object sender, RoutedEventArgs e)
+		{
+			string[] list = _Graphs.GetWarnList();
+			cpuControl.Text = list[0];
+		}
 	}
 
 }

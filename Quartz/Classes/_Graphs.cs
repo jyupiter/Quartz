@@ -4,6 +4,7 @@ using Quartz.HQ;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -35,6 +36,7 @@ namespace Quartz.Classes
 		private static double diskThreshold = 80;
 		private static double netThreshold = 80;
 		private static double gpuThreshold = 80;
+		private static string[] config;
 		public static void initGraphs()
 		{
 			if (!isTracking) { 
@@ -55,6 +57,21 @@ namespace Quartz.Classes
 			//5:network
 			StartMonitering();
 			}
+		}
+
+		public static void ReloadWarnList()
+		{
+			config = File.ReadAllLines("..\\..\\..\\HQ\\Config\\Thresholds.txt");
+			cpuThreshold = Convert.ToInt32(config[0]);
+			gpuThreshold = Convert.ToInt32(config[1]);
+			memThreshold = Convert.ToInt32(config[2]);
+			diskThreshold = Convert.ToInt32(config[3]);
+			netThreshold = Convert.ToInt32(config[4]);
+		}
+
+		public static string[] GetWarnList()
+		{
+			return new string[5] { config[0], config[1], config[2], config[3], config[4] };
 		}
 
 		public static void StartMonitering()
