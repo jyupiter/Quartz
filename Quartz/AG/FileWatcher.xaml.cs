@@ -148,12 +148,12 @@ namespace Quartz.AG
 
         private void FilterInclude_Click(object sender, RoutedEventArgs e)
         {
-            filterInclude = (bool)FilterInclude.IsChecked;
+            filterInclude = (bool)!FilterInclude.IsChecked;
         }
 
         private void FilterExclude_Click(object sender, RoutedEventArgs e)
         {
-            filterInclude = (bool)!FilterInclude.IsChecked;
+            filterInclude = (bool)FilterInclude.IsChecked;
         }
 
         private void EnableLogs_Click(object sender, RoutedEventArgs e)
