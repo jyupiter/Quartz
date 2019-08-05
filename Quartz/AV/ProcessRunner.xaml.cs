@@ -26,98 +26,42 @@ namespace Quartz.AV
     /// </summary>
     public partial class ProcessRunner : Page
     {
-        public static ArrayList allProcesses;
-        public static int waitTime; //ms
-        public static ObservableCollection<ProcessInfo> pcsdata;
-        public static ArrayList currentprocesses;
+        string path = "..\\..\\..\\HQ\\Logs\\ProcessTimes.txt";
 
         public ProcessRunner()
         {
             InitializeComponent();
-            allProcesses = GetProcessNames();
-            new Thread(GetProcessExitTimes).Start();
-            
+            GetStuffFromFile();
         }
 
-        //Thread 
-        public static void RunThis()
+        public void GetStuffFromFile()
         {
-
-            
-        }
-
-        // GET PROCESSES RUNNING, AND LOG INTO TEXT FILES
-
-        public static void CheckNewProcesses()
-        {
-            ArrayList currentProcesses = new ArrayList();
-            while (true)
+            using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+            using (var ssr = new StreamReader(stream))
             {
-                currentProcesses = GetProcessNames();
-                foreach (string process in currentProcesses)
+                while (!ssr.EndOfStream)
                 {
-                    if (!allProcesses.Contains(process))
+                    var line = ssr.ReadLine();
+                    if (!ssr.EndOfStream)
                     {
-                        allProcesses.Add(process);
-                        Debug.WriteLine("New Process detected! " + process);
-                        Thread PMoniter = new Thread(new ParameterizedThreadStart(MoniterProcess));
-                        PMoniter.SetApartmentState(ApartmentState.STA);
-                        PMoniter.Start(process);
+                        var nextLine = ssr.ReadLine();
+                        var repspl = nextLine.Split('|');
+                        var name = repspl[0];
+                        var startDate = repspl[1];
+                        var runtime = repspl[2];
+                        var EndDate = repspl[3];
+
+                        foreach (String s in repspl)
+                        {
+                            Debug.WriteLine(s);
+                        }
                     }
                 }
-            }
-        }
 
-
-        public static void MoniterProcess(object arg)
-        {
-            TimeSpan runTime = new TimeSpan(0);
-            DateTime startTime = DateTime.Now;
-            DateTime lastTime = new DateTime();
-            TimeSpan lastTotalProcessorTime = new TimeSpan();
-            DateTime curTime;
-            TimeSpan curTotalProcessorTime = new TimeSpan();
-            string process = (string)arg;
-
-            System.Diagnostics.Process[] pname = System.Diagnostics.Process.GetProcessesByName(process);
-            
-                LogPcsTime(process, startTime, runTime, DateTime.Now);
-                allProcesses.Remove(process);
-                return;
-            
-
-        }
-
-        public static void LogPcsTime(string process, DateTime start, TimeSpan runTime, DateTime end)
-        {
-            Debug.WriteLine("Logging: " + process + "|" + start + "|" + runTime + "|" + end);
-            string path = "..\\..\\..\\HQ\\Logs\\ProcessTimes.txt";
-            // This text is added only once to the file.
-            //if (!File.Exists(path))
-            //{
-            // Create a file to write to.
-            for (var i = 0; i < 10; i++)
-            {
-                try
-                {
-                    using (StreamWriter sw = File.AppendText(path))
-                    {
-                        sw.WriteLine(process + "|" + start + "|" + runTime + "|" + end);
-                    }
-                    return;
-                }
-                catch (Exception e)
-                {
-                    Debug.WriteLine("File in use! Try " + i);
-                    Thread.Sleep(waitTime / 2);
-                }
             }
 
 
-            //}
         }
-
-
         public static ArrayList GetProcessNames()
         {
             ArrayList currentProcesses = new ArrayList(Process.GetProcesses());
