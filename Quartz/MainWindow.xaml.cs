@@ -57,6 +57,7 @@ namespace Quartz
             LoginLogoutDetector();//entry point for M's function
             CreateConfigFile();// Marcus's config file
             ReadConfigFile();//Marcus's config file 
+			_Grid.InitGrid();
             foreach(Button b in MainMenu.Children.OfType<Button>())
             {
                 b.Click += FocusHandler;

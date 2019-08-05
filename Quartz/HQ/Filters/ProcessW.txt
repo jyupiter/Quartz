@@ -1,5 +1,4 @@
 ACCStd
-Music.UI
 AdminService
 AGMService
 AGSService
@@ -41,7 +40,6 @@ fdlauncher
 flux
 fontdrvhost
 fontdrvhost
-ForgedAlliance
 FubTracking
 GfExperienceService
 git
@@ -91,6 +89,7 @@ msiexec
 msiexec
 MsMpEng
 msvsmon
+Music.UI
 NisSrv
 notepad++
 NvBackend
