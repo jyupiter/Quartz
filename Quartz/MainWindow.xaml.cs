@@ -350,13 +350,48 @@ namespace Quartz
 
         public static void SendSMS()
         {
-            if (LoginAttemptCount == 3)//3 should change to dynamic variable for final presentation
+            ReadConfigFile();
+            if (LoginAttemptCount.ToString().Equals(ConfigTimes))//3 should change to dynamic variable for final presentation
             {
-                MarcusTwilio mt = new MarcusTwilio();
-                mt.calltwilio("+6596445769", "\n Failed Login Attempts detected at " + SMSlogintimestamps);//Change to dynamic variable in final presentation
-                SMSlogintimestamps = "";
-                LoginAttemptCount = 0;
+                string pcname = System.Environment.MachineName;
+                if (!ConfigPhoneNo.Equals("00000000") && ConfigSMS.Equals("Yes"))
+                {
+                    if (ConfigEmail.Equals("Yes"))
+                    {
+                        new Thread(SendEmail).Start();
+                    }
+                   
+                    
+                    MarcusTwilio mt = new MarcusTwilio();
+                    mt.calltwilio("96445769", "\nWARNING: Quartz Detected Your Computer " + pcname + " had " + LoginAttemptCount + " Failed Login Attempts detected at " + SMSlogintimestamps);//Change to dynamic variable in final presentation
+                    SMSlogintimestamps = "";
+                    LoginAttemptCount = 0;
+                }
+                else if(ConfigPhoneNo.Equals("00000000"))
+                {
+                    MessageBox.Show("There were " + LoginAttemptCount + " failed login attempts on " + pcname +
+                                    " At time" + SMSlogintimestamps +"\nWe tried sending you an SMS, but you didn't set a valid handphone number");
+                }
+                else
+                {
+                    MessageBox.Show("There were " + LoginAttemptCount + " failed login attempts on " + pcname +
+                                    " At time" + SMSlogintimestamps + "\nWe didn't send you an SMS as you requested");
+                }
+
+                if (ConfigEmail.Equals("No"))
+                {
+                    MessageBox.Show("We tried sending an email, but didnt send it as per requested");
+                }
+                
             }
+        }
+
+        public static void SendEmail()
+        {
+            MarcusEmail email = new MarcusEmail();
+            string pcname = System.Environment.MachineName;
+            email.email_send("There were " + LoginAttemptCount + " failed login attempts on " + pcname +
+                                             " At time" + SMSlogintimestamps + "\n");
         }
 
         //always called to check if file exists, create file if file doesn't exist

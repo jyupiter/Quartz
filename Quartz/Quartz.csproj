@@ -316,6 +316,7 @@
     <Compile Include="AG\FileWatcher.xaml.cs">
       <DependentUpon>FileWatcher.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MARC\MarcusEmail.cs" />
     <Compile Include="MARC\MarcusHome.xaml.cs">
       <DependentUpon>MarcusHome.xaml</DependentUpon>
     </Compile>
