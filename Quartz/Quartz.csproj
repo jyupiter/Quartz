@@ -369,5 +369,8 @@
   <ItemGroup>
     <Resource Include="HQ\Filters\ProcessW.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="HQ\Config\Thresholds.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -34,16 +34,18 @@
                     <RadioButton GroupName="ToggleGraphs" Margin="0,0,0,5" Content="Network" Click="Network"></RadioButton>
                 </StackPanel>
             </StackPanel>
-            <TextBlock Text="Set warning level for CPU." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
-            <xctk:IntegerUpDown Name="cpuControl" Height="30" Margin="0,0,0.2,0" Maximum="100" Minimum="0"/>
-            <TextBlock Text="Set warning level for GPU." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
-            <xctk:IntegerUpDown Name="gpuControl" Height="30" Margin="0,0,0.2,0" Maximum="100" Minimum="0"/>
-            <TextBlock Text="Set warning level for RAM." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
-            <xctk:IntegerUpDown Name="ramControl" Height="30" Margin="0,0,0.2,0" Maximum="100" Minimum="0"/>
-            <TextBlock Text="Set warning level for Disk." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
-            <xctk:IntegerUpDown Name="diskControl" Height="30" Margin="0,0,0.2,0" Maximum="100" Minimum="0"/>
-            <TextBlock Text="Set warning level for Network" Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
-            <xctk:IntegerUpDown Name="netControl" Height="30" Margin="0,0,0.2,0" Maximum="100" Minimum="0"/>
+            <TextBlock Text="Set warning level for CPU%." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
+            <xctk:IntegerUpDown FormatString="P" Name="cpuControl" Height="30" Margin="0,0,0.2,0" Maximum="100" Minimum="0"/>
+            <TextBlock Text="Set warning level for GPU%." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
+            <xctk:IntegerUpDown FormatString="P" Name="gpuControl" Height="30" Margin="0,0,0.2,0" Maximum="100" Minimum="0"/>
+            <TextBlock Text="Set warning level for RAM%." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
+            <xctk:IntegerUpDown FormatString="P" Name="ramControl" Height="30" Margin="0,0,0.2,0" Maximum="100" Minimum="0"/>
+            <TextBlock Text="Set warning level for Disk%." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
+            <xctk:IntegerUpDown FormatString="P" Name="diskControl" Height="30" Margin="0,0,0.2,0" Maximum="100" Minimum="0"/>
+            <TextBlock Text="Set warning level for Network%." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
+            <xctk:IntegerUpDown FormatString="P" Name="netControl" Height="30" Margin="0,0,0.2,0" Maximum="100" Minimum="0"/>
+            <Button Height="20" Name="updateWL" Margin="0,0,0.2,0" Click="updateLvls">Update warning levels</Button>
+
         </StackPanel>
         <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20"/>
         <Grid Name="GraphWrapper" DockPanel.Dock="Right" Margin="0,0,20,20">
