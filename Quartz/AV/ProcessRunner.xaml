@@ -8,7 +8,14 @@
       Background="#FFFBFBFB"
       d:DesignHeight="565" d:DesignWidth="980"
       Title="ProcessRunner">
-
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Dictionaries/GeneralDictionary.xaml"/>
+                <ResourceDictionary Source="/Dictionaries/DataGridDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
     <DockPanel LastChildFill="True">
         <Label DockPanel.Dock="Top" Content="File Version Checker" Margin="20,10" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="15"/>
         <Rectangle DockPanel.Dock="Top" Height="1" Fill="#FFCCCCCC" Margin="20,0"/>
@@ -17,7 +24,6 @@
                 <Label Content="Description" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
                 <TextBlock Text="Reports on Unused Processes. Take note of rarely used applications - they may be out of date." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
                 <Button Content="Check Processes" Height="25" HorizontalAlignment="Left" Margin="5,0,5,25" Padding="5,3" Click="Button_Click"></Button>
-
             </StackPanel>
         </StackPanel>
         <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20"/>

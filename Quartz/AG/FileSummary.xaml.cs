@@ -52,8 +52,11 @@ namespace Quartz.AG
             ComboBox c = (ComboBox)sender;
             ComboBoxItem s = (ComboBoxItem)c.SelectedItem;
             fileToUse = (string)s.Content;
-            SeriesCollection.Clear(); // coughs up blood
-            Graph();
+            changed = new int[24];
+            renamed = new int[24];
+            deleted = new int[24];
+            created = new int[24];
+            CountEvents(ParseLogs(fileToUse));
         }
 
         private void Graph()
