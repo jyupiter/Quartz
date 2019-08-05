@@ -24,6 +24,6 @@
                 <Button Style="{StaticResource BSideButtonStyle}" Template="{StaticResource BSideButtonTemplate}" Click="RedirectToProcessRunner" Content="Download Detection" HorizontalAlignment="Left"/>
             </StackPanel>
         </Border>
-        <Frame Name="UpdateWrapper" Content="" NavigationUIVisibility="Hidden" Height="565" DockPanel.Dock="Top" Source="/Quartz;component/AV/ProcessRunner.xaml"/>
+        <Frame Name="UpdateWrapper" Content="" NavigationUIVisibility="Hidden" Height="565" DockPanel.Dock="Top" Source="/Quartz;component/AV/VersionChecker.xaml"/>
     </DockPanel>
 </Page>
