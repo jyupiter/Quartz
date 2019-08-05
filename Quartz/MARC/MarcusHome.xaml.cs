@@ -30,7 +30,15 @@ namespace Quartz.MARC
         public static string ConfigSMS = "";
         public static string ConfigEmail = "";
         public static string ConfigPassword = "";
-   
+
+        public static string TempConfigPhoneNo = "";
+        public static string TempConfigTimes = "";
+        public static string TempConfigEnabled = "";
+        public static string TempConfigTakePic = "";
+        public static string TempConfigSMS = "";
+        public static string TempConfigEmail = "";
+        public static string TempConfigPassword = "";
+
 
 
         public MarcusHome()
@@ -52,16 +60,65 @@ namespace Quartz.MARC
             CurrentConfig.Text = "Phone Number: "+ConfigPhoneNo + "\n" + "Attempts allowed: "+ConfigTimes + "\n" + "Login Guard enabled: "+ConfigEnabled + "\n" + "Intruder Photo: "+ConfigTakePic + "\n" + "Warning SMS: "+ConfigSMS + "\n" + "Send Email: "+ConfigEmail + "\n" + IsPasswordSet;
         }
 
+        //SAVE SETTINGS BUTTON!
+        private void LiveScanBtn_Click(object sender, RoutedEventArgs e)
+        {
+            //Enable / Disable SecureLogin 
+            if ((bool) (SecureLoginTick.IsChecked))
+            {
+               // MessageBox.Show("it is ticked, saved");
+                //write to config now 
+                WriteEnableDisbleSecureLogin("Yes");
+            }
+            else if ((bool) (!SecureLoginTick.IsChecked))
+            {
+                MessageBox.Show("not ticky enabled");
+                WriteEnableDisbleSecureLogin("No");
+            }
+            ReadConfigFile();//IMPORTANT. Update new config file settings to ConfigXXXX variables
+            
+
+
+            //number of attempts
+            string attempts = AttemptsComboBox.Text;
+            if (attempts.Equals("1 Attempt"))
+            {
+                //set writeconfigattempts to 1 
+                MessageBox.Show("1 attempt");
+            }
+            else if (attempts.Equals("2 Attempts"))
+            {
+
+                MessageBox.Show("2 attempt");
+
+            }
+            else if (attempts.Equals("3 Attempts (default)"))
+            {
+                MessageBox.Show("3 attempt");
+            }
+
+            //write attempts method, to do 
+
+            ReadConfigFile();//call after every update
+
+
+
+            GetMyCurrentConfig();//call at the end of this func
+        }
+
         private void EnabledCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             //sms checkbox
-            MessageBox.Show("enabled tick");
+            //MessageBox.Show("enabled tick");
+
+            
         }
+        
 
         private void EnabledCheckBox_UnChecked(object sender, RoutedEventArgs e)
         {
             //sms checkbox
-            MessageBox.Show("enabled untick");
+            //MessageBox.Show("enabled untick");
         }
 
         private void PhoneNoCheckBox_Checked(object sender, RoutedEventArgs e)
@@ -130,7 +187,7 @@ namespace Quartz.MARC
         }
 
 
-        public static void ReadConfigFile()
+        public void ReadConfigFile()
         {
             //read from config file 
             //get desktop path 
@@ -162,6 +219,16 @@ namespace Quartz.MARC
                     {
                         ConfigEnabled = result;
                         Console.WriteLine("enable/disabled option detected: " + ConfigEnabled);
+                        Dispatcher.Invoke(() =>
+                        {
+                            SecureLoginTick.IsChecked = true;//tick by default
+
+                            if (!ConfigEnabled.Equals("Yes"))// if not yes, untick it
+                            {
+                                SecureLoginTick.IsChecked = false;
+                            }
+                        });
+
                     }
 
                     if (counter == 3)
@@ -208,6 +275,8 @@ namespace Quartz.MARC
 
             WriteConfigPassword(passwordPromptBox);
             MessageBox.Show("Password set!");
+            ReadConfigFile();
+            GetMyCurrentConfig();
         }
 
         //remove password
@@ -243,6 +312,8 @@ namespace Quartz.MARC
                     
                 }
             }
+            ReadConfigFile();
+            GetMyCurrentConfig();
         }
         //forgot pw 
 
@@ -265,7 +336,23 @@ namespace Quartz.MARC
 
         }//WriteConfigPassword
 
+        public static void WriteEnableDisbleSecureLogin(string enabled)
+        {
+            //get desktop path 
+            string filePath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            filePath += @"\MarcConfig.txt";
 
+            //if config file doesn't exist, create one 
+            if (File.Exists(filePath))
+            {
+                File.Create(filePath).Dispose();
+                File.AppendAllLines(filePath, new[] { "hp:" + ConfigPhoneNo, "times:" + ConfigTimes, "enabled:" + enabled, "takepic:" + ConfigTakePic, "sms:" + ConfigSMS, "email:" + ConfigEmail, "password:" + ConfigPassword });
+            }
+            else
+            {
+                Console.WriteLine("Config file exists");
+            }
+        }
 
         //for set new password 
         public class InputBox
@@ -419,6 +506,7 @@ namespace Quartz.MARC
             }
         }
 
+        
         
     }
 }
