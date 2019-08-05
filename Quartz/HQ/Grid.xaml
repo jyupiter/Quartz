@@ -5,6 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Quartz.HQ"
       xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+      xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
       mc:Ignorable="d" 
       Background="#FFFBFBFB"
       d:DesignHeight="565" d:DesignWidth="980"
@@ -28,6 +29,12 @@
                 <TextBlock Text="Exempt processes from tracking." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
                 <TextBox Name="whitelistBox" Margin="5,0,5.2,10" Height="325" AcceptsReturn="True"></TextBox>
                 <Button Height="20" Name="updateWL" Margin="0,0,0.2,0" Click="SaveWhitelist">Update White list</Button>
+                <TextBlock Text="Set warning level for process CPU usage(%)." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
+                <xctk:IntegerUpDown  Name="PCSCpu" Height="30" Margin="0,0,0.2,0" Maximum="100" Minimum="0"/>
+                <TextBlock Text="Set warning level for process Ram usage(MB)." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
+                <xctk:IntegerUpDown  Name="PCSRam" Height="30" Margin="0,0,0.2,0" Minimum="0"/>
+                <Button Height="20" Name="updatePCSWarn" Margin="0,0,0.2,0" Click="updateLvls">Update warning levels</Button>
+
             </StackPanel>
         </StackPanel>
         <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20" />

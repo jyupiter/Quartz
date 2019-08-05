@@ -95,7 +95,7 @@ namespace Quartz.HQ
 			AxisUnit = TimeSpan.TicksPerSecond;
 
 			SetAxisLimits(DateTime.Now);
-
+			updateDisplay();
 			//1:gpu 
 			//2:cpu
 			//3:ram
@@ -213,8 +213,28 @@ namespace Quartz.HQ
 
 		private void updateLvls(object sender, RoutedEventArgs e)
 		{
+			string[] list = new string[5] { cpuControl.Text , gpuControl.Text , ramControl.Text , diskControl.Text , netControl.Text };
+			using (System.IO.StreamWriter file =
+			new System.IO.StreamWriter("..\\..\\..\\HQ\\Config\\Thresholds.txt"))
+			{
+				foreach (string line in list)
+				{
+					file.WriteLine(line);
+				}
+				
+			}
+			updateDisplay();
+		}
+
+		private void updateDisplay()
+		{
+			_Graphs.ReloadWarnList();
 			string[] list = _Graphs.GetWarnList();
 			cpuControl.Text = list[0];
+			gpuControl.Text = list[1];
+			ramControl.Text = list[2];
+			diskControl.Text = list[3];
+			netControl.Text = list[4];
 		}
 	}
 
