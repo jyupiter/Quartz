@@ -31,7 +31,8 @@ namespace Quartz.MARC
                 var message = MessageResource.Create(
                     body: timeStamp,
                     from: new Twilio.Types.PhoneNumber("+12055576024"),//DO NOT CHANGE
-                    to: new Twilio.Types.PhoneNumber("+65"+phoneNo)// will need to un-static this thing to a variable with user's HP
+                    to: new Twilio.Types.PhoneNumber("+65" + phoneNo)// will need to un-static this thing to a variable with user's HP
+
                 );
 
                 Console.WriteLine(message.Sid);
@@ -42,6 +43,26 @@ namespace Quartz.MARC
                 Console.WriteLine($"Twilio Error {e.Code} - {e.MoreInfo}");
                 MessageBox.Show("Oops, we couldn't send anything to your phone. Please check your number.");
             }
+
+            //try
+            //{
+
+
+            //    var message = MessageResource.Create(
+            //        body: timeStamp + " here's the intruder photo https://imgur.com/a/urldysC",
+            //        from: new Twilio.Types.PhoneNumber("+12055576024"),//DO NOT CHANGE
+
+            //        to: new Twilio.Types.PhoneNumber("+65" + phoneNo)// will need to un-static this thing to a variable with user's HP
+
+            //    );
+
+            //}
+            //catch (ApiException e)
+            //{
+            //    Console.WriteLine(e.Message);
+            //    Console.WriteLine($"Twilio Error {e.Code} - {e.MoreInfo}");
+            //    MessageBox.Show("Oops, we couldn't send anything to your phone. Please check your number.");
+            //}
 
         }
     }

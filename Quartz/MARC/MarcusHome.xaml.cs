@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using NvAPIWrapper.Native.GPU;
 using Twilio.TwiML.Messaging;
 
 namespace Quartz.MARC
@@ -46,10 +47,31 @@ namespace Quartz.MARC
             InitializeComponent();
             ReadConfigFile();
             GetMyCurrentConfig();
+            RemindUserSetPassword();
+            UpdateComboBoxSelection();
+            PhoneNoCheckBoxChecker();//does not touch sms
         }
 
+        public void PhoneNoCheckBoxChecker()
+        {
+            if (!ConfigPhoneNo.Equals("00000000"))
+                Dispatcher.Invoke(() =>
+                {
+                    //if user set phone number 
+                    PhoneNoEnabledCheckbox.IsChecked = true;
+                });
+            else
+            {   //if not set
+                PhoneNoEnabledCheckbox.IsChecked = false;
+            }
+        }
+
+        
         private void GetMyCurrentConfig()
         {
+            
+           
+            
             //TextBox current config
             string IsPasswordSet = "Config password has been set";
             if (ConfigPassword.Equals("n"))
@@ -60,9 +82,28 @@ namespace Quartz.MARC
             CurrentConfig.Text = "Phone Number: "+ConfigPhoneNo + "\n" + "Attempts allowed: "+ConfigTimes + "\n" + "Login Guard enabled: "+ConfigEnabled + "\n" + "Intruder Photo: "+ConfigTakePic + "\n" + "Warning SMS: "+ConfigSMS + "\n" + "Send Email: "+ConfigEmail + "\n" + IsPasswordSet;
         }
 
-        //SAVE SETTINGS BUTTON!
-        private void LiveScanBtn_Click(object sender, RoutedEventArgs e)
+        //-------------save all settings button ----------------
+        private void SaveSettingsBtn_Click(object sender, RoutedEventArgs e)
         {
+            string tempSMStick = "";
+            string tempEmail = "";
+            if ((bool) (EnableSMScheckbox.IsChecked))
+            {
+                tempSMStick = "Yes";
+            }
+            else
+            {
+                tempSMStick = "No";
+            }
+
+            if ((bool)(EmailChecked.IsChecked))
+            {
+                tempEmail = "Yes";
+            }
+            else
+            {
+                tempEmail = "No";
+            }
             //Enable / Disable SecureLogin 
             if ((bool) (SecureLoginTick.IsChecked))
             {
@@ -72,7 +113,7 @@ namespace Quartz.MARC
             }
             else if ((bool) (!SecureLoginTick.IsChecked))
             {
-                MessageBox.Show("not ticky enabled");
+                //MessageBox.Show("not ticky enabled");
                 WriteEnableDisableSecureLogin("No");
             }
             ReadConfigFile();//IMPORTANT. Update new config file settings to ConfigXXXX variables
@@ -84,26 +125,49 @@ namespace Quartz.MARC
             if (attempts.Equals("1 Attempt"))
             {
                 //set writeconfigattempts to 1 
-                MessageBox.Show("1 attempt");
                 WriteAttempts("1");
             }
             else if (attempts.Equals("2 Attempts"))
             {
-
-                MessageBox.Show("2 attempt");
                 WriteAttempts("2");
 
             }
             else if (attempts.Equals("3 Attempts (default)"))
             {
-                MessageBox.Show("3 attempt");
                 WriteAttempts("3");
             }
             ReadConfigFile();//call after every update
 
+            //Write new SMS setting
+            if (tempSMStick.Equals("Yes"))
+            {
+                WriteSMSEnabled("Yes");
+            }
+            else
+            {
+                WriteSMSEnabled("No");
+            }
+            ReadConfigFile();//always call after change
+
+            //Write new email setting
+            if (tempEmail.Equals("Yes"))
+            {
+                WriteEmail("Yes");
+            }
+            else
+            {
+                WriteEmail("No");
+            }
+            ReadConfigFile();//always call after change
 
 
+
+
+            /* -------Only call at the end of this function--------*/
             GetMyCurrentConfig();//call at the end of this func
+            UpdateComboBoxSelection();//call at the end of this func
+            PhoneNoCheckBoxChecker();
+            MessageBox.Show("Configuration Saved");
         }
 
         private void EnabledCheckBox_Checked(object sender, RoutedEventArgs e)
@@ -115,76 +179,6 @@ namespace Quartz.MARC
         }
         
 
-        private void EnabledCheckBox_UnChecked(object sender, RoutedEventArgs e)
-        {
-            //sms checkbox
-            //MessageBox.Show("enabled untick");
-        }
-
-        private void PhoneNoCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            //sms checkbox
-            MessageBox.Show("hp tick");
-        }
-
-        private void PhoneNoCheckBox_UnChecked(object sender, RoutedEventArgs e)
-        {
-            //sms checkbox
-            MessageBox.Show("hp untick");
-        }
-
-        private void AttemptsCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            //sms checkbox
-            MessageBox.Show("attempts tick");
-        }
-
-        private void AttemptsCheckBox_UnChecked(object sender, RoutedEventArgs e)
-        {
-            //sms checkbox
-            MessageBox.Show("attempts untick");
-        }
-
-        private void SMSCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            //sms checkbox
-            MessageBox.Show("sms tick");
-        }
-
-        private void SMSCheckBox_UnChecked(object sender, RoutedEventArgs e)
-        {
-            //sms checkbox
-            MessageBox.Show("sms untick");
-        }
-
-        private void WebcamCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            //sms checkbox
-            MessageBox.Show("webcam tick");
-        }
-
-        private void WebcamCheckBox_UnChecked(object sender, RoutedEventArgs e)
-        {
-            //sms checkbox
-            MessageBox.Show("webcam untick");
-        }
-
-        private void EmailCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            //sms checkbox
-            MessageBox.Show("Email tick");
-        }
-
-        private void EmailCheckBox_UnChecked(object sender, RoutedEventArgs e)
-        {
-            //sms checkbox
-            MessageBox.Show("Email untick");
-        }
-
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            
-        }
 
 
         public void ReadConfigFile()
@@ -207,12 +201,23 @@ namespace Quartz.MARC
                     {
                         ConfigPhoneNo = result;
                         Console.WriteLine("Phone number detected : " + ConfigPhoneNo);
+                        Dispatcher.Invoke(() =>
+                        {
+                            PhoneNoEnabledCheckbox.IsChecked = true;//tick by default
+
+                            if (ConfigPhoneNo.Equals("00000000"))// if not yes, untick it
+                            {
+                                PhoneNoEnabledCheckbox.IsChecked = false;
+                            }
+                        });
                     }
 
                     if (counter == 1)
                     {
                         ConfigTimes = result;
                         Console.WriteLine("Attempt counter detected: " + ConfigTimes);
+                        
+
                     }
 
                     if (counter == 2)
@@ -241,22 +246,36 @@ namespace Quartz.MARC
                     {
                         ConfigSMS = result;
                         Console.WriteLine("SMS warning option detected: " + ConfigSMS);
+                        Dispatcher.Invoke(() =>
+                        {
+                            EnableSMScheckbox.IsChecked = true;//tick by default
+
+                            if (!ConfigSMS.Equals("Yes"))// if not yes, untick it
+                            {
+                                EnableSMScheckbox.IsChecked = false;
+                            }
+                        });
                     }
 
                     if (counter == 5)
                     {
                         ConfigEmail = result;
                         Console.WriteLine("Email option detected: " + ConfigEmail);
+                        Dispatcher.Invoke(() =>
+                        {
+                            EmailChecked.IsChecked = true;//tick by default
+
+                            if (!ConfigEnabled.Equals("Yes"))// if not yes, untick it
+                            {
+                                EmailChecked.IsChecked = false;
+                            }
+                        });
                     }
                     if (counter == 6)
                     {
                         ConfigPassword = result;
                         Console.WriteLine("password option yo: " + ConfigPassword);
-                        if (ConfigPassword.Equals("n"))
-                        {
-                            MessageBox.Show("Looks like you haven't set a password. We recommend it to protect your configuration.");
-
-                        }
+                        
                        
                     }
                     counter += 1;
@@ -266,20 +285,35 @@ namespace Quartz.MARC
 
         }//readconfigfile
 
+        public void RemindUserSetPassword()
+        {
+            if (ConfigPassword.Equals("n"))
+            {
+                MessageBox.Show("Looks like you haven't set a password. We recommend it to protect your configuration.");
+
+            }
+        }//only called ONCE on visiting page
+
         //set new password
         private void SetPassword(object sender, RoutedEventArgs e)
         {
             ReadConfigFile();
             if (ConfigPassword.Equals("n"))
             {
+                
                 string passwordPromptBox = new InputBox("\nSet a new password").ShowDialog();
-
-                //need a function to write to 6 
-
-                WriteConfigPassword(passwordPromptBox);
-                MessageBox.Show("Password set!");
-                ReadConfigFile();
-                GetMyCurrentConfig();
+                if (passwordPromptBox.Length < 8)
+                {
+                    MessageBox.Show("password can't be less than 8 characters!");
+                }
+                else
+                {
+                    WriteConfigPassword(passwordPromptBox);
+                    MessageBox.Show("Password set!");
+                    ReadConfigFile();
+                    GetMyCurrentConfig();
+                }
+                
 
             }
             else
@@ -292,9 +326,9 @@ namespace Quartz.MARC
                 {
                     //if match, ask for new password
                     string updatedPasswordPrompt = new InputBox("\nEnter NEW password").ShowDialog();
-                    if (updatedPasswordPrompt.Equals(""))
+                    if (updatedPasswordPrompt.Equals("") || updatedPasswordPrompt.Length < 8 )
                     {
-                        MessageBox.Show("Password NOT updated");
+                        MessageBox.Show("Password NOT updated. It can't be blank or less than 8 characters");
                     }
                     else
                     {
@@ -412,6 +446,32 @@ namespace Quartz.MARC
             else
             {
                 Console.WriteLine("Config file exists");
+            }
+        }
+
+        public void UpdateComboBoxSelection()
+        {
+            if (ConfigTimes.Equals("1"))
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    ComboBoxItem1.IsSelected = true;
+                });
+
+            }
+            else if (ConfigTimes.Equals("2"))
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    ComboBoxItem2.IsSelected = true;
+                });
+            }
+            else if (ConfigTimes.Equals("3"))
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    ComboBoxItem3.IsSelected = true;
+                });
             }
         }
 
@@ -568,6 +628,130 @@ namespace Quartz.MARC
         }
 
         
-        
+        private void EnabledCheckBox_UnChecked(object sender, RoutedEventArgs e)
+        {
+            //sms checkbox
+            //MessageBox.Show("enabled untick");
+        }
+
+        private void PhoneNoCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            //sms checkbox
+        }
+
+        private void PhoneNoCheckBox_UnChecked(object sender, RoutedEventArgs e)
+        {
+            //sms checkbox
+        }
+
+        private void SMSCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            //sms checkbox
+        }
+
+        private void SMSCheckBox_UnChecked(object sender, RoutedEventArgs e)
+        {
+            //sms checkbox
+        }
+
+        private void WebcamCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            //sms checkbox
+        }
+
+        private void WebcamCheckBox_UnChecked(object sender, RoutedEventArgs e)
+        {
+            //sms checkbox
+        }
+
+        private void EmailCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            //sms checkbox
+        }
+
+        private void EmailCheckBox_UnChecked(object sender, RoutedEventArgs e)
+        {
+            //sms checkbox
+        }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            
+        }
+
+        //add phone No
+        private void AddPhoneNo_Click(object sender, RoutedEventArgs e)
+        {
+            
+            string PhoneNoPromptBox = new InputBox("\nEnter Phone Number, without spaces").ShowDialog();
+            if (PhoneNoPromptBox.Length != 8 )
+            {
+                MessageBox.Show("Phone Number must be 8 numbers!");
+            }
+            else
+            {
+                //write the new hp func
+                WritePhoneNumber(PhoneNoPromptBox);
+                MessageBox.Show("Phone number updated to " + PhoneNoPromptBox);
+                ReadConfigFile();
+                GetMyCurrentConfig();
+            }
+        }
+
+        public void WritePhoneNumber(string phoneno)
+        {
+            //write phone no to config
+            //get desktop path 
+            string filePath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            filePath += @"\MarcConfig.txt";
+
+            //if config file doesn't exist, create one 
+            if (File.Exists(filePath))
+            {
+                File.Create(filePath).Dispose();
+                File.AppendAllLines(filePath, new[] { "hp:" + phoneno, "times:" + ConfigTimes, "enabled:" + ConfigEnabled, "takepic:" + ConfigTakePic, "sms:" + ConfigSMS, "email:" + ConfigEmail, "password:" + ConfigPassword });
+                //MessageBox.Show("PhoneNo updated yo!");
+            }
+            else
+            {
+                Console.WriteLine("Config file exists");
+            }
+        }
+
+        public void WriteSMSEnabled(string smsOption)
+        {
+            string filePath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            filePath += @"\MarcConfig.txt";
+
+            //if config file doesn't exist, create one 
+            if (File.Exists(filePath))
+            {
+                File.Create(filePath).Dispose();
+                File.AppendAllLines(filePath, new[] { "hp:" + ConfigPhoneNo, "times:" + ConfigTimes, "enabled:" + ConfigEnabled, "takepic:" + ConfigTakePic, "sms:" + smsOption, "email:" + ConfigEmail, "password:" + ConfigPassword });
+                //MessageBox.Show("SMS has been written to " + smsOption);
+            }
+            else
+            {
+                Console.WriteLine("Config file exists");
+            }
+        }
+
+        public void WriteEmail(string option)
+        {
+            string filePath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            filePath += @"\MarcConfig.txt";
+
+            //if config file doesn't exist, create one 
+            if (File.Exists(filePath))
+            {
+                File.Create(filePath).Dispose();
+                File.AppendAllLines(filePath, new[] { "hp:" + ConfigPhoneNo, "times:" + ConfigTimes, "enabled:" + ConfigEnabled, "takepic:" + ConfigTakePic, "sms:" + ConfigSMS, "email:" + option, "password:" + ConfigPassword });
+                //MessageBox.Show("SMS has been written to " + smsOption);
+            }
+            else
+            {
+                Console.WriteLine("Config file exists");
+            }
+        }
     }
 }
