@@ -30,6 +30,7 @@ namespace Quartz.AG
             IDG();
             InitializePreferences();
             LoadFromPreferences();
+            StartListen();
             targetDirectory = TargetDirectory.Text;
             filterExtensions = FilterExtensions.Text;
             enableFiltering = (bool)EnableFiltering.IsChecked;
@@ -82,18 +83,28 @@ namespace Quartz.AG
 
         // User-facing
 
+        private void StartListen()
+        {
+            Thread t = new Thread(Display);
+            t.Start();
+        }
+
         private void Display()
         {
-            List<Record> lr = Watch.lr;
-            backLogSize = lr.Count;
-            Watch.lr.RemoveRange(0, backLogSize);
-            Dispatcher.Invoke(() =>
+            while(true)
             {
-                foreach(Record r in lr)
+                List<Record> lr = Watch.lr;
+                backLogSize = lr.Count;
+                Watch.lr.RemoveRange(0, backLogSize);
+                Dispatcher.Invoke(() =>
                 {
-                    ScanResultDataGrid.Items.Add(r);
-                }
-            });
+                    foreach(Record r in lr)
+                    {
+                        ScanResultDataGrid.Items.Add(r);
+                    }
+                });
+                Thread.Sleep(1000);
+            }
         }
 
         #endregion
