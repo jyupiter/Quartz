@@ -35,7 +35,7 @@ namespace Quartz.Classes
 		private static double diskWarnLvl = 0.1;
 		private static double netWarnLvl = 0.1;
 		private static double ramWarnLvl = 1048576;
-
+		private static string[] config;
 		private static bool isInit = false;
 
 		public static void InitGrid()
@@ -53,6 +53,19 @@ namespace Quartz.Classes
 				StartMonitering();
 
 			}
+		}
+
+		public static void ReloadWarnList()
+		{
+			config = File.ReadAllLines("..\\..\\..\\HQ\\Config\\PCSWarn.txt");
+			cpuWarnLvl = ( Convert.ToDouble(config[0])) / 100;
+			ramWarnLvl = Convert.ToInt32(config[1])*1024;
+		}
+
+		public static string[] GetWarnList()
+		{
+			string[] list = new string[2] { config[0], config[1]};
+			return list;
 		}
 
 		public static void StartMonitering()
@@ -203,7 +216,7 @@ namespace Quartz.Classes
 					{
 						ramCycles = 0;
 					}
-					SetEntry(p.ProcessName, CPUUsage * 100, ramUsage, curTotalProcessorTime);
+					SetEntry(p.ProcessName, CPUUsage, ramUsage, curTotalProcessorTime);
 
 					}
 					catch (Exception e)
@@ -222,9 +235,10 @@ namespace Quartz.Classes
 			{
 				if (name == Sauce[i].pcsName)
 				{
-					Sauce[i].pcsCpu = cpu;
-					Sauce[i].pcsRam = ram;
-					Sauce[i].pcsTime = time;
+					//Sauce[i].pcsCpu = cpu * 100;
+					//Sauce[i].pcsRam = ram /1024;
+					//Sauce[i].pcsTime = time;
+					Sauce[i] = new Entry(Sauce[i].pcsName, cpu * 100, ram / 1024,time);
 				}
 			}
 		}
@@ -339,15 +353,14 @@ namespace Quartz.Classes
 		});
 	}
 
-	[StructLayout(LayoutKind.Sequential, Pack = 1)]
-	public class Entry
+	//[StructLayout(LayoutKind.Sequential, Pack = 1)]
+	public struct Entry
 	{
 		public string pcsName { get; set; }
 		public double pcsCpu { get; set; }
 		public double pcsRam { get; set; }
 		public TimeSpan pcsTime { get; set; }
 
-		public Entry() { }
 		public Entry(string name, double cpu, double ram, TimeSpan Time)
 		{
 			pcsName = name;

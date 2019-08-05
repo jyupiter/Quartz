@@ -71,8 +71,10 @@ namespace Quartz.Classes
 
 		public static string[] GetWarnList()
 		{
-			return new string[5] { config[0], config[1], config[2], config[3], config[4] };
+			string[] list = new string[5] { config[0], config[1], config[2], config[3], config[4] };
+			return list;
 		}
+
 
 		public static void StartMonitering()
 		{

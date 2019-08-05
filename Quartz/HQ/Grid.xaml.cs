@@ -35,6 +35,7 @@ namespace Quartz.HQ
 			DataContext = this;
 			InitGrid();
 			DisplayWhiteList();
+			updateDisplay();
 			new Thread(UpdateDisplay).Start();
 		}
 		private void InitGrid()
@@ -44,8 +45,8 @@ namespace Quartz.HQ
 			DataGridTextColumn ram = new DataGridTextColumn();
 			DataGridTextColumn runTime = new DataGridTextColumn();
 			name.Header = "Process";
-			cpu.Header = "Cpu Usage";
-			ram.Header = "Ram Usage";
+			cpu.Header = "Cpu Usage (%)";
+			ram.Header = "Ram Usage (MB)";
 			runTime.Header = "Process Runtime";
 			name.Binding = new Binding("pcsName");
 			cpu.Binding = new Binding("pcsCpu");
@@ -86,7 +87,6 @@ namespace Quartz.HQ
 			using (System.IO.StreamWriter file =
 			new System.IO.StreamWriter("..\\..\\..\\HQ\\Filters\\ProcessW.txt"))
 			{
-				// If the line doesn't contain the word 'Second', write the line to the file.
 				file.WriteLine(whitelistBox.Text);
 			}
 			_Grid.ReloadWhiteList();
@@ -96,7 +96,7 @@ namespace Quartz.HQ
 		public void DisplayWhiteList()
 		{
 			string output = "";
-			for (int i = 1; i < _Grid.whiteList.Length; i++)
+			for (int i = 0; i < _Grid.whiteList.Length -1; i++)
 			{
 				output += _Grid.whiteList[i] + "\n";
 			}
@@ -105,6 +105,29 @@ namespace Quartz.HQ
 			//	output += line + "\n";
 			//}
 			whitelistBox.Text = output;
+		}
+
+		private void updateLvls(object sender, RoutedEventArgs e)
+		{
+			string[] list = new string[2] { PCSCpu.Text,PCSRam.Text };
+			using (System.IO.StreamWriter file =
+			new System.IO.StreamWriter("..\\..\\..\\HQ\\Config\\PCSWarn.txt"))
+			{
+				foreach (string line in list)
+				{
+					file.WriteLine(line);
+				}
+
+			}
+			updateDisplay();
+		}
+
+		private void updateDisplay()
+		{
+			_Grid.ReloadWarnList();
+			string[] list = _Grid.GetWarnList();
+			PCSCpu.Text = list[0];
+			PCSRam.Text = list[1];
 		}
 	}
 }
