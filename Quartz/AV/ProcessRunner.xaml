@@ -5,7 +5,8 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Quartz.AV"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      Background="#FFFBFBFB"
+      d:DesignHeight="565" d:DesignWidth="980"
       Title="ProcessRunner">
 
     <DockPanel LastChildFill="True">
@@ -13,9 +14,9 @@
         <Rectangle DockPanel.Dock="Top" Height="1" Fill="#FFCCCCCC" Margin="20,0"/>
         <StackPanel DockPanel.Dock="Left" Width="199" Margin="20,20,0,20" HorizontalAlignment="Left">
             <StackPanel>
-                <Label Content="Report on Unused Processes" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
-                <TextBlock Text="Yerr Processes are running. Thy must be wary of thou which is rarely used." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
-                <Button Content="Check yerr Processes" Height="25" HorizontalAlignment="Left" Margin="5,0,5,25" Padding="5,3" Click="Button_Click"></Button>
+                <Label Content="Description" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
+                <TextBlock Text="Reports on Unused Processes. Take note of rarely used applications - they may be out of date." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
+                <Button Content="Check Processes" Height="25" HorizontalAlignment="Left" Margin="5,0,5,25" Padding="5,3" Click="Button_Click"></Button>
 
             </StackPanel>
         </StackPanel>

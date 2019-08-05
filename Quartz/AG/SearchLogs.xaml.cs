@@ -13,6 +13,8 @@ using System.Windows.Data;
 using System.Linq;
 using Version = Lucene.Net.Util.Version;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 
 namespace Quartz.AG
 {
@@ -101,6 +103,16 @@ namespace Quartz.AG
             return k;
         }
 
+        private bool IsFilterDateTime()
+        {
+            bool r = false;
+            Dispatcher.Invoke(() =>
+            {
+                r = (bool)FilterDateTime.IsChecked;
+            });
+            return r;
+        }
+
         private object[,] Checkboxes()
         {
             object[,] c = {
@@ -139,11 +151,19 @@ namespace Quartz.AG
                     if(kw.Count < 1)
                     {
                         Query query = new MatchAllDocsQuery();
-                        TopDocs hits = indexSearcher.Search(query, null, 100);
+                        TopDocs hits = indexSearcher.Search(query, null, 10000);
 
                         foreach(ScoreDoc scoreDoc in hits.ScoreDocs)
                         {
                             Document document = indexSearcher.Doc(scoreDoc.Doc);
+
+                            if(IsFilterDateTime())
+                            {
+                                if(!IsInIntervalDate(document.Get("date")))
+                                    continue;
+                                if(!IsInIntervalTime(document.Get("time")))
+                                    continue;
+                            }
 
                             if(IsMatchBad(document.Get("event")))
                                 continue;
@@ -168,6 +188,14 @@ namespace Quartz.AG
                             foreach(ScoreDoc scoreDoc in hits.ScoreDocs)
                             {
                                 Document document = indexSearcher.Doc(scoreDoc.Doc);
+
+                                if(IsFilterDateTime())
+                                {
+                                    if(!IsInIntervalDate(document.Get("date")))
+                                        continue;
+                                    if(!IsInIntervalTime(document.Get("time")))
+                                        continue;
+                                }
 
                                 if(IsMatchBad(document.Get("event")))
                                     continue;
@@ -205,13 +233,51 @@ namespace Quartz.AG
             return false;
         }
 
+        private bool IsInIntervalDate(string date)
+        {
+            DateTime d1 = DateTime.Now,
+                     d2 = DateTime.Now,
+                     ip = DateTime.Parse(date);
+            Dispatcher.Invoke(() =>
+            {
+                d1 = (DateTime)DateOne.SelectedDate;
+                d2 = (DateTime)DateTwo.SelectedDate;
+            });
+            int c1 = DateTime.Compare(d1.Date, ip.Date),
+                c2 = DateTime.Compare(d2.Date, ip.Date);
+            if((c1 > 0 && c2 > 0) || (c1 < 0 && c2 <0))
+                return false;
+            return true;
+        }
+
+        private bool IsInIntervalTime(string time)
+        {
+            DateTime d1 = DateTime.Now,
+                     d2 = DateTime.Now,
+                     ip = DateTime.Parse(time);
+            Dispatcher.Invoke(() =>
+            {
+                d1 = (DateTime)TimeOne.Value;
+                d2 = (DateTime)TimeTwo.Value;
+            });
+            int c1 = TimeSpan.Compare(d1.TimeOfDay, ip.TimeOfDay),
+                c2 = TimeSpan.Compare(d2.TimeOfDay, ip.TimeOfDay);
+            if((c1 > 0 && c2 > 0) || (c1 < 0 && c2 < 0))
+                return false;
+            return true;
+        }
+
         #endregion
 
         private void SearchLogsBtn_Click(object sender, RoutedEventArgs e)
         {
             SearchResultDataGrid.Items.Clear();
             if(NotAllHidden())
-                RetrieveFromLucene();
+                try { RetrieveFromLucene(); }
+                catch(Exception)
+                {
+                    MessageBox.Show("No logs were found.");
+                }
             else
                 MessageBox.Show("All event types are hidden.");
         }

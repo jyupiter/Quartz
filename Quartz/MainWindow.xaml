@@ -49,10 +49,9 @@
                 <Border BorderBrush="#FFCCCCCC" BorderThickness="0,0,0,1">
                     <StackPanel Name="MainMenu" Background="#FFFFFFFF" Panel.ZIndex="1" Height="25" VerticalAlignment="Top" Orientation="Horizontal" Margin="20,0,20,5">
                         <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Click="RedirectToHome" Content="Home" HorizontalAlignment="Left"/>
-                        <Button x:Name="Moniterng" Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Task Managering" HorizontalAlignment="Left" Click="RedirectToMonitering" Margin="0,0,0,0.6" VerticalAlignment="Bottom"/>
-                        <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Example" HorizontalAlignment="Left"/>
-                        <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Click="RedirectMarcusHome" Content="SecLogin" HorizontalAlignment="Left"/>
-                        <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Click="Button_Click" Content="Updates" HorizontalAlignment="Left"/>
+                        <Button x:Name="Moniterng" Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Processes" HorizontalAlignment="Left" Click="RedirectToMonitering" Margin="0,0,0,0.6" VerticalAlignment="Bottom"/>
+                        <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Click="RedirectMarcusHome" Content="Login" HorizontalAlignment="Left"/>
+                        <Button Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Click="RedirectToUpdates" Content="Updates" HorizontalAlignment="Left"/>
                         <Button x:Name="FilesBtn" Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Files" HorizontalAlignment="Left" Click="RedirectToFiles"/>
                         <Rectangle Width="1" Fill="#FFCCCCCC" Margin="10,0"/>
                         <Button x:Name="SettingsBtn" Style="{StaticResource SideButtonStyle}" Template="{StaticResource SideButtonTemplate}" Content="Settings" HorizontalAlignment="Left"/>

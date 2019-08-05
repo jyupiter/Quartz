@@ -14,7 +14,6 @@
                 <ResourceDictionary Source="/Dictionaries/DataGridDictionary.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
-
     </Page.Resources>
     <DockPanel LastChildFill="True">
         <Label DockPanel.Dock="Top" Content="Protect Files" Margin="20,10" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="15"/>
@@ -25,12 +24,12 @@
                 <TextBlock Text="Lock selected files to prevent tampering and deletion." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
                 
                 <StackPanel Orientation="Horizontal" Margin="5,10,5,0">
-                    <Button Name="SelectFileBtn" Content="Select File" Height="25" HorizontalAlignment="Left" Margin="0,0,0,0" Padding="5,3" Click="SelectFileBtn_Click"></Button>
-                    <Button Name="DeleteFileBtn" Content="Unlock" Height="25" HorizontalAlignment="Left" Margin="10,0,0,0" Padding="5,3" Click="DeleteFileBtn_Click"></Button>
+                    <Button Name="SelectFilesBtn" Content="Select Files" Height="25" HorizontalAlignment="Left" Margin="0,0,0,0" Padding="5,3" Click="SelectFilesBtn_Click"></Button>
+                    <Button Name="UnlockFileBtn" Content="Unlock" Height="25" HorizontalAlignment="Left" Margin="10,0,0,0" Padding="5,3" Click="UnlockFileBtn_Click" Visibility="Hidden"></Button>
                 </StackPanel>
             </StackPanel>
         </StackPanel>
         <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20"/>
-        <DataGrid Name="ProtectedFilesDataGrid" DockPanel.Dock="Right" Margin="0,20,20,20" BorderBrush="LightGray" />
+        <DataGrid Name="ProtectedFilesDataGrid" DockPanel.Dock="Right" Margin="0,20,20,20" BorderBrush="LightGray" IsReadOnly="True" CanUserAddRows="False" SelectionChanged="ProtectedFilesDataGrid_SelectionChanged"/>
     </DockPanel>
 </Page>

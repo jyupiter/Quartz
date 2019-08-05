@@ -5,10 +5,57 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Quartz.MARC"
       mc:Ignorable="d" 
+      Background="#FFFBFBFB"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="MarcusHome">
-
-    <Grid>
-        
-    </Grid>
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Dictionaries/GeneralDictionary.xaml"/>
+                <ResourceDictionary Source="/Dictionaries/DataGridDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+    <DockPanel LastChildFill="True">
+        <Label DockPanel.Dock="Top" Content="Secure Login" Margin="20,10" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="15"/>
+        <Rectangle DockPanel.Dock="Top" Height="1" Fill="#FFCCCCCC" Margin="20,0"/>
+        <StackPanel DockPanel.Dock="Left" Width="199" Margin="20,20,0,20" HorizontalAlignment="Left">
+            <StackPanel>
+                <Label Content="Description" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
+                <TextBlock Text="Configure secure login settings." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,25"/>
+                <Label Content="Security" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
+                <TextBlock Text="Activate the function." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,5"/>
+                <CheckBox Margin="5,0,5,5" Checked="EnabledCheckBox_Checked" Unchecked="EnabledCheckBox_UnChecked">Enable Secure Login</CheckBox>
+                <ComboBox Margin="5,0,5,10">
+                    <ComboBoxItem>1 Attempt</ComboBoxItem>
+                    <ComboBoxItem >2 Attempts</ComboBoxItem>
+                    <ComboBoxItem IsSelected="True">3 Attempts (default)</ComboBoxItem>
+                </ComboBox>
+                <Expander>
+                    <StackPanel>
+                        <Label Margin="0,10,0,0" Content="Additional" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
+                        <CheckBox Margin="5,0,5,5" Checked="PhoneNoCheckBox_Checked" Unchecked="PhoneNoCheckBox_UnChecked">Phone Number</CheckBox>
+                        <CheckBox Margin="5,0,5,5" Checked="WebcamCheckBox_Checked" Unchecked="WebcamCheckBox_UnChecked">Activate Intruder Cam</CheckBox>
+                    </StackPanel>
+                </Expander>
+                <Label Margin="0,15,0,0" Content="Notifications" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
+                <CheckBox Margin="5,0,5,5" Checked="SMSCheckBox_Checked" Unchecked="SMSCheckBox_UnChecked">Send SMS</CheckBox>
+                <CheckBox Margin="5,0,5,25" Checked="EmailCheckBox_Checked" Unchecked="SMSCheckBox_UnChecked">Send Email</CheckBox>
+                <Button Name="LiveScanBtn" Content="Save settings" Height="25" HorizontalAlignment="Left" Padding="5,3" FontFamily="Arial"></Button>
+            </StackPanel>
+        </StackPanel>
+        <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20"/>
+        <StackPanel DockPanel.Dock="Left" Width="199" Margin="0,20,0,20" HorizontalAlignment="Left">
+            <Label Content="Description" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
+            <TextBlock Text="Keep this control panel secure." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,25"/>
+            <Label Content="Password" FontWeight="Bold" FontFamily="Helvetica Neue" FontSize="13"/>
+            <TextBlock Text="Set a password for this page." Foreground="#FF555555" FontFamily="Helvetica Neue" FontSize="13" TextWrapping="Wrap" Margin="5,0,5,10"/>
+            <Button Name="s" Margin="5,0,0,5" Content="Set Password" Height="25" HorizontalAlignment="Left" Padding="5,3" Click="SetPassword" FontFamily="Arial"></Button>
+            <Button Name="d" Margin="5,0,0,0" Content="Remove Password" Height="25" HorizontalAlignment="Left" Padding="5,3" Click="RemovePassword" FontFamily="Arial"></Button>
+        </StackPanel>
+        <Rectangle DockPanel.Dock="Left" Width="1" Fill="#FFCCCCCC" Margin="20,0,20,20"/>
+        <Grid Margin="0,20,20,20">
+            <TextBox IsReadOnly="True" Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualWidth}" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualHeight}" DockPanel.Dock="Right" x:Name="CurrentConfig" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Konsole@root#:" VerticalAlignment="Top" TextChanged="TextBox_TextChanged"/>
+        </Grid>
+    </DockPanel>
 </Page>
