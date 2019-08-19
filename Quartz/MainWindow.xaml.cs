@@ -51,13 +51,13 @@ namespace Quartz
         public MainWindow()
         {
             InitializeComponent();
-			//marcustimer();// delete if not used in final product
-			//calltwilio();
-			_Graphs.initGraphs();
+            //marcustimer();// delete if not used in final product
+            //calltwilio();
+            _Graphs.initGraphs();
             LoginLogoutDetector();//entry point for M's function
             CreateConfigFile();// Marcus's config file
             ReadConfigFile();//Marcus's config file 
-			_Grid.InitGrid();
+            _Grid.InitGrid();
             foreach(Button b in MainMenu.Children.OfType<Button>())
             {
                 b.Click += FocusHandler;
@@ -356,13 +356,13 @@ namespace Quartz
             ReadConfigFile();
             if (LoginAttemptCount.ToString().Equals(ConfigTimes))//3 should change to dynamic variable for final presentation
             {
+               // new Thread(SendEmail).Start();
                 string pcname = System.Environment.MachineName;
                 if (!ConfigPhoneNo.Equals("00000000") && ConfigSMS.Equals("Yes"))
                 {
-                    if (ConfigEmail.Equals("Yes"))
-                    {
-                        new Thread(SendEmail).Start();
-                    }
+                    
+                        
+                    
                    
                     
                     MarcusTwilio mt = new MarcusTwilio();

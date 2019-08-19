@@ -29,7 +29,7 @@ namespace Quartz.MARC
     mail.Attachments.Add(attachment);
 
     SmtpServer.Port = 587;
-    SmtpServer.Credentials = new System.Net.NetworkCredential("shimarumaka@gmail.com", "eckskete69elforel");
+    SmtpServer.Credentials = new System.Net.NetworkCredential("shimarumaka@gmail.com", "l1pm3hb4nk$");
     SmtpServer.EnableSsl = true;
 
     SmtpServer.Send(mail);
