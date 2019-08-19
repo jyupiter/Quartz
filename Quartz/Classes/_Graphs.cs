@@ -86,17 +86,20 @@ namespace Quartz.Classes
 			//	Console.WriteLine(name);
 			//}
 			//NVIDIA.Initialize();
-			new Thread(GpuThread).Start();
-			new Thread(CpuThread).Start();
-			new Thread(MemThread).Start();
-			new Thread(DiskThread).Start();
-			new Thread(NetThread).Start();
+			//new Thread(GpuThread).Start();
+			//new Thread(CpuThread).Start();
+			//new Thread(MemThread).Start();
+			//ew Thread(DiskThread).Start();
+			//new Thread(NetThread).Start();
 		}
 		public static void GpuThread()
 		{
 			Debug.WriteLine("Starting Gpu");
 			int gpuCycles = 0;
-			var GPUs = PhysicalGPU.GetPhysicalGPUs();
+                var GPUs = PhysicalGPU.GetPhysicalGPUs();
+ 
+
+            
 			while (true)
 			{
 				try
